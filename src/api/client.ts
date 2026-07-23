@@ -1,8 +1,26 @@
-import type { ApiFailure, ApiResponse } from './types'
+import type {
+  ApiFailure,
+  ApiResponse,
+  ApiValidationIssue,
+} from './types'
 
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim()
 
 export const API_BASE_URL = (configuredBaseUrl || '/api/v1').replace(/\/+$/, '')
+
+const versionedPathPattern = /^(?:api(?:\/v1)?|v1)(?:\/|$)/
+
+const buildApiUrl = (path: string): string => {
+  const featurePath = path.trim().replace(/^\/+/, '')
+
+  if (versionedPathPattern.test(featurePath)) {
+    throw new Error(
+      'API feature paths must not repeat the configured /api/v1 prefix',
+    )
+  }
+
+  return featurePath ? `${API_BASE_URL}/${featurePath}` : API_BASE_URL
+}
 
 interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown
@@ -13,6 +31,7 @@ export class ApiError extends Error {
   readonly status: number
   readonly code: string
   readonly details?: string[]
+  readonly issues?: ApiValidationIssue[]
 
   constructor(status: number, failure?: ApiFailure) {
     super(failure?.error.message || `Request failed with status ${status}`)
@@ -20,6 +39,7 @@ export class ApiError extends Error {
     this.status = status
     this.code = failure?.error.code || 'REQUEST_FAILED'
     this.details = failure?.error.details
+    this.issues = failure?.error.issues
   }
 }
 
@@ -60,7 +80,7 @@ const request = async <T>(
     headers.set('Authorization', `Bearer ${accessToken}`)
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(buildApiUrl(path), {
     ...fetchOptions,
     credentials: 'include',
     headers,

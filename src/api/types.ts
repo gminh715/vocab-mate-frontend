@@ -21,9 +21,18 @@ export interface MyAccount extends PublicUser {
   profile: UserProfile
 }
 
-export interface LoginInput {
+export interface LoginRequest {
   email: string
   password: string
+}
+
+export interface RegisterRequest {
+  email: string
+  password: string
+  displayName: string
+  currentCefrLevel: CefrLevel
+  learningGoal?: string
+  preferredLanguage?: string
 }
 
 export interface AuthData {
@@ -31,21 +40,43 @@ export interface AuthData {
   accessToken: string
 }
 
+export interface MessageData {
+  message: string
+}
+
+export interface PaginationMeta {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+export interface PaginatedData<T> {
+  items: T[]
+  meta: PaginationMeta
+}
+
+export interface ApiValidationIssue {
+  code: string
+  message: string
+  entityId?: string
+}
+
 export interface ApiErrorBody {
   code: string
   message: string
   details?: string[]
-  issues?: Array<{
-    code: string
-    message: string
-    entityId?: string
-  }>
+  issues?: ApiValidationIssue[]
 }
 
 export interface ApiSuccess<T> {
   success: true
   data: T
-  meta?: unknown
+}
+
+export interface ApiSuccessWithMeta<T, TMeta = PaginationMeta>
+  extends ApiSuccess<T> {
+  meta: TMeta
 }
 
 export interface ApiFailure {
@@ -54,3 +85,7 @@ export interface ApiFailure {
 }
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiFailure
+
+export type ApiResponseWithMeta<T, TMeta = PaginationMeta> =
+  | ApiSuccessWithMeta<T, TMeta>
+  | ApiFailure

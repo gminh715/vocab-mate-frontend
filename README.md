@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vocab Mate Frontend
 
-## Getting Started
+React + TypeScript + Vite frontend connected to the Vocab Mate NestJS API.
 
-First, run the development server:
+## Development
+
+Start the backend on port `3000`, then run:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:5173`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Vite proxies `/api` to `http://localhost:3000`, so the backend's HttpOnly
+refresh-token cookie remains same-origin during local development. Copy
+`.env.example` to `.env` and change `VITE_API_PROXY_TARGET` if the backend uses
+another address.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The browser API base path defaults to `/api/v1`. For a deployment where the API
+is hosted separately, set `VITE_API_BASE_URL` to its full public `/api/v1` URL
+and enable credentialed CORS on the backend.
 
-## Learn More
+## API client
 
-To learn more about Next.js, take a look at the following resources:
+`src/api/client.ts` provides:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Typed helpers for GET, POST, PATCH, PUT, and DELETE.
+- Automatic parsing of the backend's `{ success, data }` envelope.
+- Normalized API errors from `{ success: false, error }`.
+- Bearer access-token attachment.
+- One shared refresh request and one retry after a `401`.
+- `credentials: "include"` for the HttpOnly refresh cookie.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`src/api/auth.ts` implements login, session restoration, and logout against the
+backend's `/auth` and `/users/me` endpoints.
 
-## Deploy on Vercel
+## Checks
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run lint
+npm run build
+```

@@ -11,10 +11,9 @@ import type {
   CreateCategoryRequest,
   UpdateCategoryRequest,
 } from '../types/admin-categories'
+import { categoryQueryKeys } from './useCategories'
 
-export const categoryQueryKeys = {
-  all: ['categories'] as const,
-}
+export { categoryQueryKeys } from './useCategories'
 
 export const adminCategoryQueryKeys = {
   all: ['admin-categories'] as const,

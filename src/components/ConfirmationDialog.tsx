@@ -34,6 +34,9 @@ export function ConfirmationDialog({
       aria-labelledby="confirmation-dialog-title"
       maxWidth="xs"
       fullWidth
+      slotProps={{
+        paper: { sx: { overscrollBehavior: 'contain' } },
+      }}
     >
       <DialogTitle id="confirmation-dialog-title">{title}</DialogTitle>
       <DialogContent>

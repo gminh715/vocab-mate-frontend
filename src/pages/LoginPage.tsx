@@ -27,7 +27,9 @@ const loginErrorMessage = (error: unknown): string => {
     return 'This account is suspended or disabled. Contact an administrator for help.'
   }
 
-  return apiError.details?.[0] ?? apiError.message
+  return apiError.status === 0
+    ? apiError.message
+    : 'Sign in could not be completed. Try again.'
 }
 
 export function LoginPage() {

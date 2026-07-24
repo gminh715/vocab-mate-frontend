@@ -5,6 +5,10 @@ export const routePaths = {
   home: '/',
   login: '/login',
   register: '/register',
+  articles: '/articles',
+  articleDetail: '/articles/:slug',
+  reader: '/read/:slug',
+  readingHistory: '/reading-history',
   admin: '/admin',
   adminUsers: '/admin/users',
   adminUserDetail: '/admin/users/:userId',
@@ -44,6 +48,12 @@ export const adminArticlePreviewPath = (articleId: string): string =>
     ':articleId',
     encodeURIComponent(articleId),
   )
+
+export const articlePath = (slug: string): string =>
+  routePaths.articleDetail.replace(':slug', encodeURIComponent(slug))
+
+export const readerPath = (slug: string): string =>
+  routePaths.reader.replace(':slug', encodeURIComponent(slug))
 
 export interface AuthRedirectState {
   from?: string

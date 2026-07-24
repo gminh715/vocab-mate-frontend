@@ -46,6 +46,8 @@ export function DebouncedSearchField({
   return (
     <TextField
       label={label}
+      name="search"
+      autoComplete="off"
       value={value}
       onChange={handleChange}
       placeholder={placeholder}

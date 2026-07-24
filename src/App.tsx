@@ -127,6 +127,36 @@ const HomePage = lazy(() =>
   })),
 )
 
+const ArticlesPage = lazy(() =>
+  import('./pages/ArticlesPage').then(({ ArticlesPage: Component }) => ({
+    default: Component,
+  })),
+)
+
+const ArticleDetailPage = lazy(() =>
+  import('./pages/ArticleDetailPage').then(
+    ({ ArticleDetailPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const ArticleReaderPage = lazy(() =>
+  import('./pages/ArticleReaderPage').then(
+    ({ ArticleReaderPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const ReadingHistoryPage = lazy(() =>
+  import('./pages/ReadingHistoryPage').then(
+    ({ ReadingHistoryPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
 const LoginPage = lazy(() =>
   import('./pages/LoginPage').then(({ LoginPage: Component }) => ({
     default: Component,
@@ -147,15 +177,31 @@ export function AppRoutes() {
         <Route path={routePaths.register} element={<RegisterPage />} />
       </Route>
 
-      <Route element={<ProtectedRoute />}>
-        <Route element={<AuthenticatedLayout />}>
+      <Route element={<AuthenticatedLayout />}>
+        <Route path={routePaths.articles} element={<ArticlesPage />} />
+        <Route
+          path={routePaths.articleDetail}
+          element={<ArticleDetailPage />}
+        />
+
+        <Route element={<ProtectedRoute />}>
           <Route path={routePaths.home} element={<HomePage />} />
+          <Route
+            path={routePaths.reader}
+            element={<ArticleReaderPage />}
+          />
+          <Route
+            path={routePaths.readingHistory}
+            element={<ReadingHistoryPage />}
+          />
           <Route
             path={routePaths.forbidden}
             element={<ForbiddenPage />}
           />
         </Route>
+      </Route>
 
+      <Route element={<ProtectedRoute />}>
         <Route element={<RoleRoute allowedRoles={['ADMIN']} />}>
           <Route path={routePaths.admin} element={<AdminLayout />}>
             <Route index element={<AdminPage />} />

@@ -1,118 +1,177 @@
-import type { ApiFailure, ApiResponse } from './types'
+import axios, {
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+} from 'axios'
+import type {
+  ApiErrorBody,
+  ApiFailure,
+  ApiResponse,
+} from './types'
+
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    hasRetriedAfterRefresh?: boolean
+    skipAuth?: boolean
+    skipAuthRefresh?: boolean
+  }
+}
 
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim()
 
 export const API_BASE_URL = (configuredBaseUrl || '/api/v1').replace(/\/+$/, '')
 
-interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
-  body?: unknown
-  retryOnUnauthorized?: boolean
-}
+const authRefreshExcludedPaths = new Set([
+  '/auth/login',
+  '/auth/logout',
+  '/auth/refresh',
+  '/auth/register',
+])
+
+const httpClient = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+})
+
+const refreshClient = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+})
+
+let accessToken: string | null = null
+let refreshRequest: Promise<void> | null = null
+let sessionExpiredHandler: (() => void) | null = null
 
 export class ApiError extends Error {
   readonly status: number
   readonly code: string
   readonly details?: string[]
+  readonly issues?: ApiErrorBody['issues']
 
-  constructor(status: number, failure?: ApiFailure) {
-    super(failure?.error.message || `Request failed with status ${status}`)
+  constructor({
+    status,
+    code,
+    message,
+    details,
+    issues,
+  }: {
+    status: number
+    code: string
+    message: string
+    details?: string[]
+    issues?: ApiErrorBody['issues']
+  }) {
+    super(message)
     this.name = 'ApiError'
     this.status = status
-    this.code = failure?.error.code || 'REQUEST_FAILED'
-    this.details = failure?.error.details
+    this.code = code
+    this.details = details
+    this.issues = issues
   }
 }
 
-let accessToken: string | null = null
-let refreshRequest: Promise<boolean> | null = null
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
 
-const isApiResponse = <T>(value: unknown): value is ApiResponse<T> =>
-  typeof value === 'object' &&
-  value !== null &&
-  'success' in value &&
-  typeof value.success === 'boolean'
+const isApiFailure = (value: unknown): value is ApiFailure => {
+  if (!isRecord(value) || value.success !== false || !isRecord(value.error)) {
+    return false
+  }
 
-const readResponse = async (response: Response): Promise<unknown> => {
-  if (response.status === 204) return undefined
-
-  const contentType = response.headers.get('content-type') ?? ''
-  return contentType.includes('application/json')
-    ? response.json()
-    : response.text()
+  return (
+    typeof value.error.code === 'string' &&
+    typeof value.error.message === 'string'
+  )
 }
 
-const request = async <T>(
-  path: string,
-  options: ApiRequestOptions = {},
-): Promise<T> => {
-  const {
-    body,
-    headers: suppliedHeaders,
-    retryOnUnauthorized = true,
-    ...fetchOptions
-  } = options
-  const headers = new Headers(suppliedHeaders)
+const errorMessageForStatus = (status: number): string => {
+  if (status === 401) return 'Your session is no longer valid.'
+  if (status === 403) return 'You do not have permission to do that.'
+  if (status >= 500) return 'The server could not complete the request.'
+  return 'The request could not be completed.'
+}
 
-  if (body !== undefined && !(body instanceof FormData)) {
-    headers.set('Content-Type', 'application/json')
-  }
-  if (accessToken) {
-    headers.set('Authorization', `Bearer ${accessToken}`)
+export const normalizeApiError = (error: unknown): ApiError => {
+  if (error instanceof ApiError) return error
+
+  if (axios.isAxiosError(error)) {
+    const status = error.response?.status ?? 0
+    const failure = isApiFailure(error.response?.data)
+      ? error.response.data
+      : undefined
+
+    if (!error.response) {
+      return new ApiError({
+        status,
+        code: 'NETWORK_ERROR',
+        message: 'Unable to reach the server. Check your connection and try again.',
+      })
+    }
+
+    return new ApiError({
+      status,
+      code: failure?.error.code ?? 'REQUEST_FAILED',
+      message:
+        status >= 500
+          ? errorMessageForStatus(status)
+          : failure?.error.message || errorMessageForStatus(status),
+      details: failure?.error.details,
+      issues: failure?.error.issues,
+    })
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...fetchOptions,
-    credentials: 'include',
-    headers,
-    body:
-      body === undefined || body instanceof FormData
-        ? body
-        : JSON.stringify(body),
+  return new ApiError({
+    status: 0,
+    code: 'UNEXPECTED_ERROR',
+    message: 'An unexpected error occurred. Try again.',
   })
+}
 
-  if (
-    response.status === 401 &&
-    retryOnUnauthorized &&
-    path !== '/auth/refresh' &&
-    (await refreshAccessToken())
-  ) {
-    return request<T>(path, { ...options, retryOnUnauthorized: false })
-  }
+const requestPath = (config: AxiosRequestConfig): string =>
+  (config.url ?? '').split('?')[0] ?? ''
 
-  const payload = await readResponse(response)
+const canRefreshRequest = (
+  config: InternalAxiosRequestConfig,
+): boolean =>
+  !config.hasRetriedAfterRefresh &&
+  !config.skipAuthRefresh &&
+  !authRefreshExcludedPaths.has(requestPath(config))
 
-  if (!response.ok) {
-    const failure =
-      isApiResponse<never>(payload) && !payload.success ? payload : undefined
-    throw new ApiError(response.status, failure)
-  }
-
-  if (isApiResponse<T>(payload)) {
-    if (!payload.success) throw new ApiError(response.status, payload)
-    return payload.data
-  }
-
-  return payload as T
+const notifySessionExpired = (): void => {
+  sessionExpiredHandler?.()
 }
 
 export const setAccessToken = (token: string | null): void => {
   accessToken = token
 }
 
-export const refreshAccessToken = (): Promise<boolean> => {
+export const setSessionExpiredHandler = (
+  handler: (() => void) | null,
+): void => {
+  sessionExpiredHandler = handler
+}
+
+export const refreshAccessToken = (): Promise<void> => {
   if (refreshRequest) return refreshRequest
 
-  refreshRequest = request<{ accessToken: string }>('/auth/refresh', {
-    method: 'POST',
-    retryOnUnauthorized: false,
-  })
-    .then(({ accessToken: nextToken }) => {
-      setAccessToken(nextToken)
-      return true
+  refreshRequest = refreshClient
+    .post<ApiResponse<{ accessToken: string }>>('/auth/refresh')
+    .then((response) => {
+      if (!response.data.success) {
+        throw new ApiError({
+          status: response.status,
+          code: response.data.error.code,
+          message: response.data.error.message,
+          details: response.data.error.details,
+          issues: response.data.error.issues,
+        })
+      }
+
+      setAccessToken(response.data.data.accessToken)
     })
-    .catch(() => {
+    .catch((error: unknown) => {
       setAccessToken(null)
-      return false
+      notifySessionExpired()
+      throw normalizeApiError(error)
     })
     .finally(() => {
       refreshRequest = null
@@ -121,15 +180,124 @@ export const refreshAccessToken = (): Promise<boolean> => {
   return refreshRequest
 }
 
+httpClient.interceptors.request.use((config) => {
+  if (accessToken && !config.skipAuth) {
+    config.headers.set('Authorization', `Bearer ${accessToken}`)
+  }
+
+  return config
+})
+
+httpClient.interceptors.response.use(
+  (response) => response,
+  async (error: unknown) => {
+    if (!axios.isAxiosError(error) || error.response?.status !== 401) {
+      return Promise.reject(error)
+    }
+
+    const originalRequest = error.config
+
+    if (!originalRequest || !canRefreshRequest(originalRequest)) {
+      if (originalRequest?.hasRetriedAfterRefresh) {
+        setAccessToken(null)
+        notifySessionExpired()
+      }
+
+      return Promise.reject(error)
+    }
+
+    originalRequest.hasRetriedAfterRefresh = true
+
+    try {
+      await refreshAccessToken()
+      return await httpClient.request(originalRequest)
+    } catch (refreshError: unknown) {
+      return Promise.reject(refreshError)
+    }
+  },
+)
+
+const request = async <T>(config: AxiosRequestConfig): Promise<T> => {
+  try {
+    const response = await httpClient.request<ApiResponse<T>>(config)
+    const payload = response.data
+
+    if (!payload.success) {
+      throw new ApiError({
+        status: response.status,
+        code: payload.error.code,
+        message: payload.error.message,
+        details: payload.error.details,
+        issues: payload.error.issues,
+      })
+    }
+
+    return payload.data
+  } catch (error: unknown) {
+    throw normalizeApiError(error)
+  }
+}
+
+interface ApiRequestOptions extends AxiosRequestConfig {
+  retryOnUnauthorized?: boolean
+}
+
+const withLegacyRetryOption = (
+  options: ApiRequestOptions = {},
+): AxiosRequestConfig => {
+  const { retryOnUnauthorized, ...config } = options
+
+  return {
+    ...config,
+    skipAuthRefresh:
+      config.skipAuthRefresh ??
+      (retryOnUnauthorized === undefined ? undefined : !retryOnUnauthorized),
+  }
+}
+
 export const apiClient = {
   get: <T>(path: string, options?: ApiRequestOptions) =>
-    request<T>(path, { ...options, method: 'GET' }),
-  post: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
-    request<T>(path, { ...options, method: 'POST', body }),
-  patch: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
-    request<T>(path, { ...options, method: 'PATCH', body }),
-  put: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
-    request<T>(path, { ...options, method: 'PUT', body }),
+    request<T>({ ...withLegacyRetryOption(options), method: 'GET', url: path }),
+  post: <T>(
+    path: string,
+    body?: unknown,
+    options?: ApiRequestOptions,
+  ) =>
+    request<T>({
+      ...withLegacyRetryOption(options),
+      method: 'POST',
+      url: path,
+      data: body,
+    }),
+  patch: <T>(
+    path: string,
+    body?: unknown,
+    options?: ApiRequestOptions,
+  ) =>
+    request<T>({
+      ...withLegacyRetryOption(options),
+      method: 'PATCH',
+      url: path,
+      data: body,
+    }),
+  put: <T>(
+    path: string,
+    body?: unknown,
+    options?: ApiRequestOptions,
+  ) =>
+    request<T>({
+      ...withLegacyRetryOption(options),
+      method: 'PUT',
+      url: path,
+      data: body,
+    }),
   delete: <T>(path: string, options?: ApiRequestOptions) =>
-    request<T>(path, { ...options, method: 'DELETE' }),
+    request<T>({
+      ...withLegacyRetryOption(options),
+      method: 'DELETE',
+      url: path,
+    }),
 }
+
+export const isApiError = (error: unknown): error is ApiError =>
+  error instanceof ApiError

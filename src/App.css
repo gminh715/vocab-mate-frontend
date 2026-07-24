@@ -30,6 +30,7 @@ h1 {
   font-size: clamp(32px, 6vw, 52px);
   line-height: 1.05;
   letter-spacing: -0.04em;
+  text-wrap: balance;
 }
 
 .intro {
@@ -37,44 +38,14 @@ h1 {
   line-height: 1.65;
 }
 
-.connection {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 30px 0;
-  padding: 16px;
-  border-radius: 16px;
-  background: #f3f6f4;
-}
-
-.connection div,
 .account div {
   display: grid;
   gap: 2px;
 }
 
-.connection small,
 .account small,
 .account span {
   color: #718078;
-}
-
-.status-dot {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: #d29b31;
-  box-shadow: 0 0 0 5px rgba(210, 155, 49, 0.14);
-}
-
-.connection--connected .status-dot {
-  background: #2f9a6f;
-  box-shadow: 0 0 0 5px rgba(47, 154, 111, 0.14);
-}
-
-.connection--offline .status-dot {
-  background: #c75b5b;
-  box-shadow: 0 0 0 5px rgba(199, 91, 91, 0.14);
 }
 
 form {
@@ -101,7 +72,7 @@ input {
   font: inherit;
 }
 
-input:focus {
+input:focus-visible {
   border-color: #318363;
   outline: 3px solid rgba(49, 131, 99, 0.13);
 }
@@ -115,10 +86,16 @@ button {
   font: inherit;
   font-weight: 800;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 button:hover {
   background: #165b41;
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(49, 131, 99, 0.24);
+  outline-offset: 3px;
 }
 
 button:disabled {

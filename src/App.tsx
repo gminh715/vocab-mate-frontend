@@ -1,139 +1,129 @@
-import { type FormEvent, useEffect, useState } from 'react'
-import { API_BASE_URL, ApiError, apiClient } from './api/client'
-import { authApi } from './api/auth'
-import type { MyAccount } from './api/types'
+import { type FormEvent, useState } from 'react'
+import { normalizeApiError } from './api/client'
+import {
+  useLoginMutation,
+  useLogoutMutation,
+} from './features/auth/auth-hooks'
+import { loginSchema } from './features/auth/auth-schemas'
+import { useAuth } from './features/auth/use-auth'
 import './App.css'
 
-type ConnectionState = 'checking' | 'connected' | 'offline'
-
 function App() {
-  const [connection, setConnection] = useState<ConnectionState>('checking')
-  const [account, setAccount] = useState<MyAccount | null>(null)
+  const { currentUser, error, isInitializing } = useAuth()
+  const loginMutation = useLoginMutation()
+  const logoutMutation = useLogoutMutation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-
-  useEffect(() => {
-    let active = true
-
-    void apiClient
-      .get<string>('', { retryOnUnauthorized: false })
-      .then(() => active && setConnection('connected'))
-      .catch(() => active && setConnection('offline'))
-
-    void authApi.restoreSession().then((session) => {
-      if (active) setAccount(session)
-    })
-
-    return () => {
-      active = false
-    }
-  }, [])
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setSubmitting(true)
     setMessage('')
 
+    const result = loginSchema.safeParse({ email, password })
+
+    if (!result.success) {
+      setMessage(result.error.issues[0]?.message ?? 'Check your login details.')
+      return
+    }
+
     try {
-      const session = await authApi.login({ email, password })
-      setAccount(session)
-      setConnection('connected')
+      await loginMutation.mutateAsync(result.data)
       setPassword('')
-    } catch (error) {
-      setMessage(
-        error instanceof ApiError
-          ? error.details?.join(', ') || error.message
-          : 'Không thể kết nối tới backend.',
-      )
-    } finally {
-      setSubmitting(false)
+    } catch (mutationError: unknown) {
+      const apiError = normalizeApiError(mutationError)
+      setMessage(apiError.details?.[0] ?? apiError.message)
     }
   }
 
   const handleLogout = async () => {
-    setSubmitting(true)
     setMessage('')
 
     try {
-      await authApi.logout()
-      setAccount(null)
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Đăng xuất thất bại.')
-    } finally {
-      setSubmitting(false)
+      await logoutMutation.mutateAsync()
+    } catch (mutationError: unknown) {
+      setMessage(normalizeApiError(mutationError).message)
     }
+  }
+
+  if (isInitializing) {
+    return (
+      <main className="shell">
+        <section className="card" aria-live="polite">
+          <p className="eyebrow">Vocab Mate</p>
+          <h1>Restoring your session…</h1>
+        </section>
+      </main>
+    )
   }
 
   return (
     <main className="shell">
       <section className="card">
         <p className="eyebrow">Vocab Mate</p>
-        <h1>Frontend đã sẵn sàng nói chuyện với backend.</h1>
+        <h1>Auth foundation connected to the Vocab Mate API.</h1>
         <p className="intro">
-          API client đang dùng đúng response envelope, Bearer access token và
-          HttpOnly refresh cookie của NestJS.
+          Access tokens stay in memory. Refresh tokens remain in the
+          backend-managed HttpOnly cookie.
         </p>
 
-        <div className={`connection connection--${connection}`}>
-          <span className="status-dot" aria-hidden="true" />
-          <div>
-            <strong>
-              {connection === 'checking'
-                ? 'Đang kiểm tra kết nối'
-                : connection === 'connected'
-                  ? 'Backend đã kết nối'
-                  : 'Backend chưa phản hồi'}
-            </strong>
-            <small>{API_BASE_URL}</small>
-          </div>
-        </div>
-
-        {account ? (
+        {currentUser ? (
           <div className="account">
             <div>
-              <span>Đăng nhập với</span>
-              <strong>{account.profile.displayName}</strong>
+              <span>Signed in as</span>
+              <strong>{currentUser.profile.displayName}</strong>
               <small>
-                {account.email} · {account.profile.currentCefrLevel}
+                {currentUser.email} · {currentUser.profile.currentCefrLevel}
               </small>
             </div>
-            <button type="button" onClick={handleLogout} disabled={submitting}>
-              Đăng xuất
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={logoutMutation.isPending}
+            >
+              {logoutMutation.isPending ? 'Signing Out…' : 'Sign Out'}
             </button>
           </div>
         ) : (
           <form onSubmit={handleLogin}>
-            <label>
+            <label htmlFor="email">
               Email
               <input
+                id="email"
+                name="email"
                 type="email"
                 autoComplete="email"
+                spellCheck={false}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="user@example.com"
+                placeholder="e.g. user@example.com…"
                 required
               />
             </label>
-            <label>
-              Mật khẩu
+            <label htmlFor="password">
+              Password
               <input
+                id="password"
+                name="password"
                 type="password"
                 autoComplete="current-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="••••••••"
+                placeholder="Enter your password…"
                 required
               />
             </label>
-            <button type="submit" disabled={submitting}>
-              {submitting ? 'Đang đăng nhập…' : 'Đăng nhập qua API'}
+            <button type="submit" disabled={loginMutation.isPending}>
+              {loginMutation.isPending ? 'Signing In…' : 'Sign In'}
             </button>
           </form>
         )}
 
-        {message && <p className="message" role="alert">{message}</p>}
+        {(message || error) && (
+          <p className="message" role="alert">
+            {message || error?.message}
+          </p>
+        )}
       </section>
     </main>
   )

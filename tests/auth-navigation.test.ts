@@ -10,6 +10,14 @@ describe('postAuthPath', () => {
     ).toBe('/articles/42?mode=study#sentence-3')
   })
 
+  it('preserves a safe reader destination after authentication', () => {
+    expect(
+      postAuthPath('USER', {
+        from: '/read/how-technology-changes-learning',
+      }),
+    ).toBe('/read/how-technology-changes-learning')
+  })
+
   it.each([
     'https://malicious.example',
     '//malicious.example',

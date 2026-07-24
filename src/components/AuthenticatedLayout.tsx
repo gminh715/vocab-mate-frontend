@@ -12,7 +12,7 @@ import { useLogoutMutation } from '../hooks/useAuth'
 import { useAuth } from '../contexts/AuthContext'
 
 export function AuthenticatedLayout() {
-  const { currentUser } = useAuth()
+  const { currentUser, isInitializing } = useAuth()
   const logoutMutation = useLogoutMutation()
 
   return (
@@ -55,7 +55,7 @@ export function AuthenticatedLayout() {
           >
             <Typography
               component={RouterLink}
-              to={routePaths.home}
+              to={currentUser ? routePaths.home : routePaths.articles}
               sx={{
                 color: 'primary.dark',
                 fontFamily: 'Georgia, serif',
@@ -79,9 +79,31 @@ export function AuthenticatedLayout() {
                 width: { xs: '100%', sm: 'auto' },
               }}
             >
-              <Button component={RouterLink} to={routePaths.home} color="inherit">
-                Home
+              {currentUser ? (
+                <Button
+                  component={RouterLink}
+                  to={routePaths.home}
+                  color="inherit"
+                >
+                  Home
+                </Button>
+              ) : null}
+              <Button
+                component={RouterLink}
+                to={routePaths.articles}
+                color="inherit"
+              >
+                Articles
               </Button>
+              {currentUser ? (
+                <Button
+                  component={RouterLink}
+                  to={routePaths.readingHistory}
+                  color="inherit"
+                >
+                  Reading history
+                </Button>
+              ) : null}
               {currentUser?.role === 'ADMIN' ? (
                 <Button
                   component={RouterLink}
@@ -95,20 +117,36 @@ export function AuthenticatedLayout() {
 
             <Box sx={{ flexGrow: 1 }} />
 
-            <Typography
-              color="text.secondary"
-              noWrap
-              sx={{ display: { xs: 'none', md: 'block' }, maxWidth: 220 }}
-            >
-              {currentUser?.profile.displayName}
-            </Typography>
-            <Button
-              variant="outlined"
-              onClick={() => logoutMutation.mutate()}
-              disabled={logoutMutation.isPending}
-            >
+            {currentUser ? (
+              <>
+                <Typography
+                  color="text.secondary"
+                  noWrap
+                  sx={{
+                    display: { xs: 'none', md: 'block' },
+                    maxWidth: 220,
+                  }}
+                >
+                  {currentUser.profile.displayName}
+                </Typography>
+                <Button
+                  variant="outlined"
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                >
               {logoutMutation.isPending ? 'Signing Out…' : 'Sign Out'}
-            </Button>
+                </Button>
+              </>
+            ) : (
+              <Button
+                component={RouterLink}
+                to={routePaths.login}
+                variant="outlined"
+                disabled={isInitializing}
+              >
+                Sign In
+              </Button>
+            )}
           </Toolbar>
         </Container>
       </AppBar>

@@ -1,131 +1,232 @@
-import { type FormEvent, useState } from 'react'
-import { normalizeApiError } from './api/client'
+import { lazy, Suspense } from 'react'
 import {
-  useLoginMutation,
-  useLogoutMutation,
-} from './features/auth/auth-hooks'
-import { loginSchema } from './features/auth/auth-schemas'
-import { useAuth } from './features/auth/use-auth'
-import './App.css'
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom'
+import {
+  GuestRoute,
+  ProtectedRoute,
+  RoleRoute,
+} from './components/AuthRouteGuards'
+import { SessionLoading } from './components/SessionLoading'
+import { routePaths } from './utils/paths'
+
+const AuthenticatedLayout = lazy(() =>
+  import('./components/AuthenticatedLayout').then(
+    ({ AuthenticatedLayout: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminLayout = lazy(() =>
+  import('./components/AdminLayout').then(
+    ({ AdminLayout: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminPage = lazy(() =>
+  import('./pages/Admin/AdminPage').then(({ AdminPage: Component }) => ({
+    default: Component,
+  })),
+)
+
+const AdminUsersPage = lazy(() =>
+  import('./pages/Admin/AdminUsersPage').then(
+    ({ AdminUsersPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminUserDetailPage = lazy(() =>
+  import('./pages/Admin/AdminUserDetailPage').then(
+    ({ AdminUserDetailPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminCategoriesPage = lazy(() =>
+  import('./pages/Admin/AdminCategoriesPage').then(
+    ({ AdminCategoriesPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminArticlesPage = lazy(() =>
+  import('./pages/Admin/AdminArticlesPage').then(
+    ({ AdminArticlesPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminArticleCreatePage = lazy(() =>
+  import('./pages/Admin/AdminArticleFormPage').then(
+    ({ AdminArticleCreatePage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminArticleEditPage = lazy(() =>
+  import('./pages/Admin/AdminArticleFormPage').then(
+    ({ AdminArticleEditPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminArticleContentPage = lazy(() =>
+  import('./pages/Admin/AdminArticleContentPage').then(
+    ({ AdminArticleContentPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminArticlePreviewPage = lazy(() =>
+  import('./pages/Admin/AdminArticlePreviewPage').then(
+    ({ AdminArticlePreviewPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminNotFoundPage = lazy(() =>
+  import('./pages/Admin/AdminNotFoundPage').then(
+    ({ AdminNotFoundPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const AdminPlaceholderPage = lazy(() =>
+  import('./pages/Admin/AdminPlaceholderPage').then(
+    ({ AdminPlaceholderPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const ForbiddenPage = lazy(() =>
+  import('./pages/ForbiddenPage').then(({ ForbiddenPage: Component }) => ({
+    default: Component,
+  })),
+)
+
+const HomePage = lazy(() =>
+  import('./pages/HomePage').then(({ HomePage: Component }) => ({
+    default: Component,
+  })),
+)
+
+const LoginPage = lazy(() =>
+  import('./pages/LoginPage').then(({ LoginPage: Component }) => ({
+    default: Component,
+  })),
+)
+
+const RegisterPage = lazy(() =>
+  import('./pages/RegisterPage').then(({ RegisterPage: Component }) => ({
+    default: Component,
+  })),
+)
+
+export function AppRoutes() {
+  return (
+    <Routes>
+      <Route element={<GuestRoute />}>
+        <Route path={routePaths.login} element={<LoginPage />} />
+        <Route path={routePaths.register} element={<RegisterPage />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AuthenticatedLayout />}>
+          <Route path={routePaths.home} element={<HomePage />} />
+          <Route
+            path={routePaths.forbidden}
+            element={<ForbiddenPage />}
+          />
+        </Route>
+
+        <Route element={<RoleRoute allowedRoles={['ADMIN']} />}>
+          <Route path={routePaths.admin} element={<AdminLayout />}>
+            <Route index element={<AdminPage />} />
+            <Route
+              path={routePaths.adminUsers}
+              element={<AdminUsersPage />}
+            />
+            <Route
+              path={routePaths.adminUserDetail}
+              element={<AdminUserDetailPage />}
+            />
+            <Route
+              path={routePaths.adminCategories}
+              element={<AdminCategoriesPage />}
+            />
+            <Route
+              path={routePaths.adminArticles}
+              element={<AdminArticlesPage />}
+            />
+            <Route
+              path={routePaths.adminArticleNew}
+              element={<AdminArticleCreatePage />}
+            />
+            <Route
+              path={routePaths.adminArticleEdit}
+              element={<AdminArticleEditPage />}
+            />
+            <Route
+              path={routePaths.adminArticleContent}
+              element={<AdminArticleContentPage />}
+            />
+            <Route
+              path={routePaths.adminArticlePreview}
+              element={<AdminArticlePreviewPage />}
+            />
+            <Route
+              path={routePaths.adminQuizzes}
+              element={<AdminPlaceholderPage title="Quizzes" />}
+            />
+            <Route
+              path={routePaths.adminQuizNew}
+              element={<AdminPlaceholderPage title="New quiz" />}
+            />
+            <Route
+              path={routePaths.adminQuizEdit}
+              element={<AdminPlaceholderPage title="Edit quiz" />}
+            />
+            <Route
+              path={routePaths.adminAnalytics}
+              element={<AdminPlaceholderPage title="Analytics" />}
+            />
+            <Route path="*" element={<AdminNotFoundPage />} />
+          </Route>
+        </Route>
+
+        <Route
+          path="*"
+          element={<Navigate to={routePaths.home} replace />}
+        />
+      </Route>
+    </Routes>
+  )
+}
 
 function App() {
-  const { currentUser, error, isInitializing } = useAuth()
-  const loginMutation = useLoginMutation()
-  const logoutMutation = useLogoutMutation()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
-
-  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setMessage('')
-
-    const result = loginSchema.safeParse({ email, password })
-
-    if (!result.success) {
-      setMessage(result.error.issues[0]?.message ?? 'Check your login details.')
-      return
-    }
-
-    try {
-      await loginMutation.mutateAsync(result.data)
-      setPassword('')
-    } catch (mutationError: unknown) {
-      const apiError = normalizeApiError(mutationError)
-      setMessage(apiError.details?.[0] ?? apiError.message)
-    }
-  }
-
-  const handleLogout = async () => {
-    setMessage('')
-
-    try {
-      await logoutMutation.mutateAsync()
-    } catch (mutationError: unknown) {
-      setMessage(normalizeApiError(mutationError).message)
-    }
-  }
-
-  if (isInitializing) {
-    return (
-      <main className="shell">
-        <section className="card" aria-live="polite">
-          <p className="eyebrow">Vocab Mate</p>
-          <h1>Restoring your session…</h1>
-        </section>
-      </main>
-    )
-  }
-
   return (
-    <main className="shell">
-      <section className="card">
-        <p className="eyebrow">Vocab Mate</p>
-        <h1>Auth foundation connected to the Vocab Mate API.</h1>
-        <p className="intro">
-          Access tokens stay in memory. Refresh tokens remain in the
-          backend-managed HttpOnly cookie.
-        </p>
-
-        {currentUser ? (
-          <div className="account">
-            <div>
-              <span>Signed in as</span>
-              <strong>{currentUser.profile.displayName}</strong>
-              <small>
-                {currentUser.email} · {currentUser.profile.currentCefrLevel}
-              </small>
-            </div>
-            <button
-              type="button"
-              onClick={handleLogout}
-              disabled={logoutMutation.isPending}
-            >
-              {logoutMutation.isPending ? 'Signing Out…' : 'Sign Out'}
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleLogin}>
-            <label htmlFor="email">
-              Email
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                spellCheck={false}
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="e.g. user@example.com…"
-                required
-              />
-            </label>
-            <label htmlFor="password">
-              Password
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Enter your password…"
-                required
-              />
-            </label>
-            <button type="submit" disabled={loginMutation.isPending}>
-              {loginMutation.isPending ? 'Signing In…' : 'Sign In'}
-            </button>
-          </form>
-        )}
-
-        {(message || error) && (
-          <p className="message" role="alert">
-            {message || error?.message}
-          </p>
-        )}
-      </section>
-    </main>
+    <BrowserRouter>
+      <Suspense fallback={<SessionLoading />}>
+        <AppRoutes />
+      </Suspense>
+    </BrowserRouter>
   )
 }
 

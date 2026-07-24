@@ -41,9 +41,16 @@ Inspect the actual repository before editing. Prefer the existing feature-based 
 
 ```text
 src/
-├── app/          # router, providers, layouts, theme, configuration
-├── features/     # auth, users, articles, reading, vocabularies, collections, quizzes, reviews, analytics
-└── shared/       # truly cross-feature UI, API utilities, hooks, types, and helpers
+├── App.tsx                  # Root component — định nghĩa toàn bộ routes
+├── main.tsx                 # Entry point — khởi tạo React, Redux, Theme
+├── index.css                # Global CSS tối thiểu
+├── theme.ts                 # Cấu hình MUI theme (màu sắc, typography...)
+│
+├── api/                    # Lớp giao tiếp với backend
+├── components/              # Shared UI components dùng lại nhiều nơi
+├── pages/                   # Từng trang của ứng dụng
+├── redux/                   # Global state management (Redux Toolkit)
+├── utils/                   # Hàm tiện ích, hằng số, cấu hìnhs
 ```
 
 Placement rules:

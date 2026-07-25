@@ -20,9 +20,9 @@ import {
   Link as RouterLink,
   useSearchParams,
 } from 'react-router-dom'
-import { ArticleClassification } from '../../components/ArticleChips'
-import { ConfirmationDialog } from '../../components/ConfirmationDialog'
-import { DebouncedSearchField } from '../../components/DebouncedSearchField'
+import { ArticleClassification } from '../../components/Article/ArticleChips'
+import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
+import { DebouncedSearchField } from '../../components/Shared/DebouncedSearchField'
 import { normalizeApiError } from '../../config/apiClient'
 import {
   useAdminArticleListQuery,

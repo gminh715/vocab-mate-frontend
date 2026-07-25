@@ -1,8 +1,8 @@
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import type { ChipProps } from '@mui/material/Chip'
-import type { ArticleStatus } from '../types/admin-articles'
-import type { CefrLevel } from '../types/auth'
+import type { ArticleStatus } from '../../types/admin-articles'
+import type { CefrLevel } from '../../types/auth'
 
 const statusColors: Record<ArticleStatus, ChipProps['color']> = {
   DRAFT: 'warning',

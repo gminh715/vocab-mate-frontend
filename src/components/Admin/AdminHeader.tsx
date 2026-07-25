@@ -5,9 +5,9 @@ import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import { useLogoutMutation } from '../hooks/useAuth'
-import { routePaths } from '../utils/paths'
+import { useAuth } from '../../contexts/AuthContext'
+import { useLogoutMutation } from '../../hooks/useAuth'
+import { routePaths } from '../../utils/paths'
 
 interface AdminHeaderProps {
   drawerWidth: number

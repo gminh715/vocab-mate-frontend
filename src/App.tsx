@@ -9,12 +9,12 @@ import {
   GuestRoute,
   ProtectedRoute,
   RoleRoute,
-} from './components/AuthRouteGuards'
-import { SessionLoading } from './components/SessionLoading'
+} from './components/Auth/AuthRouteGuards'
+import { SessionLoading } from './components/Shared/SessionLoading'
 import { routePaths } from './utils/paths'
 
 const AuthenticatedLayout = lazy(() =>
-  import('./components/AuthenticatedLayout').then(
+  import('./components/Layout/AuthenticatedLayout').then(
     ({ AuthenticatedLayout: Component }) => ({
       default: Component,
     }),
@@ -22,7 +22,7 @@ const AuthenticatedLayout = lazy(() =>
 )
 
 const AdminLayout = lazy(() =>
-  import('./components/AdminLayout').then(
+  import('./components/Admin/AdminLayout').then(
     ({ AdminLayout: Component }) => ({
       default: Component,
     }),
@@ -116,25 +116,25 @@ const AdminPlaceholderPage = lazy(() =>
 )
 
 const ForbiddenPage = lazy(() =>
-  import('./pages/ForbiddenPage').then(({ ForbiddenPage: Component }) => ({
+  import('./pages/Error/ForbiddenPage').then(({ ForbiddenPage: Component }) => ({
     default: Component,
   })),
 )
 
 const HomePage = lazy(() =>
-  import('./pages/HomePage').then(({ HomePage: Component }) => ({
+  import('./pages/Home/HomePage').then(({ HomePage: Component }) => ({
     default: Component,
   })),
 )
 
 const ArticlesPage = lazy(() =>
-  import('./pages/ArticlesPage').then(({ ArticlesPage: Component }) => ({
+  import('./pages/Article/ArticlesPage').then(({ ArticlesPage: Component }) => ({
     default: Component,
   })),
 )
 
 const ArticleDetailPage = lazy(() =>
-  import('./pages/ArticleDetailPage').then(
+  import('./pages/Article/ArticleDetailPage').then(
     ({ ArticleDetailPage: Component }) => ({
       default: Component,
     }),
@@ -142,7 +142,7 @@ const ArticleDetailPage = lazy(() =>
 )
 
 const ArticleReaderPage = lazy(() =>
-  import('./pages/ArticleReaderPage').then(
+  import('./pages/Article/ArticleReaderPage').then(
     ({ ArticleReaderPage: Component }) => ({
       default: Component,
     }),
@@ -150,7 +150,7 @@ const ArticleReaderPage = lazy(() =>
 )
 
 const ReadingHistoryPage = lazy(() =>
-  import('./pages/ReadingHistoryPage').then(
+  import('./pages/User/ReadingHistoryPage').then(
     ({ ReadingHistoryPage: Component }) => ({
       default: Component,
     }),
@@ -158,13 +158,13 @@ const ReadingHistoryPage = lazy(() =>
 )
 
 const LoginPage = lazy(() =>
-  import('./pages/LoginPage').then(({ LoginPage: Component }) => ({
+  import('./pages/Auth/LoginPage').then(({ LoginPage: Component }) => ({
     default: Component,
   })),
 )
 
 const RegisterPage = lazy(() =>
-  import('./pages/RegisterPage').then(({ RegisterPage: Component }) => ({
+  import('./pages/Auth/RegisterPage').then(({ RegisterPage: Component }) => ({
     default: Component,
   })),
 )

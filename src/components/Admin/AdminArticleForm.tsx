@@ -16,14 +16,14 @@ import {
   toUpdateArticleRequest,
   type ArticleFormOutput,
   type ArticleFormValues,
-} from '../schemas/admin-article'
-import type { PublicCategory } from '../types/admin-categories'
+} from '../../schemas/admin-article'
+import type { PublicCategory } from '../../types/admin-categories'
 import type {
   CreateArticleRequest,
   UpdateArticleRequest,
-} from '../types/admin-articles'
-import { CEFR_LEVELS } from '../types/auth'
-import { ArticleRichTextEditor } from './ArticleRichTextEditor'
+} from '../../types/admin-articles'
+import { CEFR_LEVELS } from '../../types/auth'
+import { ArticleRichTextEditor } from '../Article/ArticleRichTextEditor'
 
 interface CreateArticleFormProps {
   mode: 'create'

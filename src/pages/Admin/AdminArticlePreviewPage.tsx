@@ -13,8 +13,8 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom'
-import { ArticleClassification } from '../../components/ArticleChips'
-import { ArticleRenderer } from '../../components/ArticleRenderer'
+import { ArticleClassification } from '../../components/Article/ArticleChips'
+import { ArticleRenderer } from '../../components/Article/ArticleRenderer'
 import { normalizeApiError } from '../../config/apiClient'
 import { useAdminArticlePreviewQuery } from '../../hooks/useAdminArticleContent'
 import { CEFR_LEVELS, type CefrLevel } from '../../types/auth'

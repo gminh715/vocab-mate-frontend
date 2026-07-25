@@ -12,17 +12,17 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useForm } from 'react-hook-form'
-import { normalizeApiError } from '../config/apiClient'
-import { useContextualTermQuery } from '../hooks/useReading'
-import { useSaveVocabularyMutation } from '../hooks/useVocabularies'
+import { normalizeApiError } from '../../config/apiClient'
+import { useContextualTermQuery } from '../../hooks/useReading'
+import { useSaveVocabularyMutation } from '../../hooks/useVocabularies'
 import {
   saveVocabularyFormSchema,
   toSaveVocabularyRequest,
   type SaveVocabularyFormOutput,
   type SaveVocabularyFormValues,
-} from '../schemas/vocabulary'
-import type { ContextualTermLookupData } from '../types/reading'
-import type { LearningStatus } from '../types/vocabulary'
+} from '../../schemas/vocabulary'
+import type { ContextualTermLookupData } from '../../types/reading'
+import type { LearningStatus } from '../../types/vocabulary'
 
 const learningStatusLabels: Record<LearningStatus, string> = {
   NEW: 'New',

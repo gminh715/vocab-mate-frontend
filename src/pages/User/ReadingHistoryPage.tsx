@@ -13,25 +13,25 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
 import { Link as RouterLink, useSearchParams } from 'react-router-dom'
-import { ArticleCefrChip } from '../components/ArticleChips'
-import { ArticleCover } from '../components/ArticleCover'
-import { ConfirmationDialog } from '../components/ConfirmationDialog'
-import { normalizeApiError } from '../config/apiClient'
+import { ArticleCefrChip } from '../../components/Article/ArticleChips'
+import { ArticleCover } from '../../components/Article/ArticleCover'
+import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
+import { normalizeApiError } from '../../config/apiClient'
 import {
   useReadingHistoryQuery,
   useResetReadingMutation,
-} from '../hooks/useReading'
+} from '../../hooks/useReading'
 import type {
   ReadingHistoryItem,
   ReadingHistorySort,
   ReadingStatus,
-} from '../types/reading'
+} from '../../types/reading'
 import {
   normalizeReadingHistorySearchParams,
   readingHistoryParamsFromSearchParams,
   readingHistorySearchParamsFromParams,
-} from '../utils/readingHistoryParams'
-import { readerPath } from '../utils/paths'
+} from '../../utils/readingHistoryParams'
+import { readerPath } from '../../utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',

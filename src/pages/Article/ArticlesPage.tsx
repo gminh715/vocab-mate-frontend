@@ -16,20 +16,20 @@ import {
   Link as RouterLink,
   useSearchParams,
 } from 'react-router-dom'
-import { ArticleCefrChip } from '../components/ArticleChips'
-import { ArticleCover } from '../components/ArticleCover'
-import { DebouncedSearchField } from '../components/DebouncedSearchField'
-import { normalizeApiError } from '../config/apiClient'
-import { useArticleListQuery } from '../hooks/useArticles'
-import { useCategoryListQuery } from '../hooks/useCategories'
-import type { ArticleListItem } from '../types/articles'
-import { CEFR_LEVELS } from '../types/auth'
+import { ArticleCefrChip } from '../../components/Article/ArticleChips'
+import { ArticleCover } from '../../components/Article/ArticleCover'
+import { DebouncedSearchField } from '../../components/Shared/DebouncedSearchField'
+import { normalizeApiError } from '../../config/apiClient'
+import { useArticleListQuery } from '../../hooks/useArticles'
+import { useCategoryListQuery } from '../../hooks/useCategories'
+import type { ArticleListItem } from '../../types/articles'
+import { CEFR_LEVELS } from '../../types/auth'
 import {
   articleListParamsFromSearchParams,
   articleSearchParamsFromListParams,
   normalizeArticleSearchParams,
-} from '../utils/articleListParams'
-import { articlePath } from '../utils/paths'
+} from '../../utils/articleListParams'
+import { articlePath } from '../../utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',

@@ -8,12 +8,12 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink, useParams } from 'react-router-dom'
-import { ArticleCefrChip } from '../components/ArticleChips'
-import { ArticleCover } from '../components/ArticleCover'
-import { normalizeApiError } from '../config/apiClient'
-import { useAuth } from '../contexts/AuthContext'
-import { useArticleDetailQuery } from '../hooks/useArticles'
-import { readerPath, routePaths } from '../utils/paths'
+import { ArticleCefrChip } from '../../components/Article/ArticleChips'
+import { ArticleCover } from '../../components/Article/ArticleCover'
+import { normalizeApiError } from '../../config/apiClient'
+import { useAuth } from '../../contexts/AuthContext'
+import { useArticleDetailQuery } from '../../hooks/useArticles'
+import { readerPath, routePaths } from '../../utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'long',

@@ -6,15 +6,15 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { normalizeApiError } from '../config/apiClient'
-import { postAuthPath, routePaths } from '../utils/paths'
-import { AuthPageLayout } from '../components/AuthPageLayout'
-import { useLoginMutation } from '../hooks/useAuth'
+import { normalizeApiError } from '../../config/apiClient'
+import { postAuthPath, routePaths } from '../../utils/paths'
+import { AuthPageLayout } from '../../components/Auth/AuthPageLayout'
+import { useLoginMutation } from '../../hooks/useAuth'
 import {
   loginSchema,
   type LoginFormValues,
   type LoginRequest,
-} from '../schemas/auth'
+} from '../../schemas/auth'
 
 const loginErrorMessage = (error: unknown): string => {
   const apiError = normalizeApiError(error)

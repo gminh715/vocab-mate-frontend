@@ -22,9 +22,9 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { CategoryFormDialog } from '../../components/CategoryFormDialog'
-import { ConfirmationDialog } from '../../components/ConfirmationDialog'
-import { DebouncedSearchField } from '../../components/DebouncedSearchField'
+import { CategoryFormDialog } from '../../components/Admin/CategoryFormDialog'
+import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
+import { DebouncedSearchField } from '../../components/Shared/DebouncedSearchField'
 import { normalizeApiError } from '../../config/apiClient'
 import {
   useAdminCategoryDetailQuery,

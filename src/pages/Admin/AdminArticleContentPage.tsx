@@ -27,11 +27,11 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom'
-import { ArticleClassification } from '../../components/ArticleChips'
-import { ArticleSentenceEditor } from '../../components/ArticleSentenceEditor'
-import { ArticleTermDrawer } from '../../components/ArticleTermDrawer'
-import { ConfirmationDialog } from '../../components/ConfirmationDialog'
-import { DebouncedSearchField } from '../../components/DebouncedSearchField'
+import { ArticleClassification } from '../../components/Article/ArticleChips'
+import { ArticleSentenceEditor } from '../../components/Article/ArticleSentenceEditor'
+import { ArticleTermDrawer } from '../../components/Article/ArticleTermDrawer'
+import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
+import { DebouncedSearchField } from '../../components/Shared/DebouncedSearchField'
 import { normalizeApiError } from '../../config/apiClient'
 import {
   useArchiveAdminArticleMutation,

@@ -11,19 +11,19 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useForm } from 'react-hook-form'
-import { normalizeApiError } from '../config/apiClient'
+import { normalizeApiError } from '../../config/apiClient'
 import {
   categoryFormSchema,
   toCreateCategoryRequest,
   toUpdateCategoryRequest,
   type CategoryFormOutput,
   type CategoryFormValues,
-} from '../schemas/admin-category'
+} from '../../schemas/admin-category'
 import type {
   AdminCategory,
   CreateCategoryRequest,
   UpdateCategoryRequest,
-} from '../types/admin-categories'
+} from '../../types/admin-categories'
 
 interface CreateCategoryFormDialogProps {
   mode: 'create'

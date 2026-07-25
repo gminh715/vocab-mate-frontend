@@ -12,8 +12,8 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
-import { AdminArticleForm } from '../../components/AdminArticleForm'
-import { ArticleClassification } from '../../components/ArticleChips'
+import { AdminArticleForm } from '../../components/Admin/AdminArticleForm'
+import { ArticleClassification } from '../../components/Article/ArticleChips'
 import { normalizeApiError } from '../../config/apiClient'
 import {
   useAdminArticleDetailQuery,

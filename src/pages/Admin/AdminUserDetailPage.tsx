@@ -15,7 +15,7 @@ import {
   Link as RouterLink,
   useParams,
 } from 'react-router-dom'
-import { ConfirmationDialog } from '../../components/ConfirmationDialog'
+import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
 import { normalizeApiError } from '../../config/apiClient'
 import {
   useAdminUserDetailQuery,

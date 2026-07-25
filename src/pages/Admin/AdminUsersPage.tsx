@@ -20,7 +20,7 @@ import {
   Link as RouterLink,
   useSearchParams,
 } from 'react-router-dom'
-import { DebouncedSearchField } from '../../components/DebouncedSearchField'
+import { DebouncedSearchField } from '../../components/Shared/DebouncedSearchField'
 import { normalizeApiError } from '../../config/apiClient'
 import { useAdminUserListQuery } from '../../hooks/useAdminUsers'
 import {

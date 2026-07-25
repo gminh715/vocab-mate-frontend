@@ -15,11 +15,11 @@ import {
   toUpdateArticleSentenceRequest,
   type SentenceFormOutput,
   type SentenceFormValues,
-} from '../schemas/admin-article-content'
+} from '../../schemas/admin-article-content'
 import type {
   ArticleSentence,
   UpdateArticleSentenceRequest,
-} from '../types/admin-article-content'
+} from '../../types/admin-article-content'
 
 interface ArticleSentenceEditorProps {
   sentence: ArticleSentence

@@ -10,19 +10,19 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useCallback, useRef, useState } from 'react'
 import { Link as RouterLink, useParams } from 'react-router-dom'
-import { ArticleCefrChip } from '../components/ArticleChips'
-import { ArticleRenderer } from '../components/ArticleRenderer'
-import { ConfirmationDialog } from '../components/ConfirmationDialog'
-import { ContextualTermDrawer } from '../components/ContextualTermDrawer'
-import { normalizeApiError } from '../config/apiClient'
+import { ArticleCefrChip } from '../../components/Article/ArticleChips'
+import { ArticleRenderer } from '../../components/Article/ArticleRenderer'
+import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
+import { ContextualTermDrawer } from '../../components/Article/ContextualTermDrawer'
+import { normalizeApiError } from '../../config/apiClient'
 import {
   useCompleteReadingMutation,
   useReaderArticleQuery,
   useResetReadingMutation,
-} from '../hooks/useReading'
-import { useReadingProgressPersistence } from '../hooks/useReadingProgressPersistence'
-import type { ReaderArticleData } from '../types/reading'
-import { articlePath, routePaths } from '../utils/paths'
+} from '../../hooks/useReading'
+import { useReadingProgressPersistence } from '../../hooks/useReadingProgressPersistence'
+import type { ReaderArticleData } from '../../types/reading'
+import { articlePath, routePaths } from '../../utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'long',

@@ -7,9 +7,9 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink, Outlet } from 'react-router-dom'
-import { routePaths } from '../utils/paths'
-import { useLogoutMutation } from '../hooks/useAuth'
-import { useAuth } from '../contexts/AuthContext'
+import { routePaths } from '../../utils/paths'
+import { useLogoutMutation } from '../../hooks/useAuth'
+import { useAuth } from '../../contexts/AuthContext'
 
 export function AuthenticatedLayout() {
   const { currentUser, isInitializing } = useAuth()

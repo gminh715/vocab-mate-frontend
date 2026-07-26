@@ -52,9 +52,8 @@ export function AdminPage() {
               Start with content
             </Typography>
             <Typography color="text.secondary">
-              Article and quiz tools are available from the admin navigation.
-              Their backend-connected screens will be implemented by their
-              owning features.
+              Article, quiz, user, category, and aggregate analytics tools are
+              available from the admin navigation.
             </Typography>
           </Stack>
           <Button

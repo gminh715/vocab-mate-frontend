@@ -51,6 +51,12 @@ export const adminArticlePreviewPath = (articleId: string): string =>
     encodeURIComponent(articleId),
   )
 
+export const adminQuizEditPath = (quizId: string): string =>
+  routePaths.adminQuizEdit.replace(
+    ':quizId',
+    encodeURIComponent(quizId),
+  )
+
 export const articlePath = (slug: string): string =>
   routePaths.articleDetail.replace(':slug', encodeURIComponent(slug))
 

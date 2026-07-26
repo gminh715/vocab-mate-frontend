@@ -93,17 +93,33 @@ const AdminArticlePreviewPage = lazy(() =>
   ),
 )
 
-const AdminNotFoundPage = lazy(() =>
-  import('@/pages/Admin/AdminNotFoundPage').then(
-    ({ AdminNotFoundPage: Component }) => ({
-      default: Component,
-    }),
+const AdminQuizzesPage = lazy(() =>
+  import('@/pages/Admin/AdminQuizzesPage').then(
+    ({ AdminQuizzesPage: Component }) => ({ default: Component }),
   ),
 )
 
-const AdminPlaceholderPage = lazy(() =>
-  import('@/pages/Admin/AdminPlaceholderPage').then(
-    ({ AdminPlaceholderPage: Component }) => ({
+const AdminQuizCreatePage = lazy(() =>
+  import('@/pages/Admin/AdminQuizCreatePage').then(
+    ({ AdminQuizCreatePage: Component }) => ({ default: Component }),
+  ),
+)
+
+const AdminQuizBuilderPage = lazy(() =>
+  import('@/pages/Admin/AdminQuizBuilderPage').then(
+    ({ AdminQuizBuilderPage: Component }) => ({ default: Component }),
+  ),
+)
+
+const AdminAnalyticsPage = lazy(() =>
+  import('@/pages/Admin/AdminAnalyticsPage').then(
+    ({ AdminAnalyticsPage: Component }) => ({ default: Component }),
+  ),
+)
+
+const AdminNotFoundPage = lazy(() =>
+  import('@/pages/Admin/AdminNotFoundPage').then(
+    ({ AdminNotFoundPage: Component }) => ({
       default: Component,
     }),
   ),
@@ -257,19 +273,19 @@ export function AppRoutes() {
             />
             <Route
               path={routePaths.adminQuizzes}
-              element={<AdminPlaceholderPage title="Quizzes" />}
+              element={<AdminQuizzesPage />}
             />
             <Route
               path={routePaths.adminQuizNew}
-              element={<AdminPlaceholderPage title="New quiz" />}
+              element={<AdminQuizCreatePage />}
             />
             <Route
               path={routePaths.adminQuizEdit}
-              element={<AdminPlaceholderPage title="Edit quiz" />}
+              element={<AdminQuizBuilderPage />}
             />
             <Route
               path={routePaths.adminAnalytics}
-              element={<AdminPlaceholderPage title="Analytics" />}
+              element={<AdminAnalyticsPage />}
             />
             <Route path="*" element={<AdminNotFoundPage />} />
           </Route>

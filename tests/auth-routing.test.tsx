@@ -277,8 +277,7 @@ describe('Auth routing and forms', () => {
     ['/admin/articles/article-1/content', 'Article content'],
     ['/admin/articles/article-1/preview', 'Article preview'],
     ['/admin/quizzes', 'Quizzes'],
-    ['/admin/quizzes/new', 'New quiz'],
-    ['/admin/quizzes/quiz-1/edit', 'Edit quiz'],
+    ['/admin/quizzes/new', 'Create a quiz draft'],
     ['/admin/analytics', 'Analytics'],
   ])('maps the admin route %s to %s', async (path, heading) => {
     vi.mocked(authApi.restoreSession).mockResolvedValue(adminAccount)

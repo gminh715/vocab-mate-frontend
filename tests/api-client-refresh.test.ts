@@ -16,7 +16,7 @@ import {
   vi,
 } from 'vitest'
 
-type ClientModule = typeof import('../src/config/apiClient')
+type ClientModule = typeof import('@/config/apiClient')
 type ServerMode =
   | 'normal'
   | 'always-unauthorized'
@@ -143,7 +143,7 @@ beforeAll(async () => {
     `http://127.0.0.1:${address.port}/api/v1`,
   )
   vi.resetModules()
-  client = await import('../src/config/apiClient')
+  client = await import('@/config/apiClient')
 })
 
 beforeEach(() => {

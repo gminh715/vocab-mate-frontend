@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   normalizeReadingHistorySearchParams,
   readingHistoryParamsFromSearchParams,
-} from '../src/utils/readingHistoryParams'
+} from '@/utils/Reading/readingHistoryParams'
 
 describe('reading history query mapping', () => {
   it('maps supported URL values to the required API parameters', () => {

@@ -4,7 +4,7 @@ import {
   registrationFormSchema,
   registerSchema,
   toRegisterRequest,
-} from '../src/schemas/auth'
+} from '@/schemas/Auth/auth'
 
 describe('Auth schemas', () => {
   it('normalizes login email without changing the password', () => {

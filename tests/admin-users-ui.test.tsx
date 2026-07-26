@@ -4,12 +4,12 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { adminUsersApi } from '../src/api'
-import { ApiError } from '../src/config/apiClient'
-import { AdminUserDetailPage } from '../src/pages/Admin/AdminUserDetailPage'
-import { AdminUsersPage } from '../src/pages/Admin/AdminUsersPage'
-import { appTheme } from '../src/theme'
-import type { AdminUserDetail } from '../src/types/admin-users'
+import { adminUsersApi } from '@/api'
+import { ApiError } from '@/config/apiClient'
+import { AdminUserDetailPage } from '@/pages/Admin/AdminUserDetailPage'
+import { AdminUsersPage } from '@/pages/Admin/AdminUsersPage'
+import { appTheme } from '@/theme'
+import type { AdminUserDetail } from '@/types/Admin/adminUsers'
 
 const detail: AdminUserDetail = {
   user: {

@@ -7,9 +7,9 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink, Outlet } from 'react-router-dom'
-import { routePaths } from '../../utils/paths'
-import { useLogoutMutation } from '../../hooks/useAuth'
-import { useAuth } from '../../contexts/AuthContext'
+import { routePaths } from '@/utils/paths'
+import { useLogoutMutation } from '@/hooks/Auth/useAuth'
+import { useAuth } from '@/contexts/AuthContext'
 
 export function AuthenticatedLayout() {
   const { currentUser, isInitializing } = useAuth()
@@ -96,13 +96,22 @@ export function AuthenticatedLayout() {
                 Articles
               </Button>
               {currentUser ? (
-                <Button
-                  component={RouterLink}
-                  to={routePaths.readingHistory}
-                  color="inherit"
-                >
-                  Reading history
-                </Button>
+                <>
+                  <Button
+                    component={RouterLink}
+                    to={routePaths.readingHistory}
+                    color="inherit"
+                  >
+                    Reading history
+                  </Button>
+                  <Button
+                    component={RouterLink}
+                    to={routePaths.vocabularies}
+                    color="inherit"
+                  >
+                    Vocabulary
+                  </Button>
+                </>
               ) : null}
               {currentUser?.role === 'ADMIN' ? (
                 <Button

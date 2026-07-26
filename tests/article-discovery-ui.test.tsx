@@ -14,11 +14,11 @@ import {
   useLocation,
 } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { articlesApi, categoriesApi } from '../src/api'
-import { ApiError } from '../src/config/apiClient'
-import { ArticlesPage } from '../src/pages/ArticlesPage'
-import { appTheme } from '../src/theme'
-import type { ArticleListData } from '../src/types/articles'
+import { articlesApi, categoriesApi } from '@/api'
+import { ApiError } from '@/config/apiClient'
+import { ArticlesPage } from '@/pages/Article/ArticlesPage'
+import { appTheme } from '@/theme'
+import type { ArticleListData } from '@/types/Article/articles'
 
 const article = {
   id: '660e8400-e29b-41d4-a716-446655440000',

@@ -15,20 +15,20 @@ import {
   Link as RouterLink,
   useParams,
 } from 'react-router-dom'
-import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
-import { normalizeApiError } from '../../config/apiClient'
+import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
+import { normalizeApiError } from '@/config/apiClient'
 import {
   useAdminUserDetailQuery,
   useUpdateAdminUserRoleMutation,
   useUpdateAdminUserStatusMutation,
-} from '../../hooks/useAdminUsers'
+} from '@/hooks/Admin/useAdminUsers'
 import {
   USER_ROLES,
   USER_STATUSES,
   type UserRole,
   type UserStatus,
-} from '../../types/auth'
-import { routePaths } from '../../utils/paths'
+} from '@/types/Auth/auth'
+import { routePaths } from '@/utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'long',

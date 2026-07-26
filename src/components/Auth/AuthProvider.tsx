@@ -1,10 +1,10 @@
 import { useMemo, type PropsWithChildren } from 'react'
-import { normalizeApiError } from '../../config/apiClient'
+import { normalizeApiError } from '@/config/apiClient'
 import {
   AuthContext,
   type AuthContextValue,
-} from '../../contexts/AuthContext'
-import { useCurrentUserQuery } from '../../hooks/useAuth'
+} from '@/contexts/AuthContext'
+import { useCurrentUserQuery } from '@/hooks/Auth/useAuth'
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const currentUserQuery = useCurrentUserQuery()

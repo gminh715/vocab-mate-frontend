@@ -8,7 +8,7 @@ const clientMocks = vi.hoisted(() => ({
   post: vi.fn(),
 }))
 
-vi.mock('../src/config/apiClient', () => ({
+vi.mock('@/config/apiClient', () => ({
   ApiError: class ApiError extends Error {
     status = 0
     code = 'INVALID_RESPONSE'
@@ -22,13 +22,13 @@ vi.mock('../src/config/apiClient', () => ({
   },
 }))
 
-import { adminCategoriesApi } from '../src/api/AdminCategoriesApi'
+import { adminCategoriesApi } from '@/api/Admin/AdminCategoriesApi'
 import {
   categoryFormSchema,
   toCreateCategoryRequest,
   toUpdateCategoryRequest,
-} from '../src/schemas/admin-category'
-import { adminCategoryListParamsFromSearchParams } from '../src/utils/adminCategoryListParams'
+} from '@/schemas/Admin/adminCategory'
+import { adminCategoryListParamsFromSearchParams } from '@/utils/Admin/adminCategoryListParams'
 
 describe('adminCategoriesApi', () => {
   beforeEach(() => {

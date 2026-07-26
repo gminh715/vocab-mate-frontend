@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { postAuthPath } from '../src/utils/paths'
+import { postAuthPath } from '@/utils/paths'
 
 describe('postAuthPath', () => {
   it('preserves a safe internal destination', () => {

@@ -4,14 +4,14 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { adminCategoriesApi } from '../src/api'
-import { ApiError } from '../src/config/apiClient'
-import { AdminCategoriesPage } from '../src/pages/Admin/AdminCategoriesPage'
-import { appTheme } from '../src/theme'
+import { adminCategoriesApi } from '@/api'
+import { ApiError } from '@/config/apiClient'
+import { AdminCategoriesPage } from '@/pages/Admin/AdminCategoriesPage'
+import { appTheme } from '@/theme'
 import type {
   AdminCategory,
   AdminCategoryListData,
-} from '../src/types/admin-categories'
+} from '@/types/Admin/adminCategories'
 
 const category: AdminCategory = {
   id: 'category-1',

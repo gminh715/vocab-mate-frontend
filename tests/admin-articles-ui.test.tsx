@@ -9,13 +9,13 @@ import {
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { adminArticlesApi, adminCategoriesApi } from '../src/api'
-import { AdminArticleForm } from '../src/components/AdminArticleForm'
-import { ApiError } from '../src/config/apiClient'
-import { AdminArticlesPage } from '../src/pages/Admin/AdminArticlesPage'
-import type { ArticleFormOutput } from '../src/schemas/admin-article'
-import { appTheme } from '../src/theme'
-import type { AdminArticleListData } from '../src/types/admin-articles'
+import { adminArticlesApi, adminCategoriesApi } from '@/api'
+import { AdminArticleForm } from '@/components/Admin/AdminArticleForm'
+import { ApiError } from '@/config/apiClient'
+import { AdminArticlesPage } from '@/pages/Admin/AdminArticlesPage'
+import type { ArticleFormOutput } from '@/schemas/Admin/adminArticle'
+import { appTheme } from '@/theme'
+import type { AdminArticleListData } from '@/types/Admin/adminArticles'
 
 const category = {
   id: '550e8400-e29b-41d4-a716-446655440000',

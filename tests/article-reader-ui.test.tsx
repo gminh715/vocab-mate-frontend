@@ -11,15 +11,15 @@ import {
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { readingApi } from '../src/api'
-import { ArticleRenderer } from '../src/components/ArticleRenderer'
-import { ApiError } from '../src/config/apiClient'
-import { ArticleReaderPage } from '../src/pages/ArticleReaderPage'
-import { appTheme } from '../src/theme'
+import { readingApi } from '@/api'
+import { ArticleRenderer } from '@/components/Article/ArticleRenderer'
+import { ApiError } from '@/config/apiClient'
+import { ArticleReaderPage } from '@/pages/Article/ArticleReaderPage'
+import { appTheme } from '@/theme'
 import type {
   ContextualTermLookupData,
   ReaderArticleData,
-} from '../src/types/reading'
+} from '@/types/Reading/reading'
 
 const slug = 'how-technology-changes-learning'
 const contentHtml =

@@ -4,16 +4,16 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { readingApi, vocabulariesApi } from '../src/api'
-import { ApiError } from '../src/config/apiClient'
-import { readingQueryKeys } from '../src/hooks/useReading'
-import { ArticleReaderPage } from '../src/pages/ArticleReaderPage'
-import { appTheme } from '../src/theme'
+import { collectionsApi, readingApi, vocabulariesApi } from '@/api'
+import { ApiError } from '@/config/apiClient'
+import { readingQueryKeys } from '@/hooks/Reading/useReading'
+import { ArticleReaderPage } from '@/pages/Article/ArticleReaderPage'
+import { appTheme } from '@/theme'
 import type {
   ContextualTermLookupData,
   ReaderArticleData,
-} from '../src/types/reading'
-import type { SaveVocabularyData } from '../src/types/vocabulary'
+} from '@/types/Reading/reading'
+import type { SaveVocabularyData } from '@/types/Vocabulary/vocabulary'
 
 const slug = 'plastic-and-marine-life'
 const articleId = '660e8400-e29b-41d4-a716-446655440000'
@@ -170,6 +170,19 @@ const openLookup = async () => {
 describe('contextual vocabulary lookup and save flow', () => {
   beforeEach(() => {
     vi.spyOn(readingApi, 'article').mockResolvedValue(readerData)
+    vi.spyOn(collectionsApi, 'findAll').mockResolvedValue({
+      items: [
+        {
+          id: '550e8400-e29b-41d4-a716-446655440010',
+          name: 'Environment',
+          description: null,
+          createdAt: '2026-07-20T10:00:00.000Z',
+          updatedAt: '2026-07-20T10:00:00.000Z',
+          vocabularyCount: 1,
+        },
+      ],
+      meta: { page: 1, limit: 100, total: 1, totalPages: 1 },
+    })
   })
 
   afterEach(() => {
@@ -254,6 +267,7 @@ describe('contextual vocabulary lookup and save flow', () => {
     expect(vocabulariesApi.save).toHaveBeenCalledWith({
       articleSentenceTermId: termId,
       personalNote: 'Remember this sentence',
+      collectionIds: ['550e8400-e29b-41d4-a716-446655440010'],
     })
     expect(
       screen.getByRole('button', { name: 'Saving…' }),
@@ -265,10 +279,6 @@ describe('contextual vocabulary lookup and save flow', () => {
       await save.promise
     })
 
-    expect(
-      await screen.findByText('Saved to vocabulary'),
-    ).toBeInTheDocument()
-    expect(screen.getByText('Status: New.')).toBeInTheDocument()
     expect(
       queryClient.getQueryData<ContextualTermLookupData>(
         readingQueryKeys.term(articleId, termId),
@@ -301,13 +311,7 @@ describe('contextual vocabulary lookup and save flow', () => {
       await screen.findByRole('button', { name: 'Save Vocabulary' }),
     )
 
-    expect(
-      await screen.findByText('Saved to vocabulary'),
-    ).toBeInTheDocument()
     expect(readingApi.term).toHaveBeenCalledTimes(2)
-    expect(screen.queryByRole('alert')).toHaveTextContent(
-      'Saved to vocabulary',
-    )
   })
 
   it.each([
@@ -352,9 +356,9 @@ describe('contextual vocabulary lookup and save flow', () => {
     renderReader()
     const user = await openLookup()
 
-    await user.click(
-      await screen.findByRole('button', { name: 'Save Vocabulary' }),
-    )
+    const saveBtn1 = await screen.findByRole('button', { name: 'Save Vocabulary' })
+    await waitFor(() => expect(saveBtn1).not.toBeDisabled())
+    await user.click(saveBtn1)
 
     expect(
       await screen.findByText(
@@ -376,9 +380,9 @@ describe('contextual vocabulary lookup and save flow', () => {
     renderReader()
     const user = await openLookup()
 
-    await user.click(
-      await screen.findByRole('button', { name: 'Save Vocabulary' }),
-    )
+    const saveBtn2 = await screen.findByRole('button', { name: 'Save Vocabulary' })
+    await waitFor(() => expect(saveBtn2).not.toBeDisabled())
+    await user.click(saveBtn2)
 
     expect(
       await screen.findByText('Vocabulary could not be saved. Try again.'),

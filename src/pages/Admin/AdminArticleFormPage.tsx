@@ -12,27 +12,27 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
-import { AdminArticleForm } from '../../components/Admin/AdminArticleForm'
-import { ArticleClassification } from '../../components/Article/ArticleChips'
-import { normalizeApiError } from '../../config/apiClient'
+import { AdminArticleForm } from '@/components/Admin/AdminArticleForm'
+import { ArticleClassification } from '@/components/Article/ArticleChips'
+import { normalizeApiError } from '@/config/apiClient'
 import {
   useAdminArticleDetailQuery,
   useCreateAdminArticleMutation,
   useUpdateAdminArticleMutation,
-} from '../../hooks/useAdminArticles'
-import { useAdminCategoryOptionsQuery } from '../../hooks/useAdminCategories'
-import type { ArticleFormOutput } from '../../schemas/admin-article'
+} from '@/hooks/Admin/useAdminArticles'
+import { useAdminCategoryOptionsQuery } from '@/hooks/Admin/useAdminCategories'
+import type { ArticleFormOutput } from '@/schemas/Admin/adminArticle'
 import type {
   AdminArticle,
   CreateArticleRequest,
   UpdateArticleRequest,
-} from '../../types/admin-articles'
+} from '@/types/Admin/adminArticles'
 import {
   adminArticleContentPath,
   adminArticleEditPath,
   adminArticlePreviewPath,
   routePaths,
-} from '../../utils/paths'
+} from '@/utils/paths'
 
 const errorMessage = (error: unknown): string => {
   const apiError = normalizeApiError(error)

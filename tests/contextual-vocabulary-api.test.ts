@@ -5,16 +5,16 @@ const clientMocks = vi.hoisted(() => ({
   post: vi.fn(),
 }))
 
-vi.mock('../src/config/apiClient', () => ({
+vi.mock('@/config/apiClient', () => ({
   apiClient: {
     get: clientMocks.get,
     post: clientMocks.post,
   },
 }))
 
-import { readingApi } from '../src/api/ReadingApi'
-import { vocabulariesApi } from '../src/api/VocabulariesApi'
-import { toSaveVocabularyRequest } from '../src/schemas/vocabulary'
+import { readingApi } from '@/api/Reading/ReadingApi'
+import { vocabulariesApi } from '@/api/Vocabulary/VocabulariesApi'
+import { toSaveVocabularyRequest } from '@/schemas/Vocabulary/vocabulary'
 
 describe('contextual vocabulary API mapping', () => {
   beforeEach(() => {

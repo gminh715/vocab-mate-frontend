@@ -20,25 +20,25 @@ import {
   Link as RouterLink,
   useSearchParams,
 } from 'react-router-dom'
-import { ArticleClassification } from '../../components/Article/ArticleChips'
-import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
-import { DebouncedSearchField } from '../../components/Shared/DebouncedSearchField'
-import { normalizeApiError } from '../../config/apiClient'
+import { ArticleClassification } from '@/components/Article/ArticleChips'
+import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
+import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
+import { normalizeApiError } from '@/config/apiClient'
 import {
   useAdminArticleListQuery,
   useDeleteAdminArticleMutation,
-} from '../../hooks/useAdminArticles'
-import { useAdminCategoryOptionsQuery } from '../../hooks/useAdminCategories'
-import type { AdminArticleListItem } from '../../types/admin-articles'
-import { ARTICLE_STATUSES } from '../../types/admin-articles'
-import { CEFR_LEVELS } from '../../types/auth'
-import { adminArticleListParamsFromSearchParams } from '../../utils/adminArticleListParams'
+} from '@/hooks/Admin/useAdminArticles'
+import { useAdminCategoryOptionsQuery } from '@/hooks/Admin/useAdminCategories'
+import type { AdminArticleListItem } from '@/types/Admin/adminArticles'
+import { ARTICLE_STATUSES } from '@/types/Admin/adminArticles'
+import { CEFR_LEVELS } from '@/types/Auth/auth'
+import { adminArticleListParamsFromSearchParams } from '@/utils/Admin/adminArticleListParams'
 import {
   adminArticleContentPath,
   adminArticleEditPath,
   adminArticlePreviewPath,
   routePaths,
-} from '../../utils/paths'
+} from '@/utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',

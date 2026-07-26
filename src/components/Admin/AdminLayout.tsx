@@ -17,8 +17,8 @@ import {
   NavLink,
   Outlet,
 } from 'react-router-dom'
-import { routePaths } from '../../utils/paths'
-import { AdminHeader } from './AdminHeader'
+import { routePaths } from '@/utils/paths'
+import { AdminHeader } from '@/components/Admin/AdminHeader'
 
 const drawerWidth = 272
 

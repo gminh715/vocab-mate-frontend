@@ -8,17 +8,17 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { normalizeApiError } from '../../config/apiClient'
-import { postAuthPath, routePaths } from '../../utils/paths'
-import { AuthPageLayout } from '../../components/Auth/AuthPageLayout'
-import { useRegisterMutation } from '../../hooks/useAuth'
+import { normalizeApiError } from '@/config/apiClient'
+import { postAuthPath, routePaths } from '@/utils/paths'
+import { AuthPageLayout } from '@/components/Auth/AuthPageLayout'
+import { useRegisterMutation } from '@/hooks/Auth/useAuth'
 import {
   registrationFormSchema,
   toRegisterRequest,
   type RegistrationFormOutput,
   type RegistrationFormValues,
-} from '../../schemas/auth'
-import { CEFR_LEVELS } from '../../types/auth'
+} from '@/schemas/Auth/auth'
+import { CEFR_LEVELS } from '@/types/Auth/auth'
 
 export function RegisterPage() {
   const registerMutation = useRegisterMutation()

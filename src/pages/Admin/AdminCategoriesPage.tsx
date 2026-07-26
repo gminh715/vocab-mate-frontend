@@ -22,10 +22,10 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { CategoryFormDialog } from '../../components/Admin/CategoryFormDialog'
-import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
-import { DebouncedSearchField } from '../../components/Shared/DebouncedSearchField'
-import { normalizeApiError } from '../../config/apiClient'
+import { CategoryFormDialog } from '@/components/Admin/CategoryFormDialog'
+import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
+import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
+import { normalizeApiError } from '@/config/apiClient'
 import {
   useAdminCategoryDetailQuery,
   useAdminCategoryListQuery,
@@ -33,13 +33,13 @@ import {
   useDeleteAdminCategoryMutation,
   useUpdateAdminCategoryMutation,
   useUpdateAdminCategoryStatusMutation,
-} from '../../hooks/useAdminCategories'
+} from '@/hooks/Admin/useAdminCategories'
 import type {
   AdminCategory,
   CreateCategoryRequest,
   UpdateCategoryRequest,
-} from '../../types/admin-categories'
-import { adminCategoryListParamsFromSearchParams } from '../../utils/adminCategoryListParams'
+} from '@/types/Admin/adminCategories'
+import { adminCategoryListParamsFromSearchParams } from '@/utils/Admin/adminCategoryListParams'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',

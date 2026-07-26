@@ -27,12 +27,12 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom'
-import { ArticleClassification } from '../../components/Article/ArticleChips'
-import { ArticleSentenceEditor } from '../../components/Article/ArticleSentenceEditor'
-import { ArticleTermDrawer } from '../../components/Article/ArticleTermDrawer'
-import { ConfirmationDialog } from '../../components/Shared/ConfirmationDialog'
-import { DebouncedSearchField } from '../../components/Shared/DebouncedSearchField'
-import { normalizeApiError } from '../../config/apiClient'
+import { ArticleClassification } from '@/components/Article/ArticleChips'
+import { ArticleSentenceEditor } from '@/components/Article/ArticleSentenceEditor'
+import { ArticleTermDrawer } from '@/components/Article/ArticleTermDrawer'
+import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
+import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
+import { normalizeApiError } from '@/config/apiClient'
 import {
   useArchiveAdminArticleMutation,
   useCreateAdminArticleTermMutation,
@@ -46,8 +46,8 @@ import {
   useAdminArticleTermListQuery,
   useUpdateAdminArticleSentenceMutation,
   useUpdateAdminArticleTermMutation,
-} from '../../hooks/useAdminArticleContent'
-import { useAdminArticleDetailQuery } from '../../hooks/useAdminArticles'
+} from '@/hooks/Admin/useAdminArticleContent'
+import { useAdminArticleDetailQuery } from '@/hooks/Admin/useAdminArticles'
 import type {
   ArticleSentence,
   ArticleSentenceDetail,
@@ -57,14 +57,14 @@ import type {
   PublicationValidationIssue,
   UpdateArticleSentenceRequest,
   UpdateArticleTermRequest,
-} from '../../types/admin-article-content'
-import { LEXICAL_UNIT_TYPES } from '../../types/admin-article-content'
-import { CEFR_LEVELS } from '../../types/auth'
+} from '@/types/Admin/adminArticleContent'
+import { LEXICAL_UNIT_TYPES } from '@/types/Admin/adminArticleContent'
+import { CEFR_LEVELS } from '@/types/Auth/auth'
 import {
   adminArticleEditPath,
   adminArticlePreviewPath,
   routePaths,
-} from '../../utils/paths'
+} from '@/utils/paths'
 
 const positiveInteger = (
   value: string | null,

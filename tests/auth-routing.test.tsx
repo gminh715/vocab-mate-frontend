@@ -8,21 +8,21 @@ import {
   type InitialEntry,
 } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ApiError } from '../src/config/apiClient'
-import { AppRoutes } from '../src/App'
-import { appTheme } from '../src/theme'
-import { AuthProvider } from '../src/components/AuthProvider'
+import { ApiError } from '@/config/apiClient'
+import { AppRoutes } from '@/routes/AppRoutes'
+import { appTheme } from '@/theme'
+import { AuthProvider } from '@/components/Auth/AuthProvider'
 import {
   adminCategoriesApi,
   adminUsersApi,
   authApi,
-} from '../src/api'
-import type { AdminCategoryListData } from '../src/types/admin-categories'
+} from '@/api'
+import type { AdminCategoryListData } from '@/types/Admin/adminCategories'
 import type {
   AdminUserDetail,
   AdminUserListData,
-} from '../src/types/admin-users'
-import type { CurrentUser } from '../src/types/auth'
+} from '@/types/Admin/adminUsers'
+import type { CurrentUser } from '@/types/Auth/auth'
 
 const userAccount: CurrentUser = {
   id: 'user-1',

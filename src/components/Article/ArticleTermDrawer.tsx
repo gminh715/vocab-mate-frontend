@@ -29,15 +29,15 @@ import {
   toUpdateArticleTermRequest,
   type ArticleTermFormOutput,
   type ArticleTermFormValues,
-} from '../../schemas/admin-article-content'
+} from '@/schemas/Admin/adminArticleContent'
 import type {
   ArticleSentence,
   ArticleSentenceTerm,
   CreateArticleTermRequest,
   UpdateArticleTermRequest,
-} from '../../types/admin-article-content'
-import { LEXICAL_UNIT_TYPES } from '../../types/admin-article-content'
-import { CEFR_LEVELS } from '../../types/auth'
+} from '@/types/Admin/adminArticleContent'
+import { LEXICAL_UNIT_TYPES } from '@/types/Admin/adminArticleContent'
+import { CEFR_LEVELS } from '@/types/Auth/auth'
 
 interface CreateTermDrawerProps {
   mode: 'create'

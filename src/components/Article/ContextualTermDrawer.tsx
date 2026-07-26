@@ -1,36 +1,38 @@
+import { useMemo, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Alert from '@mui/material/Alert'
-import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
+import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
+import InputLabel from '@mui/material/InputLabel'
+import ListItemText from '@mui/material/ListItemText'
+import MenuItem from '@mui/material/MenuItem'
+import OutlinedInput from '@mui/material/OutlinedInput'
 import Paper from '@mui/material/Paper'
+import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useForm } from 'react-hook-form'
-import { normalizeApiError } from '../../config/apiClient'
-import { useContextualTermQuery } from '../../hooks/useReading'
-import { useSaveVocabularyMutation } from '../../hooks/useVocabularies'
+import { Controller, useForm } from 'react-hook-form'
+import { normalizeApiError } from '@/config/apiClient'
+import { useAddCollectionItemsMutation, useCollectionsQuery } from '@/hooks/Vocabulary/useCollections'
+import { useContextualTermQuery } from '@/hooks/Reading/useReading'
+import { useSaveVocabularyMutation } from '@/hooks/Vocabulary/useVocabularies'
 import {
   saveVocabularyFormSchema,
   toSaveVocabularyRequest,
   type SaveVocabularyFormOutput,
   type SaveVocabularyFormValues,
-} from '../../schemas/vocabulary'
-import type { ContextualTermLookupData } from '../../types/reading'
-import type { LearningStatus } from '../../types/vocabulary'
-
-const learningStatusLabels: Record<LearningStatus, string> = {
-  NEW: 'New',
-  LEARNING: 'Learning',
-  REVIEWING: 'Reviewing',
-  MASTERED: 'Mastered',
-  IGNORED: 'Ignored',
-}
+} from '@/schemas/Vocabulary/vocabulary'
+import type { AddCollectionItemsResponse } from '@/api/Vocabulary/CollectionsApi'
+import type { ContextualTermLookupData } from '@/types/Reading/reading'
+import type { CollectionListItem } from '@/types/Vocabulary/vocabulary'
 
 interface DisplayExample {
   sentence: string
@@ -119,24 +121,14 @@ function TermList({
 }
 
 const saveErrorMessage = (error: unknown): string => {
-  const apiError = normalizeApiError(error)
-
-  if (apiError.status === 403) {
-    return 'Saving is unavailable because lookup has been disabled for this term.'
+  const normalized = normalizeApiError(error)
+  if (normalized.status === 401) {
+    return 'Sign in to save vocabulary.'
   }
-  if (apiError.status === 404) {
-    return 'This contextual term is no longer available to save.'
+  if (normalized.status === 422) {
+    return 'One or more selected collections are no longer available. Review your collections and try again.'
   }
-  if (apiError.status === 422) {
-    if (apiError.message.toLowerCase().includes('collection')) {
-      return 'One or more selected collections are no longer available. Review your collections and try again.'
-    }
-    return 'This term is missing required prepared content and cannot be saved yet.'
-  }
-
-  return apiError.status === 0
-    ? apiError.message
-    : 'Vocabulary could not be saved. Try again.'
+  return 'Vocabulary could not be saved. Try again.'
 }
 
 function SaveVocabularyForm({
@@ -147,7 +139,24 @@ function SaveVocabularyForm({
   data: ContextualTermLookupData
 }) {
   const saveMutation = useSaveVocabularyMutation(articleId, data.term.id)
+  const addCollectionMutation = useAddCollectionItemsMutation()
+  const { data: collectionsData, isLoading: isLoadingCollections } =
+    useCollectionsQuery({ limit: 100 })
+  const collections = useMemo(
+    () => collectionsData?.items ?? [],
+    [collectionsData?.items],
+  )
+
+  const [addCollectionId, setAddCollectionId] = useState<string>('')
+  const [addFeedback, setAddFeedback] = useState<string | null>(null)
+
+  const defaultCollectionIds = useMemo(
+    () => (collections.length > 0 ? [collections[0].id] : []),
+    [collections],
+  )
+
   const {
+    control,
     formState: { errors },
     handleSubmit,
     register,
@@ -157,20 +166,83 @@ function SaveVocabularyForm({
     SaveVocabularyFormOutput
   >({
     resolver: zodResolver(saveVocabularyFormSchema),
-    defaultValues: { personalNote: '' },
+    values: { personalNote: '', collectionIds: defaultCollectionIds },
+    resetOptions: { keepDefaultValues: false },
   })
+
   const submit = handleSubmit((values) => {
     saveMutation.mutate(toSaveVocabularyRequest(data.term.id, values))
   })
 
+  const handleAddToAdditionalCollection = () => {
+    if (!addCollectionId || !data.saveState.userVocabularyId) return
+    setAddFeedback(null)
+    addCollectionMutation.mutate(
+      {
+        collectionId: addCollectionId,
+        userVocabularyIds: [data.saveState.userVocabularyId],
+      },
+      {
+        onSuccess: (res: AddCollectionItemsResponse) => {
+          if (res.skippedCount > 0) {
+            setAddFeedback('Word is already in this collection.')
+          } else {
+            setAddFeedback('Added to collection successfully!')
+          }
+          setAddCollectionId('')
+        },
+        onError: () => {
+          setAddFeedback('Failed to add to collection.')
+        },
+      },
+    )
+  }
+
   if (data.saveState.isSaved) {
     return (
-      <Alert severity="success" aria-live="polite">
-        <AlertTitle>Saved to vocabulary</AlertTitle>
-        {data.saveState.learningStatus
-          ? `Status: ${learningStatusLabels[data.saveState.learningStatus]}.`
-          : 'This contextual term is already in your vocabulary.'}
-      </Alert>
+      <Stack spacing={2}>
+        {data.saveState.userVocabularyId && collections.length > 0 ? (
+          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+              Add to another Collection
+            </Typography>
+
+            {addFeedback ? (
+              <Alert severity="info" sx={{ mb: 1.5, py: 0.5 }}>
+                {addFeedback}
+              </Alert>
+            ) : null}
+
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="add-to-collection-select-label">Select Collection</InputLabel>
+                <Select
+                  labelId="add-to-collection-select-label"
+                  value={addCollectionId}
+                  label="Select Collection"
+                  onChange={(e) => setAddCollectionId(e.target.value)}
+                  disabled={addCollectionMutation.isPending}
+                >
+                  {collections.map((col: CollectionListItem) => (
+                    <MenuItem key={col.id} value={col.id}>
+                      {col.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <Button
+                variant="outlined"
+                onClick={handleAddToAdditionalCollection}
+                disabled={!addCollectionId || addCollectionMutation.isPending}
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                {addCollectionMutation.isPending ? 'Adding…' : 'Add'}
+              </Button>
+            </Stack>
+          </Paper>
+        ) : null}
+      </Stack>
     )
   }
 
@@ -194,6 +266,58 @@ function SaveVocabularyForm({
           <Alert severity="error">{saveErrorMessage(saveMutation.error)}</Alert>
         ) : null}
 
+        {isLoadingCollections ? (
+          <CircularProgress size={24} />
+        ) : collections.length === 0 ? (
+          <Alert severity="warning">
+            You don&apos;t have any collections yet. Please create a collection first before saving vocabulary.
+          </Alert>
+        ) : (
+          <Controller
+            name="collectionIds"
+            control={control}
+            defaultValue={[collections[0]?.id].filter(Boolean)}
+            render={({ field }) => (
+              <FormControl
+                fullWidth
+                error={Boolean(errors.collectionIds)}
+                size="small"
+              >
+                <InputLabel id="select-collections-label">
+                  Collections (Required)
+                </InputLabel>
+                <Select
+                  labelId="select-collections-label"
+                  multiple
+                  value={field.value}
+                  onChange={field.onChange}
+                  input={<OutlinedInput label="Collections (Required)" />}
+                  renderValue={(selected) =>
+                    collections
+                      .filter((c: CollectionListItem) => selected.includes(c.id))
+                      .map((c: CollectionListItem) => c.name)
+                      .join(', ')
+                  }
+                >
+                  {collections.map((col: CollectionListItem) => (
+                    <MenuItem key={col.id} value={col.id}>
+                      <Checkbox checked={field.value.includes(col.id)} />
+                      <ListItemText primary={col.name} />
+                    </MenuItem>
+                  ))}
+                </Select>
+                {errors.collectionIds ? (
+                  <FormHelperText>{errors.collectionIds.message}</FormHelperText>
+                ) : (
+                  <FormHelperText>
+                    Select one or more collections to add this word to.
+                  </FormHelperText>
+                )}
+              </FormControl>
+            )}
+          />
+        )}
+
         <TextField
           label="Personal note (optional)"
           multiline
@@ -209,8 +333,9 @@ function SaveVocabularyForm({
         <Button
           type="submit"
           variant="contained"
-          disabled={saveMutation.isPending}
-          sx={{ alignSelf: 'flex-start' }}
+          color="primary"
+          disabled={saveMutation.isPending || isLoadingCollections || collections.length === 0}
+          fullWidth
         >
           {saveMutation.isPending ? 'Saving…' : 'Save Vocabulary'}
         </Button>
@@ -447,6 +572,7 @@ export function ContextualTermDrawer({
       anchor="right"
       open={open}
       onClose={onClose}
+      transitionDuration={0}
       slotProps={{
         backdrop: {
           sx: { bgcolor: 'rgba(15, 81, 56, 0.18)' },

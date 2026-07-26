@@ -3,10 +3,10 @@ import {
   postAuthPath,
   requestedPath,
   routePaths,
-} from '../../utils/paths'
-import type { UserRole } from '../../types/auth'
-import { SessionLoading } from '../Shared/SessionLoading'
-import { useAuth } from '../../contexts/AuthContext'
+} from '@/utils/paths'
+import type { UserRole } from '@/types/Auth/auth'
+import { SessionLoading } from '@/components/Shared/SessionLoading'
+import { useAuth } from '@/contexts/AuthContext'
 
 export function GuestRoute() {
   const { currentUser, isInitializing } = useAuth()

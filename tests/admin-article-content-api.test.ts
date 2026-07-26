@@ -7,7 +7,7 @@ const clientMocks = vi.hoisted(() => ({
   post: vi.fn(),
 }))
 
-vi.mock('../src/config/apiClient', () => ({
+vi.mock('@/config/apiClient', () => ({
   apiClient: {
     deleteNoContent: clientMocks.deleteNoContent,
     get: clientMocks.get,
@@ -20,13 +20,13 @@ import {
   adminArticleContentApi,
   sentenceListRequestParams,
   termListRequestParams,
-} from '../src/api/AdminArticleContentApi'
+} from '@/api/Admin/AdminArticleContentApi'
 import {
   articleTermFormSchema,
   toCreateArticleTermRequest,
   toUpdateArticleTermRequest,
   toUpdateArticleSentenceRequest,
-} from '../src/schemas/admin-article-content'
+} from '@/schemas/Admin/adminArticleContent'
 
 describe('adminArticleContentApi', () => {
   beforeEach(() => {

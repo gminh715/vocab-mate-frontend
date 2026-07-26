@@ -7,11 +7,11 @@ const clientMocks = vi.hoisted(() => ({
   deleteNoContent: vi.fn(),
 }))
 
-vi.mock('../src/config/apiClient', () => ({
+vi.mock('@/config/apiClient', () => ({
   apiClient: clientMocks,
 }))
 
-import { readingApi } from '../src/api/ReadingApi'
+import { readingApi } from '@/api/Reading/ReadingApi'
 
 describe('reading progress and history API mapping', () => {
   beforeEach(() => {

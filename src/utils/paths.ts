@@ -1,5 +1,5 @@
 import type { Location } from 'react-router-dom'
-import type { UserRole } from '../types/auth'
+import type { UserRole } from '@/types/Auth/auth'
 
 export const routePaths = {
   home: '/',
@@ -9,6 +9,8 @@ export const routePaths = {
   articleDetail: '/articles/:slug',
   reader: '/read/:slug',
   readingHistory: '/reading-history',
+  vocabularies: '/vocabularies',
+  vocabularyDetail: '/vocabularies/:userVocabularyId',
   admin: '/admin',
   adminUsers: '/admin/users',
   adminUserDetail: '/admin/users/:userId',
@@ -54,6 +56,12 @@ export const articlePath = (slug: string): string =>
 
 export const readerPath = (slug: string): string =>
   routePaths.reader.replace(':slug', encodeURIComponent(slug))
+
+export const vocabularyDetailPath = (userVocabularyId: string): string =>
+  routePaths.vocabularyDetail.replace(
+    ':userVocabularyId',
+    encodeURIComponent(userVocabularyId),
+  )
 
 export interface AuthRedirectState {
   from?: string

@@ -21,7 +21,7 @@ import {
 import {
   EditorImageDialog,
   EditorLinkDialog,
-} from './ArticleEditorDialogs'
+} from '@/components/Article/ArticleEditorDialogs'
 
 interface ArticleRichTextEditorProps {
   value: string

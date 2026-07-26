@@ -4,8 +4,8 @@ import {
   ReadingProgressQueue,
   boundReadingProgress,
   calculateReadingProgress,
-} from '../src/hooks/useReadingProgressPersistence'
-import type { ReaderProgress } from '../src/types/reading'
+} from '@/hooks/Reading/useReadingProgressPersistence'
+import type { ReaderProgress } from '@/types/Reading/reading'
 
 const progress = (progressPercent: number): ReaderProgress => ({
   articleId: 'article-1',

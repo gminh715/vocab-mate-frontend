@@ -4,13 +4,13 @@ const clientMocks = vi.hoisted(() => ({
   get: vi.fn(),
 }))
 
-vi.mock('../src/config/apiClient', () => ({
+vi.mock('@/config/apiClient', () => ({
   apiClient: {
     get: clientMocks.get,
   },
 }))
 
-import { readingApi } from '../src/api/ReadingApi'
+import { readingApi } from '@/api/Reading/ReadingApi'
 
 describe('article reader API mapping', () => {
   beforeEach(() => {

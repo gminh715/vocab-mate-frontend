@@ -9,7 +9,7 @@ const clientMocks = vi.hoisted(() => ({
   waitForPendingRefresh: vi.fn(),
 }))
 
-vi.mock('../src/config/apiClient', () => ({
+vi.mock('@/config/apiClient', () => ({
   apiClient: {
     get: clientMocks.get,
     post: clientMocks.post,
@@ -20,8 +20,8 @@ vi.mock('../src/config/apiClient', () => ({
   waitForPendingRefresh: clientMocks.waitForPendingRefresh,
 }))
 
-import { authApi } from '../src/api'
-import type { AuthData, CurrentUser } from '../src/types/auth'
+import { authApi } from '@/api'
+import type { AuthData, CurrentUser } from '@/types/Auth/auth'
 
 const authData: AuthData = {
   user: {

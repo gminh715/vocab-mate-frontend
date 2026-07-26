@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
-import type { ApiError } from '../config/apiClient'
-import type { CurrentUser } from '../types/auth'
+import type { ApiError } from '@/config/apiClient'
+import type { CurrentUser } from '@/types/Auth/auth'
 
 export interface AuthContextValue {
   currentUser: CurrentUser | null

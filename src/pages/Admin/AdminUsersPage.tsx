@@ -20,17 +20,17 @@ import {
   Link as RouterLink,
   useSearchParams,
 } from 'react-router-dom'
-import { DebouncedSearchField } from '../../components/Shared/DebouncedSearchField'
-import { normalizeApiError } from '../../config/apiClient'
-import { useAdminUserListQuery } from '../../hooks/useAdminUsers'
+import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
+import { normalizeApiError } from '@/config/apiClient'
+import { useAdminUserListQuery } from '@/hooks/Admin/useAdminUsers'
 import {
   USER_ROLES,
   USER_STATUSES,
   type UserRole,
   type UserStatus,
-} from '../../types/auth'
-import { adminUserListParamsFromSearchParams } from '../../utils/adminUserListParams'
-import { adminUserPath } from '../../utils/paths'
+} from '@/types/Auth/auth'
+import { adminUserListParamsFromSearchParams } from '@/utils/Admin/adminUserListParams'
+import { adminUserPath } from '@/utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',

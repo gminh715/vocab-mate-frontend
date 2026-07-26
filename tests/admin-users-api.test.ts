@@ -5,15 +5,15 @@ const clientMocks = vi.hoisted(() => ({
   patch: vi.fn(),
 }))
 
-vi.mock('../src/config/apiClient', () => ({
+vi.mock('@/config/apiClient', () => ({
   apiClient: {
     get: clientMocks.get,
     patch: clientMocks.patch,
   },
 }))
 
-import { adminUsersApi } from '../src/api/AdminUsersApi'
-import { adminUserListParamsFromSearchParams } from '../src/utils/adminUserListParams'
+import { adminUsersApi } from '@/api/Admin/AdminUsersApi'
+import { adminUserListParamsFromSearchParams } from '@/utils/Admin/adminUserListParams'
 
 describe('adminUsersApi', () => {
   beforeEach(() => {

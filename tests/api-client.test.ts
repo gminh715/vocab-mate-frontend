@@ -4,7 +4,7 @@ import {
   ApiError,
   normalizeApiError,
   type ApiFailure,
-} from '../src/config/apiClient'
+} from '@/config/apiClient'
 
 describe('normalizeApiError', () => {
   it('preserves the documented backend error envelope', () => {

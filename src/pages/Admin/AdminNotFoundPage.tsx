@@ -2,7 +2,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
-import { routePaths } from '../../utils/paths'
+import { routePaths } from '@/utils/paths'
 
 export function AdminNotFoundPage() {
   return (

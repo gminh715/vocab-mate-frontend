@@ -4,7 +4,7 @@ const clientMocks = vi.hoisted(() => ({
   get: vi.fn(),
 }))
 
-vi.mock('../src/config/apiClient', () => ({
+vi.mock('@/config/apiClient', () => ({
   apiClient: {
     get: clientMocks.get,
   },
@@ -13,12 +13,12 @@ vi.mock('../src/config/apiClient', () => ({
 import {
   articleListRequestParams,
   articlesApi,
-} from '../src/api/ArticlesApi'
-import { categoriesApi } from '../src/api/CategoriesApi'
+} from '@/api/Article/ArticlesApi'
+import { categoriesApi } from '@/api/Article/CategoriesApi'
 import {
   articleListParamsFromSearchParams,
   normalizeArticleSearchParams,
-} from '../src/utils/articleListParams'
+} from '@/utils/Article/articleListParams'
 
 describe('article discovery URL and API mapping', () => {
   beforeEach(() => {

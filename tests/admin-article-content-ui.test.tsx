@@ -4,19 +4,19 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { adminArticleContentApi, adminArticlesApi } from '../src/api'
-import { ArticleSentenceEditor } from '../src/components/ArticleSentenceEditor'
-import { ApiError } from '../src/config/apiClient'
-import { AdminArticleContentPage } from '../src/pages/Admin/AdminArticleContentPage'
-import { AdminArticlePreviewPage } from '../src/pages/Admin/AdminArticlePreviewPage'
-import { appTheme } from '../src/theme'
+import { adminArticleContentApi, adminArticlesApi } from '@/api'
+import { ArticleSentenceEditor } from '@/components/Article/ArticleSentenceEditor'
+import { ApiError } from '@/config/apiClient'
+import { AdminArticleContentPage } from '@/pages/Admin/AdminArticleContentPage'
+import { AdminArticlePreviewPage } from '@/pages/Admin/AdminArticlePreviewPage'
+import { appTheme } from '@/theme'
 import type {
   ArticlePreviewData,
   ArticleSentence,
   ArticleSentenceTerm,
   ArticleTermListItem,
-} from '../src/types/admin-article-content'
-import type { AdminArticleDetail } from '../src/types/admin-articles'
+} from '@/types/Admin/adminArticleContent'
+import type { AdminArticleDetail } from '@/types/Admin/adminArticles'
 
 const articleId = '660e8400-e29b-41d4-a716-446655440000'
 const sentenceId = '770e8400-e29b-41d4-a716-446655440000'

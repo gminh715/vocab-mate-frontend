@@ -22,23 +22,39 @@ The browser API base path defaults to `/api/v1`. For a deployment where the API
 is hosted separately, set `VITE_API_BASE_URL` to its full public `/api/v1` URL
 and enable credentialed CORS on the backend.
 
+## Project structure
+
+The source follows a layered structure with domain folders inside each layer:
+
+```text
+src/
+├── api/          # Typed backend calls, grouped by domain
+├── app/          # Root providers and application composition
+├── components/   # Reusable UI, grouped by domain
+├── config/       # Shared infrastructure such as the Axios client
+├── contexts/     # Small cross-cutting React contexts
+├── hooks/        # TanStack Query and UI hooks, grouped by domain
+├── pages/        # Route-level screens, grouped by user flow
+├── routes/       # Route tree and access-control composition
+├── schemas/      # Zod input and response schemas, grouped by domain
+├── types/        # Backend contract types, grouped by domain
+└── utils/        # Pure helpers, grouped by domain
+```
+
+Use the `@/` alias for imports from `src`. Feature-specific code stays in its
+domain; only code reused by unrelated features belongs in `Shared`.
+
 ## API client
 
-`src/api/client.ts` provides:
-
-- Typed helpers for GET, POST, PATCH, PUT, and DELETE.
-- Automatic parsing of the backend's `{ success, data }` envelope.
-- Normalized API errors from `{ success: false, error }`.
-- Bearer access-token attachment.
-- One shared refresh request and one retry after a `401`.
-- `credentials: "include"` for the HttpOnly refresh cookie.
-
-`src/api/auth.ts` implements login, session restoration, and logout against the
-backend's `/auth` and `/users/me` endpoints.
+`src/config/apiClient.ts` owns the shared Axios client, backend envelope parsing,
+normalized errors, in-memory access-token handling, one shared refresh request,
+and a single retry after `401`. Domain API modules live under `src/api`.
 
 ## Checks
 
 ```bash
 npm run lint
+npm run typecheck
+npm run test
 npm run build
 ```

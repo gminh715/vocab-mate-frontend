@@ -10,18 +10,18 @@ import {
   createMemoryRouter,
 } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AppRoutes } from '../src/App'
-import { articlesApi, authApi } from '../src/api'
-import { AuthProvider } from '../src/components/AuthProvider'
-import { ApiError } from '../src/config/apiClient'
+import { AppRoutes } from '@/routes/AppRoutes'
+import { articlesApi, authApi } from '@/api'
+import { AuthProvider } from '@/components/Auth/AuthProvider'
+import { ApiError } from '@/config/apiClient'
 import {
   AuthContext,
   type AuthContextValue,
-} from '../src/contexts/AuthContext'
-import { ArticleDetailPage } from '../src/pages/ArticleDetailPage'
-import { appTheme } from '../src/theme'
-import type { ArticleDetailData } from '../src/types/articles'
-import type { CurrentUser } from '../src/types/auth'
+} from '@/contexts/AuthContext'
+import { ArticleDetailPage } from '@/pages/Article/ArticleDetailPage'
+import { appTheme } from '@/theme'
+import type { ArticleDetailData } from '@/types/Article/articles'
+import type { CurrentUser } from '@/types/Auth/auth'
 
 const slug = 'how-technology-changes-learning'
 

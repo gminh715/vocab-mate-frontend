@@ -7,7 +7,7 @@ const clientMocks = vi.hoisted(() => ({
   post: vi.fn(),
 }))
 
-vi.mock('../src/config/apiClient', () => ({
+vi.mock('@/config/apiClient', () => ({
   apiClient: {
     deleteNoContent: clientMocks.deleteNoContent,
     get: clientMocks.get,
@@ -19,14 +19,14 @@ vi.mock('../src/config/apiClient', () => ({
 import {
   adminArticlesApi,
   articleListRequestParams,
-} from '../src/api/AdminArticlesApi'
+} from '@/api/Admin/AdminArticlesApi'
 import {
   articleFormSchema,
   hasArticleContentChanged,
   toCreateArticleRequest,
   toUpdateArticleRequest,
-} from '../src/schemas/admin-article'
-import { adminArticleListParamsFromSearchParams } from '../src/utils/adminArticleListParams'
+} from '@/schemas/Admin/adminArticle'
+import { adminArticleListParamsFromSearchParams } from '@/utils/Admin/adminArticleListParams'
 
 const validValues = articleFormSchema.parse({
   categoryId: '550e8400-e29b-41d4-a716-446655440000',

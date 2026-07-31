@@ -1,6 +1,7 @@
 import { apiClient } from '@/config/apiClient'
 import type {
   ArticleArchiveData,
+  ArticleAnalysisData,
   ArticlePreviewData,
   ArticlePublishData,
   ArticleRestoreDraftData,
@@ -50,6 +51,11 @@ export const termListRequestParams = (params: ArticleTermListParams) => ({
   ...(params.sentenceId ? { sentenceId: params.sentenceId } : {}),
   ...(params.cefrLevel ? { cefrLevel: params.cefrLevel } : {}),
   ...(params.unitType ? { unitType: params.unitType } : {}),
+  ...(params.origin ? { origin: params.origin } : {}),
+  ...(params.reviewStatus ? { reviewStatus: params.reviewStatus } : {}),
+  ...(params.explanationStatus
+    ? { explanationStatus: params.explanationStatus }
+    : {}),
   ...(params.isActive === undefined
     ? {}
     : { isActive: params.isActive }),
@@ -64,6 +70,11 @@ export const adminArticleContentApi = {
     apiClient.post<ParseArticleContentData>(
       `${articlePath(articleId)}/parse-content`,
       request,
+    ),
+
+  analyze: (articleId: string): Promise<ArticleAnalysisData> =>
+    apiClient.post<ArticleAnalysisData>(
+      `${articlePath(articleId)}/analyze`,
     ),
 
   listSentences: (
@@ -124,6 +135,22 @@ export const adminArticleContentApi = {
     apiClient.patch<ArticleTermUpdateData>(
       termPath(articleId, termId),
       request,
+    ),
+
+  approveTerm: (
+    articleId: string,
+    termId: string,
+  ): Promise<ArticleTermUpdateData> =>
+    apiClient.post<ArticleTermUpdateData>(
+      `${termPath(articleId, termId)}/approve`,
+    ),
+
+  rejectTerm: (
+    articleId: string,
+    termId: string,
+  ): Promise<ArticleTermUpdateData> =>
+    apiClient.post<ArticleTermUpdateData>(
+      `${termPath(articleId, termId)}/reject`,
     ),
 
   deleteTerm: (articleId: string, termId: string): Promise<void> =>

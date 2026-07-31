@@ -344,6 +344,28 @@ describe('contextual vocabulary lookup and save flow', () => {
     },
   )
 
+  it('shows a safe retry state while another request prepares the term', async () => {
+    vi.spyOn(readingApi, 'term').mockRejectedValue(
+      new ApiError({
+        status: 503,
+        code: 'SERVICE_UNAVAILABLE',
+        message: 'Internal generation state',
+      }),
+    )
+    renderReader()
+
+    await openLookup()
+
+    expect(
+      await screen.findByText(
+        'This term is being prepared. Please try again shortly.',
+      ),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Try again' }),
+    ).toBeInTheDocument()
+  })
+
   it('explains a 422 collection-ownership rejection without exposing the raw error', async () => {
     vi.spyOn(readingApi, 'term').mockResolvedValue(unsavedLookup)
     vi.spyOn(vocabulariesApi, 'save').mockRejectedValue(

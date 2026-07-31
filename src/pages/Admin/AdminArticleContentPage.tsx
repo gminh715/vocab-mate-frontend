@@ -35,11 +35,14 @@ import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useArchiveAdminArticleMutation,
+  useAnalyzeAdminArticleMutation,
+  useApproveAdminArticleTermMutation,
   useCreateAdminArticleTermMutation,
   useDeleteAdminArticleTermMutation,
   useParseAdminArticleContentMutation,
   usePublishAdminArticleMutation,
   useRestoreAdminArticleDraftMutation,
+  useRejectAdminArticleTermMutation,
   useAdminArticleSentenceDetailQuery,
   useAdminArticleSentenceListQuery,
   useAdminArticleTermDetailQuery,
@@ -59,6 +62,11 @@ import type {
   UpdateArticleTermRequest,
 } from '@/types/Admin/adminArticleContent'
 import { LEXICAL_UNIT_TYPES } from '@/types/Admin/adminArticleContent'
+import {
+  TERM_ORIGINS,
+  TERM_REVIEW_STATUSES,
+} from '@/types/Admin/adminArticleContent'
+import { AI_GENERATION_STATUSES } from '@/types/Admin/adminArticles'
 import { CEFR_LEVELS } from '@/types/Auth/auth'
 import {
   adminArticleEditPath,
@@ -88,6 +96,11 @@ const apiMessage = (error: unknown): string => {
 interface Feedback {
   severity: 'success' | 'error' | 'warning'
   message: string
+}
+
+interface ModerationTarget {
+  term: ArticleSentenceTerm
+  action: 'approve' | 'reject'
 }
 
 interface SummaryValueProps {
@@ -663,12 +676,26 @@ export function AdminArticleContentPage() {
   const termUnit = LEXICAL_UNIT_TYPES.find(
     (unitType) => unitType === searchParams.get('termUnit'),
   )
+  const termOrigin = TERM_ORIGINS.find(
+    (origin) => origin === searchParams.get('termOrigin'),
+  )
+  const termReview = TERM_REVIEW_STATUSES.find(
+    (status) => status === searchParams.get('termReview'),
+  )
+  const termExplanation = AI_GENERATION_STATUSES.find(
+    (status) => status === searchParams.get('termExplanation'),
+  )
   const termParams = {
     page: positiveInteger(searchParams.get('termPage'), 1),
     limit: positiveInteger(searchParams.get('termLimit'), 20, 100),
     ...(termQ ? { q: termQ } : {}),
     ...(termCefr ? { cefrLevel: termCefr } : {}),
     ...(termUnit ? { unitType: termUnit } : {}),
+    ...(termOrigin ? { origin: termOrigin } : {}),
+    ...(termReview ? { reviewStatus: termReview } : {}),
+    ...(termExplanation
+      ? { explanationStatus: termExplanation }
+      : {}),
     ...(optionalBoolean(searchParams.get('termActive')) === undefined
       ? {}
       : {
@@ -687,6 +714,11 @@ export function AdminArticleContentPage() {
   )
   const termListQuery = useAdminArticleTermListQuery(articleId, termParams)
   const parseMutation = useParseAdminArticleContentMutation(articleId)
+  const analyzeMutation = useAnalyzeAdminArticleMutation(articleId)
+  const approveTermMutation =
+    useApproveAdminArticleTermMutation(articleId)
+  const rejectTermMutation =
+    useRejectAdminArticleTermMutation(articleId)
   const publishMutation = usePublishAdminArticleMutation(articleId)
   const archiveMutation = useArchiveAdminArticleMutation(articleId)
   const restoreMutation = useRestoreAdminArticleDraftMutation(articleId)
@@ -699,6 +731,9 @@ export function AdminArticleContentPage() {
     useState<ArticleSentenceTerm | null>(null)
   const [lifecycleAction, setLifecycleAction] =
     useState<LifecycleAction | null>(null)
+  const [analysisOpen, setAnalysisOpen] = useState(false)
+  const [moderationTarget, setModerationTarget] =
+    useState<ModerationTarget | null>(null)
 
   const updateParams = (
     updates: Record<string, string | undefined>,
@@ -752,6 +787,51 @@ export function AdminArticleContentPage() {
     archiveMutation.reset()
     restoreMutation.reset()
     setLifecycleAction(action)
+  }
+
+  const runAnalysis = () => {
+    analyzeMutation.mutate(undefined, {
+      onSuccess: (data) => {
+        setAnalysisOpen(false)
+        updateParams({
+          tab: 'terms',
+          termOrigin: 'AI',
+          termReview: 'PENDING',
+          termPage: '1',
+        })
+        setFeedback({
+          severity: 'success',
+          message: `Analysis completed with ${data.candidateCount} candidate terms for content version ${data.contentVersion}.`,
+        })
+      },
+      onError: (error) => {
+        setFeedback({
+          severity: 'error',
+          message: apiMessage(error),
+        })
+        setAnalysisOpen(false)
+      },
+    })
+  }
+
+  const runModeration = () => {
+    if (!moderationTarget) return
+    const mutation =
+      moderationTarget.action === 'approve'
+        ? approveTermMutation
+        : rejectTermMutation
+
+    mutation.mutate(moderationTarget.term.id, {
+      onSuccess: () => {
+        const actionLabel =
+          moderationTarget.action === 'approve' ? 'approved' : 'rejected'
+        setFeedback({
+          severity: 'success',
+          message: `${moderationTarget.term.wordDisplay} ${actionLabel}.`,
+        })
+        setModerationTarget(null)
+      },
+    })
   }
 
   const activeLifecycleMutation =
@@ -847,6 +927,10 @@ export function AdminArticleContentPage() {
 
   const { article, sentenceCount, termCount, quizCount } = detailQuery.data
   const isReadOnly = article.status === 'ARCHIVED'
+  const canAnalyze =
+    article.status === 'DRAFT' &&
+    (article.aiAnalysisStatus === 'PENDING' ||
+      article.aiAnalysisStatus === 'FAILED')
 
   return (
     <Stack spacing={3}>
@@ -933,6 +1017,22 @@ export function AdminArticleContentPage() {
                     : 'Parse current content'}
                 </Button>
               ) : null}
+              {canAnalyze ? (
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    analyzeMutation.reset()
+                    setAnalysisOpen(true)
+                  }}
+                  disabled={analyzeMutation.isPending}
+                >
+                  {analyzeMutation.isPending
+                    ? 'Analyzing…'
+                    : article.aiAnalysisStatus === 'FAILED'
+                      ? 'Retry analysis'
+                      : 'Analyze with AI'}
+                </Button>
+              ) : null}
               {article.status === 'DRAFT' ? (
                 <Button
                   variant="contained"
@@ -979,6 +1079,33 @@ export function AdminArticleContentPage() {
             <SummaryValue label="Terms" value={termCount} />
             <SummaryValue label="Quizzes" value={quizCount} />
           </Box>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1}
+            sx={{ alignItems: { sm: 'center' } }}
+          >
+            <Typography color="text.secondary" variant="body2">
+              AI analysis
+            </Typography>
+            <Chip
+              size="small"
+              label={article.aiAnalysisStatus ?? 'Not run'}
+              color={
+                article.aiAnalysisStatus === 'READY'
+                  ? 'success'
+                  : article.aiAnalysisStatus === 'FAILED'
+                    ? 'error'
+                    : 'default'
+              }
+              variant="outlined"
+            />
+            {article.aiAnalysisStatus === 'FAILED' &&
+            article.aiAnalysisError ? (
+              <Typography color="error" variant="body2">
+                {article.aiAnalysisError}
+              </Typography>
+            ) : null}
+          </Stack>
         </Stack>
       </Paper>
 
@@ -1241,6 +1368,57 @@ export function AdminArticleContentPage() {
                 </TextField>
                 <TextField
                   select
+                  label="Origin"
+                  value={termOrigin ?? ''}
+                  onChange={(event) =>
+                    updateParams(
+                      { termOrigin: event.target.value || undefined },
+                      'termPage',
+                    )
+                  }
+                >
+                  <MenuItem value="">All origins</MenuItem>
+                  <MenuItem value="MANUAL">Manual</MenuItem>
+                  <MenuItem value="AI">AI candidate</MenuItem>
+                </TextField>
+                <TextField
+                  select
+                  label="Review"
+                  value={termReview ?? ''}
+                  onChange={(event) =>
+                    updateParams(
+                      { termReview: event.target.value || undefined },
+                      'termPage',
+                    )
+                  }
+                >
+                  <MenuItem value="">All review states</MenuItem>
+                  <MenuItem value="PENDING">Pending</MenuItem>
+                  <MenuItem value="APPROVED">Approved</MenuItem>
+                  <MenuItem value="REJECTED">Rejected</MenuItem>
+                </TextField>
+                <TextField
+                  select
+                  label="Enrichment"
+                  value={termExplanation ?? ''}
+                  onChange={(event) =>
+                    updateParams(
+                      {
+                        termExplanation:
+                          event.target.value || undefined,
+                      },
+                      'termPage',
+                    )
+                  }
+                >
+                  <MenuItem value="">All enrichment states</MenuItem>
+                  <MenuItem value="PENDING">Pending</MenuItem>
+                  <MenuItem value="PROCESSING">Processing</MenuItem>
+                  <MenuItem value="READY">Ready</MenuItem>
+                  <MenuItem value="FAILED">Failed</MenuItem>
+                </TextField>
+                <TextField
+                  select
                   label="Unit type"
                   value={termUnit ?? ''}
                   onChange={(event) =>
@@ -1333,6 +1511,23 @@ export function AdminArticleContentPage() {
                                 color="primary"
                                 variant="outlined"
                               />
+                              <Chip
+                                label={term.origin === 'AI' ? 'AI' : 'Manual'}
+                                size="small"
+                                variant="outlined"
+                              />
+                              <Chip
+                                label={term.reviewStatus}
+                                size="small"
+                                color={
+                                  term.reviewStatus === 'APPROVED'
+                                    ? 'success'
+                                    : term.reviewStatus === 'REJECTED'
+                                      ? 'error'
+                                      : 'warning'
+                                }
+                                variant="outlined"
+                              />
                               {!term.isActive ? (
                                 <Chip label="Inactive" size="small" />
                               ) : null}
@@ -1341,11 +1536,55 @@ export function AdminArticleContentPage() {
                               color="text.secondary"
                               sx={{ mt: 0.5 }}
                             >
-                              {term.contextualMeaningVi}
+                              {term.contextualMeaningVi ??
+                                'Enrichment will be generated after approval and reader lookup.'}
                             </Typography>
+                            {term.selectionReason ? (
+                              <Typography
+                                color="text.secondary"
+                                variant="body2"
+                                sx={{ mt: 0.75 }}
+                              >
+                                Selection reason: {term.selectionReason}
+                              </Typography>
+                            ) : null}
                           </Box>
                           {!isReadOnly ? (
-                            <Stack direction="row" spacing={0.5}>
+                            <Stack
+                              direction="row"
+                              spacing={0.5}
+                              sx={{ alignItems: 'flex-start', flexWrap: 'wrap' }}
+                            >
+                              {article.status === 'DRAFT' &&
+                              term.origin === 'AI' &&
+                              term.reviewStatus === 'PENDING' ? (
+                                <>
+                                  <Button
+                                    size="small"
+                                    color="success"
+                                    onClick={() =>
+                                      setModerationTarget({
+                                        term,
+                                        action: 'approve',
+                                      })
+                                    }
+                                  >
+                                    Approve
+                                  </Button>
+                                  <Button
+                                    size="small"
+                                    color="error"
+                                    onClick={() =>
+                                      setModerationTarget({
+                                        term,
+                                        action: 'reject',
+                                      })
+                                    }
+                                  >
+                                    Reject
+                                  </Button>
+                                </>
+                              ) : null}
                               <Button
                                 size="small"
                                 onClick={() => setEditTermId(term.id)}
@@ -1413,6 +1652,54 @@ export function AdminArticleContentPage() {
         isPending={activeLifecycleMutation.isPending}
         onClose={() => setLifecycleAction(null)}
         onConfirm={confirmLifecycle}
+      />
+
+      <ConfirmationDialog
+        open={analysisOpen}
+        title={
+          article.aiAnalysisStatus === 'FAILED'
+            ? 'Retry draft analysis'
+            : 'Analyze this draft'
+        }
+        description="This sends the current draft article content to the configured AI service. It may update category and CEFR level and creates pending candidates for explicit review; it never publishes the article."
+        confirmLabel="Run analysis"
+        isPending={analyzeMutation.isPending}
+        errorMessage={
+          analyzeMutation.isError
+            ? apiMessage(analyzeMutation.error)
+            : null
+        }
+        onCancel={() => setAnalysisOpen(false)}
+        onConfirm={runAnalysis}
+      />
+
+      <ConfirmationDialog
+        open={Boolean(moderationTarget)}
+        title={
+          moderationTarget?.action === 'approve'
+            ? 'Approve AI candidate'
+            : 'Reject AI candidate'
+        }
+        description={
+          moderationTarget?.action === 'approve'
+            ? `Approve “${moderationTarget.term.wordDisplay}” and add its reader marker exactly once? Contextual enrichment remains lazy until a reader looks it up.`
+            : `Reject “${moderationTarget?.term.wordDisplay ?? ''}”? Rejected terms remain inaccessible to readers.`
+        }
+        confirmLabel={
+          moderationTarget?.action === 'approve' ? 'Approve' : 'Reject'
+        }
+        isPending={
+          approveTermMutation.isPending || rejectTermMutation.isPending
+        }
+        errorMessage={
+          approveTermMutation.isError
+            ? apiMessage(approveTermMutation.error)
+            : rejectTermMutation.isError
+              ? apiMessage(rejectTermMutation.error)
+              : null
+        }
+        onCancel={() => setModerationTarget(null)}
+        onConfirm={runModeration}
       />
 
       <TermDeleteDialog

@@ -334,50 +334,59 @@ function QuickAction({
 
 function ContinueReadingCard({ item }: { item: ReadingHistoryItem }) {
   const progress = Math.min(100, Math.max(0, item.progressPercent))
+  const isAvailable = item.article.status === 'PUBLISHED'
+  const content = (
+    <Stack spacing={1.25}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}
+      >
+        <Typography
+          component="h3"
+          sx={{
+            fontFamily: 'Georgia, serif',
+            fontSize: 21,
+            fontWeight: 700,
+            lineHeight: 1.25,
+          }}
+        >
+          {item.article.title}
+        </Typography>
+        <Chip
+          size="small"
+          label={`${integerFormatter.format(progress)}%`}
+          color="primary"
+          variant="outlined"
+        />
+      </Stack>
+      <LinearProgress
+        variant="determinate"
+        value={progress}
+        aria-label={`${item.article.title} reading progress`}
+        sx={{ height: 7, borderRadius: 99 }}
+      />
+      <Typography variant="body2" color="text.secondary">
+        {isAvailable ? null : 'Archived · '}
+        Last read {dateFormatter.format(new Date(item.lastReadAt))}
+      </Typography>
+    </Stack>
+  )
 
   return (
     <Card component="article" variant="outlined">
-      <CardActionArea
-        component={RouterLink}
-        to={readerPath(item.article.slug)}
-        aria-label={`Continue reading ${item.article.title}`}
-        sx={{ height: '100%', p: 2.25 }}
-      >
-        <Stack spacing={1.25}>
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}
-          >
-            <Typography
-              component="h3"
-              sx={{
-                fontFamily: 'Georgia, serif',
-                fontSize: 21,
-                fontWeight: 700,
-                lineHeight: 1.25,
-              }}
-            >
-              {item.article.title}
-            </Typography>
-            <Chip
-              size="small"
-              label={`${integerFormatter.format(progress)}%`}
-              color="primary"
-              variant="outlined"
-            />
-          </Stack>
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-            aria-label={`${item.article.title} reading progress`}
-            sx={{ height: 7, borderRadius: 99 }}
-          />
-          <Typography variant="body2" color="text.secondary">
-            Last read {dateFormatter.format(new Date(item.lastReadAt))}
-          </Typography>
-        </Stack>
-      </CardActionArea>
+      {isAvailable ? (
+        <CardActionArea
+          component={RouterLink}
+          to={readerPath(item.article.slug)}
+          aria-label={`Continue reading ${item.article.title}`}
+          sx={{ height: '100%', p: 2.25 }}
+        >
+          {content}
+        </CardActionArea>
+      ) : (
+        <Box sx={{ p: 2.25 }}>{content}</Box>
+      )}
     </Card>
   )
 }
@@ -435,8 +444,11 @@ export function HomePage() {
   const readingQuery = useReadingHistoryQuery(CONTINUE_READING_PARAMS)
   const overview = overviewQuery.data
   const continueReading = readingQuery.data?.items ?? []
-  const primaryPath = continueReading[0]
-    ? readerPath(continueReading[0].article.slug)
+  const resumableArticle = continueReading.find(
+    (item) => item.article.status === 'PUBLISHED',
+  )
+  const primaryPath = resumableArticle
+    ? readerPath(resumableArticle.article.slug)
     : routePaths.articles
   const allMetricsZero =
     overview !== undefined &&
@@ -511,7 +523,7 @@ export function HomePage() {
             size="large"
             sx={{ mt: 2.5 }}
           >
-            {continueReading[0] ? 'Continue learning' : 'Find an article'}
+            {resumableArticle ? 'Continue learning' : 'Find an article'}
           </Button>
         </Box>
       </Paper>
@@ -590,11 +602,11 @@ export function HomePage() {
             to={routePaths.articles}
             emphasis
           />
-          {continueReading[0] ? (
+          {resumableArticle ? (
             <QuickAction
               title="Continue reading"
-              detail={continueReading[0].article.title}
-              to={readerPath(continueReading[0].article.slug)}
+              detail={resumableArticle.article.title}
+              to={readerPath(resumableArticle.article.slug)}
             />
           ) : (
             <QuickAction

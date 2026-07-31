@@ -264,4 +264,54 @@ describe('HomePage', () => {
       '/read/city-trees-cooler-streets',
     )
   })
+
+  it('represents archived reading history without linking to an unavailable reader', () => {
+    queryState.reading.data = {
+      items: [
+        {
+          articleId: 'archived-article-id',
+          status: 'READING',
+          progressPercent: 42,
+          lastBlockKey: 'paragraph-2',
+          completedAt: null,
+          firstOpenedAt: '2026-07-20T01:00:00.000Z',
+          lastReadAt: '2026-07-25T01:00:00.000Z',
+          article: {
+            id: 'archived-article-id',
+            title: 'An archived learning story',
+            slug: 'archived-learning-story',
+            summary: 'Historical reading activity.',
+            thumbnailUrl: null,
+            cefrLevel: 'B1',
+            status: 'ARCHIVED',
+            publishedAt: '2026-07-19T01:00:00.000Z',
+            category: {
+              id: 'category-id',
+              name: 'History',
+              slug: 'history',
+            },
+          },
+        },
+      ],
+      meta: {
+        page: 1,
+        limit: 3,
+        total: 1,
+        totalPages: 1,
+      },
+    }
+
+    renderDashboard()
+
+    expect(screen.getByText('An archived learning story')).toBeInTheDocument()
+    expect(screen.getByText(/Archived · Last read/)).toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', {
+        name: 'Continue reading An archived learning story',
+      }),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /^Reading history/ }),
+    ).toHaveAttribute('href', '/reading-history')
+  })
 })

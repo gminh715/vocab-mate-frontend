@@ -64,6 +64,12 @@ const term: ArticleSentenceTerm = {
   vocabularyTopic: 'technology',
   examples: [],
   skill: null,
+  origin: 'MANUAL',
+  reviewStatus: 'APPROVED',
+  selectionReason: null,
+  explanationStatus: 'READY',
+  explanationError: null,
+  explanationGeneratedAt: '2026-07-20T10:00:00.000Z',
   isLookupEnabled: true,
   isActive: true,
   createdAt: '2026-07-20T10:00:00.000Z',
@@ -80,6 +86,13 @@ const articleDetail: AdminArticleDetail = {
     contentHtml:
       `<p><span data-sentence-id="${sentenceId}">Digital tools improve access to education.</span></p>`,
     contentVersion: 2,
+    importSource: null,
+    externalId: null,
+    canonicalUrl: null,
+    contentHash: null,
+    sourcePublishedAt: null,
+    aiAnalysisStatus: 'PENDING',
+    aiAnalysisError: null,
     sourceName: null,
     sourceUrl: null,
     authorName: null,
@@ -358,6 +371,81 @@ describe('Admin article content workspace', () => {
 
     await waitFor(() => expect(archive).toHaveBeenCalledWith(articleId))
     expect(await screen.findByText('Article archived.')).toBeInTheDocument()
+  })
+
+  it('analyzes a draft and explicitly approves a pending AI candidate', async () => {
+    const aiTerm: ArticleTermListItem = {
+      ...termListItem,
+      contextualMeaningVi: null,
+      origin: 'AI',
+      reviewStatus: 'PENDING',
+      selectionReason: 'Useful phrase in the article context.',
+      explanationStatus: 'PENDING',
+      explanationGeneratedAt: null,
+    }
+    vi.mocked(adminArticleContentApi.listTerms).mockResolvedValue({
+      items: [aiTerm],
+      meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
+      contentVersion: 2,
+    })
+    const analyze = vi
+      .spyOn(adminArticleContentApi, 'analyze')
+      .mockResolvedValue({
+        articleId,
+        contentVersion: 2,
+        aiAnalysisStatus: 'READY',
+        category,
+        cefrLevel: 'B1',
+        candidateCount: 1,
+      })
+    const approve = vi
+      .spyOn(adminArticleContentApi, 'approveTerm')
+      .mockResolvedValue({
+        term: { ...aiTerm, reviewStatus: 'APPROVED' },
+        contentHtmlChanged: true,
+      })
+    const user = userEvent.setup()
+    renderContentPage()
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Analyze with AI' }),
+    )
+    await user.click(
+      within(
+        screen.getByRole('dialog', { name: 'Analyze this draft' }),
+      ).getByRole('button', { name: 'Run analysis' }),
+    )
+
+    await waitFor(() => expect(analyze).toHaveBeenCalledWith(articleId))
+    expect(
+      await screen.findByText(/analysis completed with 1 candidate/i),
+    ).toBeInTheDocument()
+    await user.click(
+      await screen.findByRole('button', { name: 'Approve' }),
+    )
+    await user.click(
+      within(
+        screen.getByRole('dialog', { name: 'Approve AI candidate' }),
+      ).getByRole('button', { name: 'Approve' }),
+    )
+
+    await waitFor(() => expect(approve).toHaveBeenCalledWith(articleId, termId))
+  })
+
+  it('does not offer unsupported reanalysis after a draft is ready', async () => {
+    vi.mocked(adminArticlesApi.detail).mockResolvedValue({
+      ...articleDetail,
+      article: {
+        ...articleDetail.article,
+        aiAnalysisStatus: 'READY',
+      },
+    })
+    renderContentPage()
+
+    await screen.findByRole('heading', { name: 'Article content' })
+    expect(
+      screen.queryByRole('button', { name: /analy/i }),
+    ).not.toBeInTheDocument()
   })
 })
 

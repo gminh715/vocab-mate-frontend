@@ -1,10 +1,22 @@
 import type { PaginationMeta } from '@/types/Admin/adminUsers'
-import type { ArticleStatus } from '@/types/Admin/adminArticles'
+import type {
+  AiGenerationStatus,
+  ArticleStatus,
+} from '@/types/Admin/adminArticles'
 import type { CefrLevel } from '@/types/Auth/auth'
 import type { PublicCategory } from '@/types/Admin/adminCategories'
 
 export const LEXICAL_UNIT_TYPES = ['WORD', 'PHRASE'] as const
+export const TERM_ORIGINS = ['MANUAL', 'AI'] as const
+export const TERM_REVIEW_STATUSES = [
+  'PENDING',
+  'APPROVED',
+  'REJECTED',
+] as const
 export type LexicalUnitType = (typeof LEXICAL_UNIT_TYPES)[number]
+export type TermOrigin = (typeof TERM_ORIGINS)[number]
+export type TermReviewStatus =
+  (typeof TERM_REVIEW_STATUSES)[number]
 
 export interface ArticleSentence {
   id: string
@@ -37,7 +49,7 @@ export interface ArticleSentenceTerm {
   partOfSpeech: string
   ipa: string | null
   cefrLevel: CefrLevel
-  contextualMeaningVi: string
+  contextualMeaningVi: string | null
   definitionEn: string | null
   contextualExplanation: string | null
   synonyms: string[]
@@ -47,6 +59,12 @@ export interface ArticleSentenceTerm {
   vocabularyTopic: string | null
   examples: ArticleTermExample[]
   skill: string | null
+  origin: TermOrigin
+  reviewStatus: TermReviewStatus
+  selectionReason: string | null
+  explanationStatus: AiGenerationStatus
+  explanationError: string | null
+  explanationGeneratedAt: string | null
   isLookupEnabled: boolean
   isActive: boolean
   createdAt: string
@@ -98,6 +116,9 @@ export interface ArticleTermListParams {
   sentenceId?: string
   cefrLevel?: CefrLevel
   unitType?: LexicalUnitType
+  origin?: TermOrigin
+  reviewStatus?: TermReviewStatus
+  explanationStatus?: AiGenerationStatus
   isActive?: boolean
   q?: string
 }
@@ -153,6 +174,15 @@ export interface ArticleTermCreateData {
 export interface ArticleTermUpdateData {
   term: ArticleSentenceTerm
   contentHtmlChanged: boolean
+}
+
+export interface ArticleAnalysisData {
+  articleId: string
+  contentVersion: number
+  aiAnalysisStatus: 'READY'
+  category: PublicCategory
+  cefrLevel: CefrLevel
+  candidateCount: number
 }
 
 export interface PublicationValidationIssue {

@@ -9,9 +9,17 @@ export const ARTICLE_STATUSES = [
 ] as const
 
 export const ADMIN_ARTICLE_SORTS = ['newest', 'oldest'] as const
+export const AI_GENERATION_STATUSES = [
+  'PENDING',
+  'PROCESSING',
+  'READY',
+  'FAILED',
+] as const
 
 export type ArticleStatus = (typeof ARTICLE_STATUSES)[number]
 export type AdminArticleSort = (typeof ADMIN_ARTICLE_SORTS)[number]
+export type AiGenerationStatus =
+  (typeof AI_GENERATION_STATUSES)[number]
 
 export interface AdminArticleListParams {
   page: number
@@ -33,6 +41,13 @@ export interface AdminArticleListItem {
   cefrLevel: CefrLevel
   status: ArticleStatus
   contentVersion: number
+  importSource: string | null
+  externalId: string | null
+  canonicalUrl: string | null
+  contentHash: string | null
+  sourcePublishedAt: string | null
+  aiAnalysisStatus: AiGenerationStatus | null
+  aiAnalysisError: string | null
   publishedAt: string | null
   archivedAt: string | null
   createdAt: string

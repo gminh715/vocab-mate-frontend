@@ -167,6 +167,30 @@ const ReadingHistoryPage = lazy(() =>
   ),
 )
 
+const AdminNewsPage = lazy(() =>
+  import('@/pages/Admin/AdminNewsPage').then(
+    ({ AdminNewsPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const ProfileSettingsPage = lazy(() =>
+  import('@/pages/User/ProfileSettingsPage').then(
+    ({ ProfileSettingsPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const SecuritySettingsPage = lazy(() =>
+  import('@/pages/User/SecuritySettingsPage').then(
+    ({ SecuritySettingsPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
 const SavedVocabularyPage = lazy(() =>
   import('@/pages/Vocabulary/SavedVocabularyPage').then(
     ({ SavedVocabularyPage: Component }) => ({
@@ -221,6 +245,14 @@ export function AppRoutes() {
             element={<ReadingHistoryPage />}
           />
           <Route
+            path={routePaths.profileSettings}
+            element={<ProfileSettingsPage />}
+          />
+          <Route
+            path={routePaths.securitySettings}
+            element={<SecuritySettingsPage />}
+          />
+          <Route
             path={routePaths.vocabularies}
             element={<SavedVocabularyPage />}
           />
@@ -254,6 +286,10 @@ export function AppRoutes() {
             <Route
               path={routePaths.adminArticles}
               element={<AdminArticlesPage />}
+            />
+            <Route
+              path={routePaths.adminNews}
+              element={<AdminNewsPage />}
             />
             <Route
               path={routePaths.adminArticleNew}

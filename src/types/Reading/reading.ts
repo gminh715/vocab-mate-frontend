@@ -82,7 +82,7 @@ export interface ContextualTerm {
   partOfSpeech: string
   ipa: string | null
   cefrLevel: CefrLevel
-  contextualMeaningVi: string
+  contextualMeaningVi: string | null
   definitionEn: string | null
   contextualExplanation: string | null
   synonyms: string[]
@@ -90,8 +90,13 @@ export interface ContextualTerm {
   collocations: string[]
   relatedTerms: string[]
   vocabularyTopic: string | null
-  examples: unknown[]
+  examples: Array<{
+    sentence: string
+    translationVi: string
+  }>
   skill: string | null
+  explanationStatus: 'PENDING' | 'PROCESSING' | 'READY' | 'FAILED'
+  explanationGeneratedAt: string | null
 }
 
 export interface ContextualParentSentence {

@@ -339,7 +339,12 @@ describe('Auth routing and forms', () => {
     queryClient.setQueryData(['vocabularies', 'private'], {
       term: 'sensitive-user-data',
     })
-    await user.click(screen.getByRole('button', { name: 'Sign Out' }))
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Open account menu for Admin',
+      }),
+    )
+    await user.click(screen.getByRole('menuitem', { name: 'Sign out' }))
 
     await screen.findByRole('heading', { name: 'Welcome Back' })
     await waitFor(() => {
@@ -372,7 +377,12 @@ describe('Auth routing and forms', () => {
     const user = userEvent.setup()
 
     await screen.findByRole('heading', { name: 'Welcome back, Learner.' })
-    await user.click(screen.getByRole('button', { name: 'Sign Out' }))
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Open account menu for Learner',
+      }),
+    )
+    await user.click(screen.getByRole('menuitem', { name: 'Sign out' }))
 
     await screen.findByRole('heading', { name: 'Welcome Back' })
     await waitFor(() => {

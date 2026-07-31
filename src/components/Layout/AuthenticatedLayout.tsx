@@ -1,19 +1,57 @@
 import AppBar from '@mui/material/AppBar'
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider'
 import Link from '@mui/material/Link'
+import ListItemText from '@mui/material/ListItemText'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import { useState } from 'react'
 import { Link as RouterLink, Outlet } from 'react-router-dom'
+import { UserAvatar } from '@/components/Shared/UserAvatar'
 import { routePaths } from '@/utils/paths'
 import { useLogoutMutation } from '@/hooks/Auth/useAuth'
+import { useUpdateMyProfileMutation } from '@/hooks/User/useProfile'
 import { useAuth } from '@/contexts/AuthContext'
 
 export function AuthenticatedLayout() {
   const { currentUser, isInitializing } = useAuth()
   const logoutMutation = useLogoutMutation()
+  const updateProfileMutation = useUpdateMyProfileMutation()
+  const [accountMenuAnchor, setAccountMenuAnchor] =
+    useState<HTMLElement | null>(null)
+  const [languageNotice, setLanguageNotice] = useState<string | null>(null)
+  const accountMenuOpen = Boolean(accountMenuAnchor)
+
+  const closeAccountMenu = () => setAccountMenuAnchor(null)
+
+  const changePreferredLanguage = async () => {
+    if (!currentUser || updateProfileMutation.isPending) return
+
+    const preferredLanguage =
+      currentUser.profile.preferredLanguage === 'en' ? 'vi' : 'en'
+    closeAccountMenu()
+
+    try {
+      await updateProfileMutation.mutateAsync({ preferredLanguage })
+      setLanguageNotice(
+        `Preferred language changed to ${preferredLanguage.toUpperCase()}.`,
+      )
+    } catch {
+      setLanguageNotice('Language preference could not be updated. Try again.')
+    }
+  }
+
+  const logout = () => {
+    closeAccountMenu()
+    logoutMutation.mutate()
+  }
 
   return (
     <Box sx={{ minHeight: '100svh', bgcolor: 'background.default' }}>
@@ -73,10 +111,12 @@ export function AuthenticatedLayout() {
               aria-label="Primary navigation"
               direction="row"
               spacing={0.5}
+              useFlexGap
               sx={{
                 ml: { xs: 0, sm: 2 },
                 order: { xs: 3, sm: 0 },
                 width: { xs: '100%', sm: 'auto' },
+                flexWrap: 'wrap',
               }}
             >
               {currentUser ? (
@@ -128,23 +168,82 @@ export function AuthenticatedLayout() {
 
             {currentUser ? (
               <>
-                <Typography
-                  color="text.secondary"
-                  noWrap
+                <Button
+                  color="inherit"
+                  id="account-menu-button"
+                  aria-label={`Open account menu for ${currentUser.profile.displayName}`}
+                  aria-controls={accountMenuOpen ? 'account-menu' : undefined}
+                  aria-haspopup="menu"
+                  aria-expanded={accountMenuOpen ? 'true' : undefined}
+                  onClick={(event) => setAccountMenuAnchor(event.currentTarget)}
+                  startIcon={
+                    <UserAvatar
+                      displayName={currentUser.profile.displayName}
+                      avatarUrl={currentUser.profile.avatarUrl}
+                      size={32}
+                    />
+                  }
                   sx={{
-                    display: { xs: 'none', md: 'block' },
+                    minWidth: 0,
                     maxWidth: 220,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                   }}
                 >
-                  {currentUser.profile.displayName}
-                </Typography>
-                <Button
-                  variant="outlined"
-                  onClick={() => logoutMutation.mutate()}
-                  disabled={logoutMutation.isPending}
-                >
-              {logoutMutation.isPending ? 'Signing Out…' : 'Sign Out'}
+                  <Box
+                    component="span"
+                    sx={{
+                      display: { xs: 'none', md: 'block' },
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {currentUser.profile.displayName}
+                  </Box>
                 </Button>
+                <Menu
+                  id="account-menu"
+                  anchorEl={accountMenuAnchor}
+                  open={accountMenuOpen}
+                  onClose={closeAccountMenu}
+                  slotProps={{
+                    list: {
+                      'aria-labelledby': 'account-menu-button',
+                    },
+                  }}
+                >
+                  <MenuItem
+                    component={RouterLink}
+                    to={routePaths.profileSettings}
+                    onClick={closeAccountMenu}
+                  >
+                    <ListItemText primary="Profile settings" />
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => void changePreferredLanguage()}
+                    disabled={updateProfileMutation.isPending}
+                  >
+                    <ListItemText
+                      primary="Language settings"
+                      secondary={`Current: ${currentUser.profile.preferredLanguage.toUpperCase()} · Switch to ${
+                        currentUser.profile.preferredLanguage === 'en'
+                          ? 'VI'
+                          : 'EN'
+                      }`}
+                    />
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem
+                    onClick={logout}
+                    disabled={logoutMutation.isPending}
+                  >
+                    <ListItemText
+                      primary={
+                        logoutMutation.isPending ? 'Signing out…' : 'Sign out'
+                      }
+                    />
+                  </MenuItem>
+                </Menu>
               </>
             ) : (
               <Button
@@ -169,6 +268,22 @@ export function AuthenticatedLayout() {
       >
         <Outlet />
       </Container>
+
+      <Snackbar
+        open={languageNotice !== null}
+        autoHideDuration={4_000}
+        onClose={() => setLanguageNotice(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={updateProfileMutation.isError ? 'error' : 'success'}
+          variant="filled"
+          onClose={() => setLanguageNotice(null)}
+          sx={{ width: '100%' }}
+        >
+          {languageNotice}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

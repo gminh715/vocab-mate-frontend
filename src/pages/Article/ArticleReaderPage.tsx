@@ -8,17 +8,15 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import { ArticleCefrChip } from '@/components/Article/ArticleChips'
 import { ArticleRenderer } from '@/components/Article/ArticleRenderer'
-import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 import { ContextualTermDrawer } from '@/components/Article/ContextualTermDrawer'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useCompleteReadingMutation,
   useReaderArticleQuery,
-  useResetReadingMutation,
 } from '@/hooks/Reading/useReading'
 import { useReadingProgressPersistence } from '@/hooks/Reading/useReadingProgressPersistence'
 import type { ReaderArticleData } from '@/types/Reading/reading'
@@ -56,21 +54,6 @@ const readerErrorMessage = (error: unknown): string => {
   return apiError.status === 0
     ? apiError.message
     : 'The article reader could not be loaded. Try again.'
-}
-
-const progressActionErrorMessage = (error: unknown): string => {
-  const apiError = normalizeApiError(error)
-
-  if (apiError.status === 404) {
-    return 'This article is no longer available.'
-  }
-  if (apiError.status === 409) {
-    return 'Reading progress changed in another request. Try again.'
-  }
-
-  return apiError.status === 0
-    ? apiError.message
-    : 'Reading progress could not be updated. Try again.'
 }
 
 function ReaderLoading() {
@@ -157,18 +140,16 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
   const [selectedTermId, setSelectedTermId] = useState<string | null>(null)
   const [isLookupOpen, setIsLookupOpen] = useState(false)
   const [isLookupModeEnabled, setIsLookupModeEnabled] = useState(false)
-  const [pendingAction, setPendingAction] = useState<
-    'complete' | 'reset' | null
-  >(null)
   const readerContainerRef = useRef<HTMLDivElement | null>(null)
   const progressActionInFlightRef = useRef(false)
+  const automaticCompletionAttemptedRef = useRef(
+    data.progress.status === 'COMPLETED',
+  )
   const { article, contentHtml, highlightedTermIds } = data
   const completeMutation = useCompleteReadingMutation(article.slug)
-  const resetMutation = useResetReadingMutation(article.slug)
   const {
     progress,
     applyComplete,
-    applyReset,
     prepareProgressAction,
     resumeProgress,
   } =
@@ -201,41 +182,77 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
     progress.status === 'COMPLETED'
       ? 'Complete'
       : `${progressFormatter.format(progress.progressPercent)}% read`
-  const actionMutation =
-    pendingAction === 'complete' ? completeMutation : resetMutation
-  const actionError = actionMutation.error
-    ? progressActionErrorMessage(actionMutation.error)
-    : null
+  const completeAtEnd = useCallback(async () => {
+    if (
+      automaticCompletionAttemptedRef.current ||
+      progressActionInFlightRef.current
+    ) {
+      return
+    }
 
-  const confirmProgressAction = async () => {
-    if (progressActionInFlightRef.current) return
+    automaticCompletionAttemptedRef.current = true
     progressActionInFlightRef.current = true
 
     try {
       await prepareProgressAction()
-
-      if (pendingAction === 'complete') {
-        const result = await completeMutation.mutateAsync(article.id)
-        applyComplete(result.progress)
-        setPendingAction(null)
-        return
-      }
-
-      if (pendingAction === 'reset') {
-        await resetMutation.mutateAsync(article.id)
-        applyReset()
-        setPendingAction(null)
-      }
+      const result = await completeMutation.mutateAsync(article.id)
+      applyComplete(result.progress)
     } catch {
-      // The confirmation dialog presents the normalized mutation error.
       resumeProgress()
     } finally {
       progressActionInFlightRef.current = false
     }
+  }, [
+    applyComplete,
+    article.id,
+    completeMutation,
+    prepareProgressAction,
+    resumeProgress,
+  ])
+
+  useEffect(() => {
+    if (
+      progress.status !== 'COMPLETED' &&
+      progress.progressPercent >= 100
+    ) {
+      void completeAtEnd()
+    }
+  }, [completeAtEnd, progress.progressPercent, progress.status])
+
+  const retryAutomaticCompletion = () => {
+    automaticCompletionAttemptedRef.current = false
+    completeMutation.reset()
+    void completeAtEnd()
   }
 
   return (
     <Stack spacing={{ xs: 3, md: 4 }}>
+      <Box
+        sx={(theme) => ({
+          position: 'fixed',
+          inset: '0 0 auto',
+          zIndex: theme.zIndex.appBar + 1,
+          bgcolor: 'background.paper',
+        })}
+      >
+        <Typography
+          id="reading-progress-label"
+          aria-live="polite"
+          sx={visuallyHidden}
+        >
+          Reading progress: {progressLabel}
+        </Typography>
+        <LinearProgress
+          variant="determinate"
+          value={progress.progressPercent}
+          aria-labelledby="reading-progress-label"
+          sx={{
+            height: 5,
+            bgcolor: 'primary.light',
+          }}
+        />
+      </Box>
+
       <Button
         component={RouterLink}
         to={articlePath(article.slug)}
@@ -314,76 +331,23 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
             ) : null}
           </Stack>
 
-          <Box>
-            <Stack
-              direction="row"
-              sx={{ justifyContent: 'space-between', mb: 0.75 }}
+          {completeMutation.isError &&
+          progress.status !== 'COMPLETED' ? (
+            <Alert
+              severity="warning"
+              action={
+                <Button
+                  color="inherit"
+                  onClick={retryAutomaticCompletion}
+                >
+                  Try again
+                </Button>
+              }
             >
-              <Typography
-                id="reading-progress-label"
-                sx={{ fontSize: 13, fontWeight: 750 }}
-              >
-                Reading progress
-              </Typography>
-              <Typography
-                color="text.secondary"
-                sx={{
-                  fontSize: 13,
-                  fontVariantNumeric: 'tabular-nums',
-                }}
-              >
-                {progressLabel}
-              </Typography>
-            </Stack>
-            <LinearProgress
-              variant="determinate"
-              value={progress.progressPercent}
-              aria-labelledby="reading-progress-label"
-              sx={{
-                height: 7,
-                borderRadius: 999,
-                bgcolor: 'primary.light',
-                '& .MuiLinearProgress-bar': { borderRadius: 999 },
-              }}
-            />
-          </Box>
-
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={1}
-            sx={{ alignItems: { sm: 'center' } }}
-          >
-            {progress.status === 'COMPLETED' ? (
-              <Chip
-                label="Completed"
-                color="success"
-                aria-live="polite"
-                sx={{ alignSelf: 'flex-start', fontWeight: 750 }}
-              />
-            ) : (
-              <Button
-                variant="contained"
-                onClick={() => setPendingAction('complete')}
-                disabled={completeMutation.isPending}
-                sx={{ alignSelf: 'flex-start' }}
-              >
-                Mark as complete
-              </Button>
-            )}
-            {progress.progressPercent > 0 ||
-            progress.status === 'COMPLETED' ? (
-              <Button
-                color="inherit"
-                onClick={() => setPendingAction('reset')}
-                disabled={
-                  completeMutation.isPending || resetMutation.isPending
-                }
-                sx={{ alignSelf: 'flex-start' }}
-              >
-                Reset progress
-              </Button>
-            ) : null}
-          </Stack>
+              You reached the end, but the article could not be marked
+              complete.
+            </Alert>
+          ) : null}
         </Stack>
       </Paper>
 
@@ -485,32 +449,6 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
         termId={selectedTermId}
         open={isLookupOpen}
         onClose={closeLookup}
-      />
-
-      <ConfirmationDialog
-        open={pendingAction !== null}
-        title={
-          pendingAction === 'complete'
-            ? 'Mark This Article Complete?'
-            : 'Reset Reading Progress?'
-        }
-        description={
-          pendingAction === 'complete'
-            ? 'Your reading progress will be set to 100%.'
-            : 'Your reading progress will return to 0%. Saved vocabulary and quiz history will not be deleted.'
-        }
-        confirmLabel={
-          pendingAction === 'complete'
-            ? 'Mark as Complete'
-            : 'Reset Progress'
-        }
-        isPending={actionMutation.isPending}
-        errorMessage={actionError}
-        onCancel={() => {
-          actionMutation.reset()
-          setPendingAction(null)
-        }}
-        onConfirm={() => void confirmProgressAction()}
       />
     </Stack>
   )

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const clientMocks = vi.hoisted(() => ({
   get: vi.fn(),
   isApiError: vi.fn(),
+  patch: vi.fn(),
   post: vi.fn(),
   refreshAccessToken: vi.fn(),
   setAccessToken: vi.fn(),
@@ -12,6 +13,7 @@ const clientMocks = vi.hoisted(() => ({
 vi.mock('@/config/apiClient', () => ({
   apiClient: {
     get: clientMocks.get,
+    patch: clientMocks.patch,
     post: clientMocks.post,
   },
   isApiError: clientMocks.isApiError,
@@ -129,5 +131,28 @@ describe('authApi', () => {
     await logout
 
     expect(clientMocks.post).toHaveBeenCalledWith('/auth/logout')
+  })
+
+  it('changes the password without sending UI confirmation and clears the access token after success', async () => {
+    clientMocks.patch.mockResolvedValue({ message: 'Done' })
+
+    await expect(
+      authApi.changePassword({
+        currentPassword: 'OldPass@123',
+        newPassword: 'NewPass@456',
+      }),
+    ).resolves.toEqual({ message: 'Done' })
+
+    expect(clientMocks.patch).toHaveBeenCalledWith(
+      '/auth/change-password',
+      {
+        currentPassword: 'OldPass@123',
+        newPassword: 'NewPass@456',
+      },
+      { suppressSessionExpiredAfterRetry: true },
+    )
+    expect(clientMocks.setAccessToken).toHaveBeenCalledWith(null)
+    expect(clientMocks.refreshAccessToken).not.toHaveBeenCalled()
+    expect(clientMocks.post).not.toHaveBeenCalledWith('/auth/logout')
   })
 })

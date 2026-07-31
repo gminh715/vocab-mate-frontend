@@ -390,7 +390,7 @@ function LookupDetails({
             overflowWrap: 'anywhere',
           }}
         >
-          {term.contextualMeaningVi}
+          {term.contextualMeaningVi ?? 'Vietnamese meaning unavailable'}
         </Typography>
       </Paper>
 
@@ -670,6 +670,8 @@ export function ContextualTermDrawer({
               ? 'Lookup is disabled for this contextual term.'
               : apiError?.status === 404
                 ? 'This contextual term is no longer available in the article.'
+                : apiError?.status === 409 || apiError?.status === 503
+                  ? 'This term is being prepared. Please try again shortly.'
                 : 'Vocabulary details could not be loaded. Try again.'}
           </Alert>
           {apiError?.status !== 403 && apiError?.status !== 404 ? (

@@ -34,6 +34,7 @@ declare module 'axios' {
     hasRetriedAfterRefresh?: boolean
     skipAuth?: boolean
     skipAuthRefresh?: boolean
+    suppressSessionExpiredAfterRetry?: boolean
   }
 }
 
@@ -223,7 +224,10 @@ httpClient.interceptors.response.use(
     const originalRequest = error.config
 
     if (!originalRequest || !canRefreshRequest(originalRequest)) {
-      if (originalRequest?.hasRetriedAfterRefresh) {
+      if (
+        originalRequest?.hasRetriedAfterRefresh &&
+        !originalRequest.suppressSessionExpiredAfterRetry
+      ) {
         setAccessToken(null)
         notifySessionExpired()
       }

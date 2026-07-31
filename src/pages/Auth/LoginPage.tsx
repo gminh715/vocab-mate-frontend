@@ -4,12 +4,18 @@ import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import { useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { normalizeApiError } from '@/config/apiClient'
 import { postAuthPath, routePaths } from '@/utils/paths'
 import { AuthPageLayout } from '@/components/Auth/AuthPageLayout'
-import { useLoginMutation } from '@/hooks/Auth/useAuth'
+import {
+  authQueryKeys,
+  useLoginMutation,
+  type AuthSessionNotice,
+} from '@/hooks/Auth/useAuth'
 import {
   loginSchema,
   type LoginFormValues,
@@ -34,8 +40,24 @@ const loginErrorMessage = (error: unknown): string => {
 
 export function LoginPage() {
   const loginMutation = useLoginMutation()
+  const queryClient = useQueryClient()
   const location = useLocation()
   const navigate = useNavigate()
+  const [sessionNotice] = useState<AuthSessionNotice | undefined>(() =>
+    queryClient.getQueryData<AuthSessionNotice>(
+      authQueryKeys.sessionNotice(),
+    ),
+  )
+  const passwordChanged =
+    sessionNotice === 'PASSWORD_CHANGED'
+
+  useEffect(() => {
+    if (!sessionNotice) return
+    queryClient.removeQueries({
+      queryKey: authQueryKeys.sessionNotice(),
+      exact: true,
+    })
+  }, [queryClient, sessionNotice])
   const {
     formState: { errors },
     handleSubmit,
@@ -67,6 +89,13 @@ export function LoginPage() {
       alternateAction="Create an account"
       alternateHref={routePaths.register}
     >
+      {passwordChanged ? (
+        <Alert severity="success" role="status" aria-live="polite">
+          Password changed successfully. Please sign in again with the
+          new password.
+        </Alert>
+      ) : null}
+
       {loginMutation.error ? (
         <Alert severity="error" role="alert">
           {loginErrorMessage(loginMutation.error)}

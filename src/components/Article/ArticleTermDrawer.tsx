@@ -97,7 +97,7 @@ const termValues = (
   partOfSpeech: term.partOfSpeech,
   ipa: term.ipa ?? '',
   cefrLevel: term.cefrLevel,
-  contextualMeaningVi: term.contextualMeaningVi,
+  contextualMeaningVi: term.contextualMeaningVi ?? '',
   definitionEn: term.definitionEn ?? '',
   contextualExplanation: term.contextualExplanation ?? '',
   synonyms: term.synonyms,

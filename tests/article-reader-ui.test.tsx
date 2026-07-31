@@ -5,8 +5,6 @@ import {
   render,
   screen,
   waitFor,
-  waitForElementToBeRemoved,
-  within,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -228,7 +226,6 @@ describe('Article reader page', () => {
         completedAt: '2026-07-24T10:00:00.000Z',
       },
     })
-    vi.spyOn(readingApi, 'reset').mockResolvedValue(undefined)
   })
 
   afterEach(() => {
@@ -244,10 +241,13 @@ describe('Article reader page', () => {
         name: readerData.article.title,
       }),
     ).toBeInTheDocument()
-    expect(screen.getByText('37.5% read')).toBeInTheDocument()
+    const progressBar = screen.getByRole('progressbar', {
+      name: 'Reading progress: 37.5% read',
+    })
+    expect(progressBar).toHaveAttribute('aria-valuenow', '37.5')
     expect(
-      screen.getByRole('progressbar', { name: 'Reading progress' }),
-    ).toHaveAttribute('aria-valuenow', '37.5')
+      progressBar.closest('header'),
+    ).toBeNull()
 
     const firstDuplicate = container.querySelector(
       '[data-term-id="term-1"]',
@@ -397,58 +397,42 @@ describe('Article reader page', () => {
     expect(screen.queryByText('private reader detail')).not.toBeInTheDocument()
   })
 
-  it('confirms completion and updates the reader to 100%', async () => {
-    const user = userEvent.setup()
+  it('automatically completes the article when reading progress reaches 100%', async () => {
+    vi.spyOn(
+      HTMLElement.prototype,
+      'getBoundingClientRect',
+    ).mockReturnValue({
+      top: -400,
+      bottom: 600,
+      height: 1_000,
+      left: 0,
+      right: 800,
+      width: 800,
+      x: 0,
+      y: -400,
+      toJSON: () => ({}),
+    })
     renderReaderPage()
 
     await screen.findByRole('heading', {
       name: readerData.article.title,
     })
-    await user.click(
-      screen.getByRole('button', { name: 'Mark as complete' }),
-    )
+    fireEvent.scroll(window)
 
-    const dialog = screen.getByRole('dialog', {
-      name: 'Mark This Article Complete?',
+    await waitFor(() => {
+      expect(readingApi.complete).toHaveBeenCalledTimes(1)
     })
-    await user.click(
-      within(dialog).getByRole('button', {
-        name: 'Mark as Complete',
-      }),
-    )
-
-    expect(await screen.findByText('Completed')).toBeInTheDocument()
-    await waitForElementToBeRemoved(dialog)
     expect(
-      screen.getByRole('progressbar', { name: 'Reading progress' }),
+      screen.getByRole('progressbar', {
+        name: 'Reading progress: Complete',
+      }),
     ).toHaveAttribute('aria-valuenow', '100')
-    expect(readingApi.complete).toHaveBeenCalledTimes(1)
-  })
-
-  it('requires reset confirmation and returns progress to 0%', async () => {
-    const user = userEvent.setup()
-    renderReaderPage()
-
-    await screen.findByRole('heading', {
-      name: readerData.article.title,
-    })
-    await user.click(
-      screen.getByRole('button', { name: 'Reset progress' }),
-    )
-
-    const dialog = screen.getByRole('dialog', {
-      name: 'Reset Reading Progress?',
-    })
-    expect(dialog).toHaveTextContent(
-      'Saved vocabulary and quiz history will not be deleted.',
-    )
-    await user.click(
-      within(dialog).getByRole('button', { name: 'Reset Progress' }),
-    )
-
-    expect(await screen.findByText('0% read')).toBeInTheDocument()
-    expect(readingApi.reset).toHaveBeenCalledWith(
-      readerData.article.id,
-    )
+    expect(screen.queryByText('Completed')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Reset progress' }),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Mark as complete' }),
+    ).not.toBeInTheDocument()
   })
 })

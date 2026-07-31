@@ -173,6 +173,16 @@ export const useParseAdminArticleContentMutation = (articleId: string) => {
   })
 }
 
+export const useAnalyzeAdminArticleMutation = (articleId: string) => {
+  const invalidate = useInvalidateArticleContent(articleId)
+
+  return useMutation({
+    mutationFn: () => adminArticleContentApi.analyze(articleId),
+    onSuccess: invalidate,
+    retry: false,
+  })
+}
+
 export const useUpdateAdminArticleSentenceMutation = (
   articleId: string,
   sentenceId: string,
@@ -229,6 +239,28 @@ export const useDeleteAdminArticleTermMutation = (articleId: string) => {
   return useMutation({
     mutationFn: (termId: string) =>
       adminArticleContentApi.deleteTerm(articleId, termId),
+    onSuccess: invalidate,
+    retry: false,
+  })
+}
+
+export const useApproveAdminArticleTermMutation = (articleId: string) => {
+  const invalidate = useInvalidateArticleContent(articleId)
+
+  return useMutation({
+    mutationFn: (termId: string) =>
+      adminArticleContentApi.approveTerm(articleId, termId),
+    onSuccess: invalidate,
+    retry: false,
+  })
+}
+
+export const useRejectAdminArticleTermMutation = (articleId: string) => {
+  const invalidate = useInvalidateArticleContent(articleId)
+
+  return useMutation({
+    mutationFn: (termId: string) =>
+      adminArticleContentApi.rejectTerm(articleId, termId),
     onSuccess: invalidate,
     retry: false,
   })

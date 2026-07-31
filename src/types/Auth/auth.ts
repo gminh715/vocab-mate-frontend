@@ -21,6 +21,19 @@ export interface UserProfile {
   preferredLanguage: string
 }
 
+export interface UpdateMyProfileRequest {
+  displayName?: string
+  avatarUrl?: string
+  currentCefrLevel?: CefrLevel
+  learningGoal?: CefrLevel
+  preferredLanguage?: string
+}
+
+export interface UpdatedMyProfile {
+  user: PublicUser
+  profile: UserProfile
+}
+
 export interface CurrentUser extends PublicUser {
   profile: UserProfile
 }
@@ -32,4 +45,9 @@ export interface AuthData {
 
 export interface MessageData {
   message: string
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
 }

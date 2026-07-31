@@ -20,6 +20,7 @@ type ClientModule = typeof import('@/config/apiClient')
 type ServerMode =
   | 'normal'
   | 'always-unauthorized'
+  | 'change-password-incorrect'
   | 'refresh-failure'
 
 let client: ClientModule
@@ -84,6 +85,33 @@ beforeAll(async () => {
         sendJson(response, 401, {
           success: false,
           error: { code: 'UNAUTHORIZED', message: 'Unauthorized' },
+        })
+        return
+      }
+
+      sendJson(response, 200, {
+        success: true,
+        data: { message: 'Done' },
+      })
+      return
+    }
+
+    if (path === '/api/v1/auth/change-password') {
+      recordRequest(path, authorization)
+
+      if (
+        mode === 'change-password-incorrect' ||
+        authorization !== 'Bearer fresh-token'
+      ) {
+        sendJson(response, 401, {
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message:
+              mode === 'change-password-incorrect'
+                ? 'Current password is incorrect'
+                : 'Unauthorized',
+          },
         })
         return
       }
@@ -253,5 +281,48 @@ describe('Axios authentication behavior', () => {
       'Bearer expired-token',
       'Bearer fresh-token',
     ])
+  })
+
+  it('refreshes an expired access token once before changing a password', async () => {
+    client.setAccessToken('expired-token')
+
+    await expect(
+      client.apiClient.patch(
+        '/auth/change-password',
+        {
+          currentPassword: 'OldPass@123',
+          newPassword: 'NewPass@456',
+        },
+        { suppressSessionExpiredAfterRetry: true },
+      ),
+    ).resolves.toEqual({ message: 'Done' })
+
+    expect(refreshCalls).toBe(1)
+    expect(resourceCalls.get('/api/v1/auth/change-password')).toBe(2)
+  })
+
+  it('does not refresh-loop or expire the session for an incorrect current password', async () => {
+    mode = 'change-password-incorrect'
+    const sessionExpired = vi.fn()
+    client.setSessionExpiredHandler(sessionExpired)
+    client.setAccessToken('expired-token')
+
+    await expect(
+      client.apiClient.patch(
+        '/auth/change-password',
+        {
+          currentPassword: 'WrongPass@123',
+          newPassword: 'NewPass@456',
+        },
+        { suppressSessionExpiredAfterRetry: true },
+      ),
+    ).rejects.toMatchObject({
+      status: 401,
+      message: 'Current password is incorrect',
+    })
+
+    expect(refreshCalls).toBe(1)
+    expect(resourceCalls.get('/api/v1/auth/change-password')).toBe(2)
+    expect(sessionExpired).not.toHaveBeenCalled()
   })
 })

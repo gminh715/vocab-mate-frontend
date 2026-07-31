@@ -50,6 +50,34 @@ domain; only code reused by unrelated features belongs in `Shared`.
 normalized errors, in-memory access-token handling, one shared refresh request,
 and a single retry after `401`. Domain API modules live under `src/api`.
 
+## Guardian and contextual vocabulary flow
+
+Provider credentials belong to the backend and must never use a `VITE_*`
+variable. After the backend is configured, an admin can:
+
+1. Open **Admin → News import**, search Guardian metadata, choose an active
+   category, and import up to five sanitized draft articles.
+2. Open an imported draft, parse its current content, run article analysis,
+   and explicitly approve or reject each pending AI candidate.
+3. Preview and explicitly publish the article.
+4. Open the published article as a learner, select an approved marked term,
+   wait for lazy contextual enrichment when needed, and save the resulting
+   vocabulary snapshot.
+
+Manual checks:
+
+- Guardian result cards show attribution links and never display article body
+  HTML.
+- Rejected and pending candidates cannot be opened by a learner.
+- A repeated lookup displays the cached contextual result.
+- A lookup already being prepared shows a safe retry message.
+- A saved vocabulary keeps its original contextual snapshot after later source
+  term changes.
+
+`preferredLanguage` controls frontend interface language only. It is not sent
+as a Guardian or AI input and does not select translation, enrichment, article,
+highlight, or vocabulary behavior.
+
 ## Checks
 
 ```bash

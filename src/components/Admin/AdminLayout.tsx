@@ -31,6 +31,7 @@ const adminNavigation = [
     to: routePaths.adminCategories,
   },
   { label: 'Articles', shortLabel: 'AR', to: routePaths.adminArticles },
+  { label: 'News import', shortLabel: 'NI', to: routePaths.adminNews },
   { label: 'Quizzes', shortLabel: 'QZ', to: routePaths.adminQuizzes },
   { label: 'Analytics', shortLabel: 'AN', to: routePaths.adminAnalytics },
 ] as const

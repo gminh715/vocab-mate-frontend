@@ -99,6 +99,18 @@ describe('adminArticleContentApi', () => {
     ])
   })
 
+  it('maps draft analysis and explicit candidate moderation actions', async () => {
+    await adminArticleContentApi.analyze('article/id')
+    await adminArticleContentApi.approveTerm('article/id', 'term/id')
+    await adminArticleContentApi.rejectTerm('article/id', 'term/id')
+
+    expect(clientMocks.post.mock.calls).toEqual([
+      ['/admin/articles/article%2Fid/analyze'],
+      ['/admin/articles/article%2Fid/terms/term%2Fid/approve'],
+      ['/admin/articles/article%2Fid/terms/term%2Fid/reject'],
+    ])
+  })
+
   it('maps allowlisted sentence and term list filters', () => {
     expect(
       sentenceListRequestParams({
@@ -115,6 +127,9 @@ describe('adminArticleContentApi', () => {
         sentenceId: 'sentence-1',
         cefrLevel: 'B2',
         unitType: 'PHRASE',
+        origin: 'AI',
+        reviewStatus: 'PENDING',
+        explanationStatus: 'FAILED',
         isActive: true,
         q: 'digital',
       }),
@@ -124,6 +139,9 @@ describe('adminArticleContentApi', () => {
       sentenceId: 'sentence-1',
       cefrLevel: 'B2',
       unitType: 'PHRASE',
+      origin: 'AI',
+      reviewStatus: 'PENDING',
+      explanationStatus: 'FAILED',
       isActive: true,
       q: 'digital',
     })

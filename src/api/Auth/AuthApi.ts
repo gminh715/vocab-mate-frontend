@@ -12,6 +12,7 @@ import type {
 } from '@/schemas/Auth/auth'
 import type {
   AuthData,
+  ChangePasswordRequest,
   CurrentUser,
   MessageData,
 } from '@/types/Auth/auth'
@@ -83,5 +84,17 @@ export const authApi = {
     } finally {
       setAccessToken(null)
     }
+  },
+
+  async changePassword(
+    request: ChangePasswordRequest,
+  ): Promise<MessageData> {
+    const response = await apiClient.patch<MessageData>(
+      '/auth/change-password',
+      request,
+      { suppressSessionExpiredAfterRetry: true },
+    )
+    setAccessToken(null)
+    return response
   },
 }

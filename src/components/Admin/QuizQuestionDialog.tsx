@@ -128,7 +128,7 @@ export function QuizQuestionDialog({
                   <MenuItem value="">Choose a term</MenuItem>
                   {termsQuery.data?.items.map((term) => (
                     <MenuItem key={term.id} value={term.id}>
-                      {term.wordDisplay} · sentence {term.sentenceOrder} · {term.contextualMeaningVi}
+                      {term.wordDisplay ?? term.value} · sentence {term.sentenceOrder} · {term.contextualMeaningVi ?? 'Metadata pending lookup'}
                     </MenuItem>
                   ))}
                 </TextField>

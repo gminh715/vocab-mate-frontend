@@ -13,7 +13,7 @@ import { ArticleCover } from '@/components/Article/ArticleCover'
 import { normalizeApiError } from '@/config/apiClient'
 import { useAuth } from '@/contexts/AuthContext'
 import { useArticleDetailQuery } from '@/hooks/Article/useArticles'
-import { readerPath, routePaths } from '@/utils/paths'
+import { readerPath, reviewStartPath, routePaths } from '@/utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'long',
@@ -282,18 +282,33 @@ export function ArticleDetailPage() {
           </Box>
 
           <Stack spacing={1.25} sx={{ alignItems: 'flex-start' }}>
-            <Button
-              component={RouterLink}
-              to={isAuthenticated ? destination : routePaths.login}
-              state={
-                isAuthenticated ? undefined : { from: destination }
-              }
-              variant="contained"
-              size="large"
-              disabled={isInitializing}
-            >
-              {isInitializing ? 'Checking session…' : 'Start reading'}
-            </Button>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.25}>
+              <Button
+                component={RouterLink}
+                to={isAuthenticated ? destination : routePaths.login}
+                state={
+                  isAuthenticated ? undefined : { from: destination }
+                }
+                variant="contained"
+                size="large"
+                disabled={isInitializing}
+              >
+                {isInitializing ? 'Checking session…' : 'Start reading'}
+              </Button>
+              {isAuthenticated ? (
+                <Button
+                  component={RouterLink}
+                  to={reviewStartPath({
+                    sessionType: 'ARTICLE_REVIEW',
+                    articleId: article.id,
+                  })}
+                  variant="outlined"
+                  size="large"
+                >
+                  Review Saved Words
+                </Button>
+              ) : null}
+            </Stack>
             {!isInitializing && !isAuthenticated ? (
               <Typography color="text.secondary" variant="body2">
                 Sign in is required to open the focused reader. You will return

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { ThemeProvider } from '@mui/material/styles'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/AuthContext'
@@ -23,6 +23,23 @@ interface DashboardQueryState {
     isError: boolean
     error: unknown
     refetch: ReturnType<typeof vi.fn>
+  }
+  review: {
+    today: {
+      data: { dueVocabularyCount: number; recommendedQuizzes: [] }
+      isPending: boolean
+      isError: boolean
+      error: unknown
+    }
+    active: {
+      data: undefined | {
+        session: { id: string }
+        progress: { remainingCount: number }
+      }
+      isSuccess: boolean
+      isError: boolean
+      error: unknown
+    }
   }
 }
 
@@ -57,6 +74,20 @@ const { queryState } = vi.hoisted<{ queryState: DashboardQueryState }>(() => ({
       error: null,
       refetch: vi.fn(),
     },
+    review: {
+      today: {
+        data: { dueVocabularyCount: 3, recommendedQuizzes: [] },
+        isPending: false,
+        isError: false,
+        error: null,
+      },
+      active: {
+        data: undefined,
+        isSuccess: false,
+        isError: true,
+        error: { status: 404 },
+      },
+    },
   },
 }))
 
@@ -90,6 +121,11 @@ vi.mock('@/hooks/Analytics/useAnalytics', () => ({
 
 vi.mock('@/hooks/Reading/useReading', () => ({
   useReadingHistoryQuery: () => queryState.reading,
+}))
+
+vi.mock('@/hooks/Review/useReviews', () => ({
+  useTodayReviewsQuery: () => queryState.review.today,
+  useActiveReviewSessionQuery: () => queryState.review.active,
 }))
 
 const currentUser = {
@@ -165,6 +201,18 @@ describe('HomePage', () => {
     queryState.reading.isPending = false
     queryState.reading.isError = false
     queryState.reading.error = null
+    queryState.review.today = {
+      data: { dueVocabularyCount: 3, recommendedQuizzes: [] },
+      isPending: false,
+      isError: false,
+      error: null,
+    }
+    queryState.review.active = {
+      data: undefined,
+      isSuccess: false,
+      isError: true,
+      error: { status: 404 },
+    }
   })
 
   it('formats the confirmed 0..1 accuracy ratio as a percentage', () => {
@@ -206,7 +254,21 @@ describe('HomePage', () => {
     ).toBeInTheDocument()
   })
 
-  it('navigates from a quick action to due vocabulary', () => {
+  it('shows the focused review card with count, duration, and one start action', () => {
+    renderDashboard()
+    const card = screen.getByRole('region', {
+      name: 'Keep familiar words close',
+    })
+
+    expect(within(card).getByText('3')).toBeInTheDocument()
+    expect(within(card).getByText('~1 min')).toBeInTheDocument()
+    expect(within(card).getByRole('link', { name: 'Start Review' })).toHaveAttribute(
+      'href',
+      '/review?sessionType=DAILY_REVIEW',
+    )
+  })
+
+  it('navigates from a quick action to daily review', () => {
     renderDashboard()
 
     fireEvent.click(
@@ -214,7 +276,31 @@ describe('HomePage', () => {
     )
 
     expect(screen.getByLabelText('Current path')).toHaveTextContent(
-      '/vocabularies?dueOnly=true',
+      '/review?sessionType=DAILY_REVIEW',
+    )
+  })
+
+  it('resumes the active server session from the dashboard card', () => {
+    queryState.review.today = {
+      data: { dueVocabularyCount: 0, recommendedQuizzes: [] },
+      isPending: false,
+      isError: true,
+      error: new Error('offline'),
+    }
+    queryState.review.active = {
+      data: {
+        session: { id: 'active-session' },
+        progress: { remainingCount: 4 },
+      },
+      isSuccess: true,
+      isError: false,
+      error: null,
+    }
+    renderDashboard()
+
+    expect(screen.getByRole('link', { name: 'Resume Review' })).toHaveAttribute(
+      'href',
+      '/review/active-session',
     )
   })
 

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -34,6 +34,7 @@ import {
   vocabularyParamsFromSearchParams,
   vocabularySearchParamsFromParams,
 } from '@/utils/Vocabulary/vocabularyParams'
+import { reviewStartPath } from '@/utils/paths'
 
 export function SavedVocabularyPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -156,14 +157,28 @@ export function SavedVocabularyPage() {
               {activeTitle}
             </Typography>
 
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setIsAddVocabOpen(true)}
-              sx={{ fontWeight: 750 }}
-            >
-              + Add Vocabulary
-            </Button>
+            <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+              {activeCollection ? (
+                <Button
+                  component={RouterLink}
+                  to={reviewStartPath({
+                    sessionType: 'COLLECTION_REVIEW',
+                    collectionId: activeCollection.id,
+                  })}
+                  variant="contained"
+                >
+                  Review Collection
+                </Button>
+              ) : null}
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => setIsAddVocabOpen(true)}
+                sx={{ fontWeight: 750 }}
+              >
+                + Add Vocabulary
+              </Button>
+            </Stack>
           </Stack>
 
           <DueVocabularyHeader

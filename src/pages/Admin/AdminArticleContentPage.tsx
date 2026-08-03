@@ -313,10 +313,10 @@ function SentenceTerms({
                     sx={{ flexWrap: 'wrap', gap: 0.75 }}
                   >
                     <Typography sx={{ fontWeight: 750 }}>
-                      {term.wordDisplay}
+                      {term.wordDisplay ?? term.value}
                     </Typography>
                     <Chip
-                      label={term.cefrLevel}
+                      label={term.cefrLevel ?? 'CEFR pending'}
                       size="small"
                       variant="outlined"
                       color="primary"
@@ -506,7 +506,7 @@ function TermDeleteDialog({
       <DialogContent>
         <DialogContentText>
           {term
-            ? `Delete “${term.wordDisplay}” and unwrap its backend marker?`
+            ? `Delete “${term.wordDisplay ?? term.value}” and unwrap its backend marker?`
             : ''}
         </DialogContentText>
         {deleteError ? (
@@ -795,13 +795,13 @@ export function AdminArticleContentPage() {
         setAnalysisOpen(false)
         updateParams({
           tab: 'terms',
-          termOrigin: 'AI',
-          termReview: 'PENDING',
+          termOrigin: 'NLP',
+          termReview: 'APPROVED',
           termPage: '1',
         })
         setFeedback({
           severity: 'success',
-          message: `Analysis completed with ${data.candidateCount} candidate terms for content version ${data.contentVersion}.`,
+          message: `Vocabulary analysis created ${data.candidateCount} terms for content version ${data.contentVersion}.`,
         })
       },
       onError: (error) => {
@@ -827,7 +827,7 @@ export function AdminArticleContentPage() {
           moderationTarget.action === 'approve' ? 'approved' : 'rejected'
         setFeedback({
           severity: 'success',
-          message: `${moderationTarget.term.wordDisplay} ${actionLabel}.`,
+          message: `${moderationTarget.term.wordDisplay ?? moderationTarget.term.value} ${actionLabel}.`,
         })
         setModerationTarget(null)
       },
@@ -1030,7 +1030,7 @@ export function AdminArticleContentPage() {
                     ? 'Analyzing…'
                     : article.aiAnalysisStatus === 'FAILED'
                       ? 'Retry analysis'
-                      : 'Analyze with AI'}
+                      : 'Analyze vocabulary'}
                 </Button>
               ) : null}
               {article.status === 'DRAFT' ? (
@@ -1085,7 +1085,7 @@ export function AdminArticleContentPage() {
             sx={{ alignItems: { sm: 'center' } }}
           >
             <Typography color="text.secondary" variant="body2">
-              AI analysis
+              Vocabulary analysis
             </Typography>
             <Chip
               size="small"
@@ -1380,6 +1380,7 @@ export function AdminArticleContentPage() {
                   <MenuItem value="">All origins</MenuItem>
                   <MenuItem value="MANUAL">Manual</MenuItem>
                   <MenuItem value="AI">AI candidate</MenuItem>
+                  <MenuItem value="NLP">WinkNLP</MenuItem>
                 </TextField>
                 <TextField
                   select
@@ -1498,7 +1499,7 @@ export function AdminArticleContentPage() {
                               sx={{ flexWrap: 'wrap', gap: 0.75 }}
                             >
                               <Typography sx={{ fontWeight: 750 }}>
-                                {term.wordDisplay}
+                                {term.wordDisplay ?? term.value}
                               </Typography>
                               <Chip
                                 label={`Sentence ${term.sentenceOrder}`}
@@ -1506,13 +1507,19 @@ export function AdminArticleContentPage() {
                                 variant="outlined"
                               />
                               <Chip
-                                label={term.cefrLevel}
+                                label={term.cefrLevel ?? 'CEFR pending'}
                                 size="small"
                                 color="primary"
                                 variant="outlined"
                               />
                               <Chip
-                                label={term.origin === 'AI' ? 'AI' : 'Manual'}
+                                label={
+                                  term.origin === 'AI'
+                                    ? 'AI'
+                                    : term.origin === 'NLP'
+                                      ? 'WinkNLP'
+                                      : 'Manual'
+                                }
                                 size="small"
                                 variant="outlined"
                               />
@@ -1661,7 +1668,7 @@ export function AdminArticleContentPage() {
             ? 'Retry draft analysis'
             : 'Analyze this draft'
         }
-        description="This sends the current draft article content to the configured AI service. It may update category and CEFR level and creates pending candidates for explicit review; it never publishes the article."
+        description="This tokenizes every current sentence locally with WinkNLP, creates approved lookup terms with deferred metadata, and inserts one marker for each unique valid surface. It does not call an AI provider or publish the article."
         confirmLabel="Run analysis"
         isPending={analyzeMutation.isPending}
         errorMessage={
@@ -1682,8 +1689,8 @@ export function AdminArticleContentPage() {
         }
         description={
           moderationTarget?.action === 'approve'
-            ? `Approve “${moderationTarget.term.wordDisplay}” and add its reader marker exactly once? Contextual enrichment remains lazy until a reader looks it up.`
-            : `Reject “${moderationTarget?.term.wordDisplay ?? ''}”? Rejected terms remain inaccessible to readers.`
+            ? `Approve “${moderationTarget.term.wordDisplay ?? moderationTarget.term.value}” and add its reader marker exactly once? Contextual enrichment remains lazy until a reader looks it up.`
+            : `Reject “${moderationTarget?.term.wordDisplay ?? moderationTarget?.term.value ?? ''}”? Rejected terms remain inaccessible to readers.`
         }
         confirmLabel={
           moderationTarget?.action === 'approve' ? 'Approve' : 'Reject'

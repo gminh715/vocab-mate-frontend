@@ -7,7 +7,7 @@ import type { CefrLevel } from '@/types/Auth/auth'
 import type { PublicCategory } from '@/types/Admin/adminCategories'
 
 export const LEXICAL_UNIT_TYPES = ['WORD', 'PHRASE'] as const
-export const TERM_ORIGINS = ['MANUAL', 'AI'] as const
+export const TERM_ORIGINS = ['MANUAL', 'AI', 'NLP'] as const
 export const TERM_REVIEW_STATUSES = [
   'PENDING',
   'APPROVED',
@@ -42,13 +42,13 @@ export interface ArticleSentenceTerm {
   id: string
   sentenceId: string
   value: string
-  wordDisplay: string
+  wordDisplay: string | null
   lemma: string
-  normalizedLemma: string
+  normalizedLemma: string | null
   unitType: LexicalUnitType
-  partOfSpeech: string
+  partOfSpeech: string | null
   ipa: string | null
-  cefrLevel: CefrLevel
+  cefrLevel: CefrLevel | null
   contextualMeaningVi: string | null
   definitionEn: string | null
   contextualExplanation: string | null

@@ -373,18 +373,22 @@ describe('Admin article content workspace', () => {
     expect(await screen.findByText('Article archived.')).toBeInTheDocument()
   })
 
-  it('analyzes a draft and explicitly approves a pending AI candidate', async () => {
-    const aiTerm: ArticleTermListItem = {
+  it('runs local vocabulary analysis and shows approved WinkNLP terms with deferred metadata', async () => {
+    const nlpTerm: ArticleTermListItem = {
       ...termListItem,
+      wordDisplay: null,
+      normalizedLemma: null,
+      partOfSpeech: null,
+      cefrLevel: null,
       contextualMeaningVi: null,
-      origin: 'AI',
-      reviewStatus: 'PENDING',
-      selectionReason: 'Useful phrase in the article context.',
+      origin: 'NLP',
+      reviewStatus: 'APPROVED',
+      selectionReason: null,
       explanationStatus: 'PENDING',
       explanationGeneratedAt: null,
     }
     vi.mocked(adminArticleContentApi.listTerms).mockResolvedValue({
-      items: [aiTerm],
+      items: [nlpTerm],
       meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
       contentVersion: 2,
     })
@@ -398,18 +402,15 @@ describe('Admin article content workspace', () => {
         cefrLevel: 'B1',
         candidateCount: 1,
       })
-    const approve = vi
-      .spyOn(adminArticleContentApi, 'approveTerm')
-      .mockResolvedValue({
-        term: { ...aiTerm, reviewStatus: 'APPROVED' },
-        contentHtmlChanged: true,
-      })
     const user = userEvent.setup()
     renderContentPage()
 
     await user.click(
-      await screen.findByRole('button', { name: 'Analyze with AI' }),
+      await screen.findByRole('button', { name: 'Analyze vocabulary' }),
     )
+    expect(
+      screen.getByText(/tokenizes every current sentence locally with WinkNLP/i),
+    ).toBeInTheDocument()
     await user.click(
       within(
         screen.getByRole('dialog', { name: 'Analyze this draft' }),
@@ -418,18 +419,17 @@ describe('Admin article content workspace', () => {
 
     await waitFor(() => expect(analyze).toHaveBeenCalledWith(articleId))
     expect(
-      await screen.findByText(/analysis completed with 1 candidate/i),
+      await screen.findByText(/vocabulary analysis created 1 terms/i),
     ).toBeInTheDocument()
-    await user.click(
-      await screen.findByRole('button', { name: 'Approve' }),
+    expect(await screen.findByText('Digital tools')).toBeInTheDocument()
+    expect(screen.getByText('CEFR pending')).toBeInTheDocument()
+    expect(adminArticleContentApi.listTerms).toHaveBeenLastCalledWith(
+      articleId,
+      expect.objectContaining({
+        origin: 'NLP',
+        reviewStatus: 'APPROVED',
+      }),
     )
-    await user.click(
-      within(
-        screen.getByRole('dialog', { name: 'Approve AI candidate' }),
-      ).getByRole('button', { name: 'Approve' }),
-    )
-
-    await waitFor(() => expect(approve).toHaveBeenCalledWith(articleId, termId))
   })
 
   it('does not offer unsupported reanalysis after a draft is ready', async () => {

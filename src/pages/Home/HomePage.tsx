@@ -15,6 +15,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 import { LearningAnalyticsSections } from '@/components/Dashboard/LearningAnalyticsSections'
+import { ReviewReadyCard } from '@/components/Dashboard/ReviewReadyCard'
 import { useAuth } from '@/contexts/AuthContext'
 import { normalizeApiError } from '@/config/apiClient'
 import { useAnalyticsOverviewQuery } from '@/hooks/Analytics/useAnalytics'
@@ -28,6 +29,7 @@ import {
 } from '@/utils/Analytics/analyticsParams'
 import {
   readerPath,
+  reviewStartPath,
   routePaths,
 } from '@/utils/paths'
 
@@ -528,6 +530,8 @@ export function HomePage() {
         </Box>
       </Paper>
 
+      <ReviewReadyCard />
+
       <Stack component="section" spacing={2} aria-labelledby="overview-title">
         <SectionHeading
           id="overview-title"
@@ -622,7 +626,7 @@ export function HomePage() {
                 ? `${integerFormatter.format(overview.dueToday)} ready today.`
                 : 'Check your due vocabulary list.'
             }
-            to={`${routePaths.vocabularies}?dueOnly=true`}
+            to={reviewStartPath({ sessionType: 'DAILY_REVIEW' })}
           />
           <QuickAction
             title="Saved vocabulary"

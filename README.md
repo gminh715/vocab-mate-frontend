@@ -80,6 +80,41 @@ Manual checks:
 as a Guardian or AI input and does not select translation, enrichment, article,
 highlight, or vocabulary behavior.
 
+## Invisible review experience
+
+The dashboard's review card reads `GET /reviews/today` and shows the due count,
+an estimated duration, and one Start Review action. Article pages and saved
+collections provide optional scoped entry points. Review routes are:
+
+```text
+/review                         create or resume from URL source parameters
+/review/:sessionId              restore and answer one question at a time
+/review/:sessionId/summary      completed-session summary
+```
+
+`src/api/Review` contains typed HTTP calls, `src/hooks/Review` owns TanStack
+Query state and mutations, and `src/pages/Review` owns transient interaction
+state. Durable progress remains on the backend: refresh, Exit, and navigation
+restore the active session. The frontend never duplicates a session in Redux or
+browser storage.
+
+An answer or skip mutation advances from the `nextQuestion` already included in
+that response, avoiding a fetch between questions. Submission is locked while
+the mutation is pending. Correct answers show brief feedback and advance
+automatically; incorrect answers show the correct meaning and explanation,
+explain that the word will return later, and require one Continue action. Hints
+are progressive, and multiple-choice and fill-in-the-blank use the same server
+grading contract.
+
+There are deliberately no Again, Hard, Good, or Easy controls. The API infers
+scheduling privately from the interaction. AI availability is not presented as
+a learner decision: cached or rule-based questions keep the session usable when
+AI generation is unavailable.
+
+Focused review checks live in `tests/review-ui.test.tsx`,
+`tests/reviews-api.test.ts`, and `tests/dashboard-ui.test.tsx`. The UI flow test
+asserts at each interaction state that no self-rating button is rendered.
+
 ## Checks
 
 ```bash

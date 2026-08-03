@@ -1,5 +1,6 @@
 import type { Location } from 'react-router-dom'
 import type { UserRole } from '@/types/Auth/auth'
+import type { ReviewSessionType } from '@/types/Review/review'
 
 export const routePaths = {
   home: '/',
@@ -13,6 +14,9 @@ export const routePaths = {
   securitySettings: '/settings/security',
   vocabularies: '/vocabularies',
   vocabularyDetail: '/vocabularies/:userVocabularyId',
+  review: '/review',
+  reviewSession: '/review/:sessionId',
+  reviewSummary: '/review/:sessionId/summary',
   admin: '/admin',
   adminUsers: '/admin/users',
   adminUserDetail: '/admin/users/:userId',
@@ -71,6 +75,30 @@ export const vocabularyDetailPath = (userVocabularyId: string): string =>
     ':userVocabularyId',
     encodeURIComponent(userVocabularyId),
   )
+
+export const reviewSessionPath = (sessionId: string): string =>
+  routePaths.reviewSession.replace(':sessionId', encodeURIComponent(sessionId))
+
+export const reviewSummaryPath = (sessionId: string): string =>
+  routePaths.reviewSummary.replace(':sessionId', encodeURIComponent(sessionId))
+
+export const reviewStartPath = ({
+  sessionType,
+  quizId,
+  articleId,
+  collectionId,
+}: {
+  sessionType: ReviewSessionType
+  quizId?: string
+  articleId?: string
+  collectionId?: string
+}): string => {
+  const params = new URLSearchParams({ sessionType })
+  if (quizId) params.set('quizId', quizId)
+  if (articleId) params.set('articleId', articleId)
+  if (collectionId) params.set('collectionId', collectionId)
+  return `${routePaths.review}?${params.toString()}`
+}
 
 export interface AuthRedirectState {
   from?: string

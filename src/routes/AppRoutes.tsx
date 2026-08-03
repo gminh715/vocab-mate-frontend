@@ -207,6 +207,18 @@ const VocabularyDetailPage = lazy(() =>
   ),
 )
 
+const ReviewPage = lazy(() =>
+  import('@/pages/Review/ReviewPage').then(({ ReviewPage: Component }) => ({
+    default: Component,
+  })),
+)
+
+const ReviewSummaryPage = lazy(() =>
+  import('@/pages/Review/ReviewSummaryPage').then(
+    ({ ReviewSummaryPage: Component }) => ({ default: Component }),
+  ),
+)
+
 const LoginPage = lazy(() =>
   import('@/pages/Auth/LoginPage').then(({ LoginPage: Component }) => ({
     default: Component,
@@ -268,6 +280,13 @@ export function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedRoute />}>
+        <Route path={routePaths.review} element={<ReviewPage />} />
+        <Route path={routePaths.reviewSession} element={<ReviewPage />} />
+        <Route
+          path={routePaths.reviewSummary}
+          element={<ReviewSummaryPage />}
+        />
+
         <Route element={<RoleRoute allowedRoles={['ADMIN']} />}>
           <Route path={routePaths.admin} element={<AdminLayout />}>
             <Route index element={<AdminPage />} />

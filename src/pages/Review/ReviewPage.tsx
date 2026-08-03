@@ -1,0 +1,601 @@
+import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import LinearProgress from '@mui/material/LinearProgress'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {
+  Link as RouterLink,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom'
+import { normalizeApiError } from '@/config/apiClient'
+import {
+  useReviewSessionQuery,
+  useSkipReviewItemMutation,
+  useStartReviewSessionMutation,
+  useSubmitReviewAnswerMutation,
+} from '@/hooks/Review/useReviews'
+import type {
+  ReviewQuestion,
+  ReviewSessionItem,
+  ReviewResult,
+  SkippedReviewItem,
+  StartReviewSessionRequest,
+  SubmittedReviewAnswer,
+} from '@/types/Review/review'
+import {
+  reviewSessionPath,
+  reviewSummaryPath,
+  routePaths,
+} from '@/utils/paths'
+
+const CORRECT_FEEDBACK_DELAY_MS = 900
+const MAX_RESPONSE_TIME_MS = 2_147_483_647
+
+interface ReviewSummaryNavigationState {
+  result: ReviewResult
+}
+
+type ReviewTransition = SubmittedReviewAnswer | SkippedReviewItem
+
+const questionHints = (question: ReviewQuestion): string[] => {
+  switch (question.questionType) {
+    case 'FILL_BLANK':
+      return [
+        'Read the whole sentence and notice what kind of word the blank needs.',
+        'Check the words beside the blank for clues about tense, form, or number.',
+      ]
+    case 'SELECT_MEANING':
+      return [
+        'Recall how the word was used in its original sentence.',
+        'Choose the most specific meaning that fits that context.',
+      ]
+    case 'SELECT_WORD':
+      return [
+        'Say the meaning in your own words before looking at the choices again.',
+        'Look for the word whose form and tone best match the meaning.',
+      ]
+    case 'SELECT_CORRECT_CONTEXT':
+      return [
+        'Look for the sentence where the word carries the meaning you learned.',
+        'Read each choice with the target word and remove contexts that feel unrelated.',
+      ]
+  }
+}
+
+const startRequestFromSearch = (
+  searchParams: URLSearchParams,
+): StartReviewSessionRequest | null => {
+  const sessionType = searchParams.get('sessionType') ?? 'DAILY_REVIEW'
+  const quizId = searchParams.get('quizId')
+  const articleId = searchParams.get('articleId')
+  const collectionId = searchParams.get('collectionId')
+
+  if (sessionType === 'DAILY_REVIEW') {
+    return quizId || articleId || collectionId
+      ? null
+      : { sessionType, limit: 20 }
+  }
+  if (sessionType === 'ARTICLE_REVIEW' && articleId && !quizId && !collectionId) {
+    return { sessionType, articleId, limit: 20 }
+  }
+  if (
+    sessionType === 'COLLECTION_REVIEW' &&
+    collectionId &&
+    !quizId &&
+    !articleId
+  ) {
+    return { sessionType, collectionId, limit: 20 }
+  }
+  if (sessionType === 'QUIZ' && quizId && !articleId && !collectionId) {
+    return { sessionType, quizId, limit: 20 }
+  }
+  return null
+}
+
+function ReviewShell({ children }: { children: React.ReactNode }) {
+  return (
+    <Box
+      sx={{
+        minHeight: '100svh',
+        bgcolor: 'background.default',
+        px: { xs: 2, sm: 3 },
+        pt: 'max(18px, env(safe-area-inset-top))',
+        pb: 'max(24px, env(safe-area-inset-bottom))',
+      }}
+    >
+      <Stack
+        component="header"
+        direction="row"
+        spacing={2}
+        sx={{
+          maxWidth: 860,
+          mx: 'auto',
+          minHeight: 52,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography
+          component={RouterLink}
+          to={routePaths.home}
+          sx={{
+            color: 'primary.dark',
+            fontFamily: 'Georgia, serif',
+            fontSize: 22,
+            fontWeight: 700,
+            textDecoration: 'none',
+          }}
+        >
+          Vocab Mate
+        </Typography>
+        <Button component={RouterLink} to={routePaths.home} color="inherit">
+          Exit
+        </Button>
+      </Stack>
+      <Box component="main" sx={{ maxWidth: 860, mx: 'auto', mt: { xs: 2, sm: 4 } }}>
+        {children}
+      </Box>
+    </Box>
+  )
+}
+
+function ReviewStarter() {
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const mutation = useStartReviewSessionMutation()
+  const startedRef = useRef(false)
+  const searchString = searchParams.toString()
+  const request = useMemo(
+    () => startRequestFromSearch(new URLSearchParams(searchString)),
+    [searchString],
+  )
+
+  const start = useCallback(() => {
+    if (!request || mutation.isPending) return
+    startedRef.current = true
+    mutation.mutate(request, {
+      onSuccess: (state) => {
+        navigate(reviewSessionPath(state.session.id), { replace: true })
+      },
+    })
+  }, [mutation, navigate, request])
+
+  useEffect(() => {
+    if (!startedRef.current) start()
+  }, [start])
+
+  if (!request) {
+    return (
+      <ReviewShell>
+        <Alert severity="error">
+          This review link is not valid. Return home and choose a review again.
+        </Alert>
+      </ReviewShell>
+    )
+  }
+
+  if (mutation.isError) {
+    const error = normalizeApiError(mutation.error)
+    const noEligibleVocabulary = error.status === 404
+
+    return (
+      <ReviewShell>
+        <Paper variant="outlined" sx={{ p: { xs: 3, sm: 5 }, textAlign: 'center' }}>
+          <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 34, sm: 44 } }}>
+            {noEligibleVocabulary ? 'Nothing is ready here yet' : 'Review could not start'}
+          </Typography>
+          <Typography color="text.secondary" sx={{ mt: 1.5, maxWidth: 560, mx: 'auto' }}>
+            {noEligibleVocabulary
+              ? 'There are no saved words ready for this review. Keep reading or choose another collection.'
+              : 'Your saved words are safe. Check your connection and try again.'}
+          </Typography>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1.5}
+            sx={{ mt: 3, justifyContent: 'center' }}
+          >
+            {!noEligibleVocabulary ? (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  startedRef.current = false
+                  mutation.reset()
+                  start()
+                }}
+              >
+                Try Again
+              </Button>
+            ) : null}
+            <Button component={RouterLink} to={routePaths.home} variant="outlined">
+              Back Home
+            </Button>
+          </Stack>
+        </Paper>
+      </ReviewShell>
+    )
+  }
+
+  return (
+    <ReviewShell>
+      <Stack role="status" spacing={2} sx={{ minHeight: 360, alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={38} />
+        <Typography color="text.secondary">Preparing your review…</Typography>
+      </Stack>
+    </ReviewShell>
+  )
+}
+
+function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
+  const navigate = useNavigate()
+  const sessionQuery = useReviewSessionQuery(sessionId)
+  const answerMutation = useSubmitReviewAnswerMutation(sessionId)
+  const skipMutation = useSkipReviewItemMutation(sessionId)
+  const [transitionItem, setTransitionItem] = useState<ReviewSessionItem | null>(null)
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
+  const [answerText, setAnswerText] = useState('')
+  const [hintsUsed, setHintsUsed] = useState(0)
+  const [feedback, setFeedback] = useState<SubmittedReviewAnswer | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [isLocked, setIsLocked] = useState(false)
+  const questionStartedAtRef = useRef(0)
+  const submissionLockRef = useRef(false)
+  const displayItem = transitionItem ?? sessionQuery.data?.nextItem ?? null
+  const displayItemId = displayItem?.id
+  const displayQuestionId = displayItem?.question.id
+
+  const resetQuestion = useCallback((nextItem: ReviewSessionItem) => {
+    setTransitionItem(nextItem)
+    setSelectedOptionId(null)
+    setAnswerText('')
+    setHintsUsed(0)
+    setFeedback(null)
+    setActionError(null)
+    questionStartedAtRef.current = Date.now()
+    submissionLockRef.current = false
+    setIsLocked(false)
+  }, [])
+
+  const finishOrAdvance = useCallback(
+    (transition: ReviewTransition) => {
+      if (transition.sessionCompleted && transition.completionSummary) {
+        const state: ReviewSummaryNavigationState = {
+          result: transition.completionSummary,
+        }
+        navigate(reviewSummaryPath(sessionId), { replace: true, state })
+        return
+      }
+      if (transition.nextQuestion) {
+        resetQuestion(transition.nextQuestion)
+        return
+      }
+      submissionLockRef.current = false
+      setIsLocked(false)
+      setActionError('The next question is not available. Reload this review to continue.')
+    },
+    [navigate, resetQuestion, sessionId],
+  )
+
+  useEffect(() => {
+    const state = sessionQuery.data
+    if (!state) return
+    if (state.session.status === 'COMPLETED') {
+      navigate(reviewSummaryPath(sessionId), { replace: true })
+    }
+  }, [navigate, sessionId, sessionQuery.data])
+
+  useEffect(() => {
+    if (!displayItemId) return
+    questionStartedAtRef.current = Date.now()
+  }, [displayItemId, displayQuestionId])
+
+  useEffect(() => {
+    if (!feedback?.isCorrect) return
+    const timer = window.setTimeout(
+      () => finishOrAdvance(feedback),
+      CORRECT_FEEDBACK_DELAY_MS,
+    )
+    return () => window.clearTimeout(timer)
+  }, [feedback, finishOrAdvance])
+
+  const progress = feedback?.progress ?? sessionQuery.data?.progress
+  const question = displayItem?.question
+  const hints = question ? questionHints(question) : []
+  const isFillBlank = question?.questionType === 'FILL_BLANK'
+  const canSubmit = Boolean(
+    displayItem &&
+      !feedback &&
+      (isFillBlank ? answerText.trim() : selectedOptionId),
+  )
+  const isBusy =
+    isLocked ||
+    answerMutation.isPending ||
+    skipMutation.isPending
+
+  const submitAnswer = async () => {
+    if (
+      !displayItem ||
+      !question ||
+      !canSubmit ||
+      submissionLockRef.current ||
+      answerMutation.isPending ||
+      skipMutation.isPending
+    ) return
+    submissionLockRef.current = true
+    setIsLocked(true)
+    setActionError(null)
+
+    try {
+      const elapsed = Math.min(
+        Math.max(Date.now() - questionStartedAtRef.current, 0),
+        MAX_RESPONSE_TIME_MS,
+      )
+      const result = await answerMutation.mutateAsync({
+        reviewSessionItemId: displayItem.id,
+        quizQuestionId: question.id,
+        ...(isFillBlank
+          ? { userAnswerText: answerText.trim() }
+          : { selectedOptionId: selectedOptionId! }),
+        responseTimeMs: elapsed,
+        hintsUsed,
+      })
+      setFeedback(result)
+    } catch (error: unknown) {
+      submissionLockRef.current = false
+      setIsLocked(false)
+      const apiError = normalizeApiError(error)
+      setActionError(
+        apiError.status === 409
+          ? 'This question was already updated. Reload the review to continue.'
+          : 'Your answer could not be saved. Check your connection and try again.',
+      )
+    }
+  }
+
+  const skipQuestion = async () => {
+    if (
+      !displayItem ||
+      !question ||
+      feedback ||
+      submissionLockRef.current ||
+      answerMutation.isPending ||
+      skipMutation.isPending
+    ) return
+    submissionLockRef.current = true
+    setIsLocked(true)
+    setActionError(null)
+
+    try {
+      const result = await skipMutation.mutateAsync({
+        reviewSessionItemId: displayItem.id,
+        quizQuestionId: question.id,
+      })
+      finishOrAdvance(result)
+    } catch (error: unknown) {
+      submissionLockRef.current = false
+      setIsLocked(false)
+      const apiError = normalizeApiError(error)
+      setActionError(
+        apiError.status === 409
+          ? 'This question was already updated. Reload the review to continue.'
+          : 'This word could not be skipped. Check your connection and try again.',
+      )
+    }
+  }
+
+  if (sessionQuery.isError) {
+    const error = normalizeApiError(sessionQuery.error)
+    return (
+      <ReviewShell>
+        <Alert
+          severity="error"
+          action={
+            error.status !== 404 ? (
+              <Button color="inherit" onClick={() => void sessionQuery.refetch()}>
+                Try Again
+              </Button>
+            ) : undefined
+          }
+        >
+          {error.status === 404
+            ? 'This review session is not available.'
+            : 'Your review could not be restored. Try again.'}
+        </Alert>
+      </ReviewShell>
+    )
+  }
+
+  if (sessionQuery.isPending || !progress || !displayItem || !question) {
+    return (
+      <ReviewShell>
+        <Stack role="status" spacing={2} sx={{ minHeight: 360, alignItems: 'center', justifyContent: 'center' }}>
+          <CircularProgress size={38} />
+          <Typography color="text.secondary">Restoring your review…</Typography>
+        </Stack>
+      </ReviewShell>
+    )
+  }
+
+  return (
+    <ReviewShell>
+      <Stack spacing={{ xs: 2.5, sm: 3.5 }}>
+        <Box>
+          <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <Typography sx={{ fontWeight: 800 }}>
+              Question {Math.min(progress.answeredCount + 1, progress.totalQuestions)} of {progress.totalQuestions}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+              {progress.remainingCount} remaining
+            </Typography>
+          </Stack>
+          <LinearProgress
+            variant="determinate"
+            value={Math.min(100, Math.max(0, progress.progressPercent))}
+            aria-label="Review progress"
+            sx={{ mt: 1, height: 8, borderRadius: 99, bgcolor: 'primary.light' }}
+          />
+        </Box>
+
+        <Paper
+          component="section"
+          aria-labelledby="review-question"
+          variant="outlined"
+          sx={{ p: { xs: 2.5, sm: 4.5 }, borderTop: 5, borderTopColor: 'primary.main' }}
+        >
+          <Typography
+            sx={{ color: 'primary.main', fontSize: 12, fontWeight: 850, letterSpacing: '0.1em', textTransform: 'uppercase' }}
+          >
+            {isFillBlank ? 'Complete the sentence' : 'Choose one answer'}
+          </Typography>
+          <Typography
+            id="review-question"
+            component="h1"
+            variant="h1"
+            sx={{ mt: 1.25, fontSize: { xs: 30, sm: 40 }, textWrap: 'balance' }}
+          >
+            {question.prompt}
+          </Typography>
+
+          {question.blankSentence ? (
+            <Box
+              sx={{ mt: 2.5, p: 2, borderLeft: 4, borderColor: 'secondary.main', bgcolor: 'secondary.light' }}
+            >
+              <Typography sx={{ fontSize: { xs: 17, sm: 19 }, lineHeight: 1.7 }}>
+                {question.blankSentence}
+              </Typography>
+            </Box>
+          ) : null}
+
+          <Box component="form" onSubmit={(event) => { event.preventDefault(); void submitAnswer() }} sx={{ mt: 3 }}>
+            {isFillBlank ? (
+              <TextField
+                label="Your answer"
+                name="reviewAnswer"
+                value={answerText}
+                onChange={(event) => setAnswerText(event.target.value)}
+                disabled={Boolean(feedback) || isBusy}
+                autoComplete="off"
+                slotProps={{ htmlInput: { maxLength: 2_000 } }}
+              />
+            ) : (
+              <Stack spacing={1.25} role="group" aria-label="Answer choices">
+                {question.options.map((option) => {
+                  const selected = selectedOptionId === option.id
+                  return (
+                    <Button
+                      key={option.id}
+                      type="button"
+                      variant={selected ? 'contained' : 'outlined'}
+                      color={feedback && selected ? (feedback.isCorrect ? 'success' : 'error') : 'primary'}
+                      aria-pressed={selected}
+                      disabled={Boolean(feedback) || isBusy}
+                      onClick={() => setSelectedOptionId(option.id)}
+                      sx={{
+                        minHeight: 54,
+                        justifyContent: 'flex-start',
+                        px: 2,
+                        textAlign: 'left',
+                        whiteSpace: 'normal',
+                        overflowWrap: 'anywhere',
+                      }}
+                    >
+                      {option.text}
+                    </Button>
+                  )
+                })}
+              </Stack>
+            )}
+
+            {hintsUsed > 0 && !feedback ? (
+              <Alert severity="info" aria-live="polite" sx={{ mt: 2 }}>
+                {hints[hintsUsed - 1]}
+              </Alert>
+            ) : null}
+
+            {feedback ? (
+              feedback.isCorrect ? (
+                <Alert severity="success" role="status" sx={{ mt: 2.5 }}>
+                  <Typography sx={{ fontWeight: 800 }}>Nice work.</Typography>
+                  <Typography variant="body2">Moving to the next word…</Typography>
+                </Alert>
+              ) : (
+                <Alert severity="error" role="alert" sx={{ mt: 2.5 }}>
+                  <Typography sx={{ fontWeight: 850 }}>Correct answer: {feedback.correctAnswer}</Typography>
+                  <Typography variant="body2" sx={{ mt: 0.5 }}>
+                    {feedback.explanation}
+                  </Typography>
+                  {feedback.willReturnLater ? (
+                    <Typography variant="body2" sx={{ mt: 1, fontWeight: 750 }}>
+                      You’ll see this word again near the end with a different question.
+                    </Typography>
+                  ) : null}
+                </Alert>
+              )
+            ) : null}
+
+            {actionError ? (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {actionError}
+              </Alert>
+            ) : null}
+
+            <Stack
+              direction={{ xs: 'column-reverse', sm: 'row' }}
+              spacing={1.5}
+              sx={{ mt: 3, justifyContent: 'space-between', alignItems: { sm: 'center' } }}
+            >
+              {!feedback ? (
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    type="button"
+                    color="inherit"
+                    disabled={isBusy || hintsUsed >= hints.length}
+                    onClick={() => setHintsUsed((count) => Math.min(count + 1, hints.length))}
+                  >
+                    {hintsUsed === 0 ? 'Hint' : 'Another Hint'}
+                  </Button>
+                  <Button type="button" color="inherit" disabled={isBusy} onClick={() => void skipQuestion()}>
+                    {skipMutation.isPending ? 'Skipping…' : 'Skip'}
+                  </Button>
+                </Stack>
+              ) : <Box />}
+
+              {feedback && !feedback.isCorrect ? (
+                <Button type="button" variant="contained" onClick={() => finishOrAdvance(feedback)}>
+                  Continue
+                </Button>
+              ) : !feedback ? (
+                <Button type="submit" variant="contained" disabled={!canSubmit || isBusy}>
+                  {answerMutation.isPending ? 'Checking…' : 'Check Answer'}
+                </Button>
+              ) : null}
+            </Stack>
+          </Box>
+        </Paper>
+      </Stack>
+    </ReviewShell>
+  )
+}
+
+export function ReviewPage() {
+  const { sessionId } = useParams()
+  return sessionId ? (
+    <ReviewSessionExperience sessionId={sessionId} />
+  ) : (
+    <ReviewStarter />
+  )
+}
+
+export type { ReviewSummaryNavigationState }

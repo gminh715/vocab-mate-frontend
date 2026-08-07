@@ -13,14 +13,47 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import { Link as RouterLink, Outlet } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { Link as RouterLink, Outlet, useMatch } from 'react-router-dom'
 import { UserAvatar } from '@/components/Shared/UserAvatar'
 import { routePaths } from '@/utils/paths'
 import { useLogoutMutation } from '@/hooks/Auth/useAuth'
 import { useUpdateMyProfileMutation } from '@/hooks/User/useProfile'
 import { useAuth } from '@/contexts/AuthContext'
 
+function NavLink({ to, end = true, children }: { to: string; end?: boolean; children: React.ReactNode }) {
+  const match = useMatch({ path: to, end })
+  const isActive = Boolean(match)
+
+  return (
+    <Button
+      component={RouterLink}
+      to={to}
+      color={isActive ? 'primary' : 'inherit'}
+      sx={{
+        fontWeight: isActive ? 700 : 500,
+        position: 'relative',
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          bottom: 6,
+          left: 8,
+          right: 8,
+          height: 2,
+          borderRadius: 1,
+          bgcolor: 'primary.main',
+          opacity: isActive ? 1 : 0,
+          transition: 'opacity 150ms ease',
+        },
+      }}
+    >
+      {children}
+    </Button>
+  )
+}
+
 export function AuthenticatedLayout() {
+  const { t } = useTranslation('home')
   const { currentUser, isInitializing } = useAuth()
   const logoutMutation = useLogoutMutation()
   const updateProfileMutation = useUpdateMyProfileMutation()
@@ -41,10 +74,10 @@ export function AuthenticatedLayout() {
     try {
       await updateProfileMutation.mutateAsync({ preferredLanguage })
       setLanguageNotice(
-        `Preferred language changed to ${preferredLanguage.toUpperCase()}.`,
+        t('nav.languageUpdated', { language: preferredLanguage.toUpperCase() }),
       )
     } catch {
-      setLanguageNotice('Language preference could not be updated. Try again.')
+      setLanguageNotice(t('nav.languageError'))
     }
   }
 
@@ -54,7 +87,14 @@ export function AuthenticatedLayout() {
   }
 
   return (
-    <Box sx={{ minHeight: '100svh', bgcolor: 'background.default' }}>
+    <Box
+      sx={{
+        minHeight: '100svh',
+        bgcolor: 'background.default',
+        overflowX: 'hidden',
+        maxWidth: '100%',
+      }}
+    >
       <Link
         href="#main-content"
         sx={{
@@ -72,14 +112,20 @@ export function AuthenticatedLayout() {
           },
         }}
       >
-        Skip to main content
+        {t('nav.skipToContent', 'Skip to main content')}
       </Link>
 
       <AppBar
-        position="static"
+        position="sticky"
         color="transparent"
         elevation={0}
-        sx={{ bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider' }}
+        sx={{
+          top: 0,
+          zIndex: 1100,
+          bgcolor: 'background.paper',
+          borderBottom: 1,
+          borderColor: 'divider',
+        }}
       >
         <Container maxWidth="lg">
           <Toolbar
@@ -96,7 +142,7 @@ export function AuthenticatedLayout() {
               to={currentUser ? routePaths.home : routePaths.articles}
               sx={{
                 color: 'primary.dark',
-                fontFamily: 'Georgia, serif',
+                fontFamily: '"Merriweather", serif',
                 fontSize: 24,
                 fontWeight: 700,
                 textDecoration: 'none',
@@ -120,47 +166,17 @@ export function AuthenticatedLayout() {
               }}
             >
               {currentUser ? (
-                <Button
-                  component={RouterLink}
-                  to={routePaths.home}
-                  color="inherit"
-                >
-                  Home
-                </Button>
+                <NavLink to={routePaths.home}>{t('nav.home', 'Home')}</NavLink>
               ) : null}
-              <Button
-                component={RouterLink}
-                to={routePaths.articles}
-                color="inherit"
-              >
-                Articles
-              </Button>
+              <NavLink to={routePaths.articles}>{t('nav.articles', 'Articles')}</NavLink>
               {currentUser ? (
                 <>
-                  <Button
-                    component={RouterLink}
-                    to={routePaths.readingHistory}
-                    color="inherit"
-                  >
-                    Reading history
-                  </Button>
-                  <Button
-                    component={RouterLink}
-                    to={routePaths.vocabularies}
-                    color="inherit"
-                  >
-                    Vocabulary
-                  </Button>
+                  <NavLink to={routePaths.readingHistory}>{t('nav.readingHistory', 'Reading history')}</NavLink>
+                  <NavLink to={routePaths.vocabularies}>{t('nav.vocabulary', 'Vocabulary')}</NavLink>
                 </>
               ) : null}
               {currentUser?.role === 'ADMIN' ? (
-                <Button
-                  component={RouterLink}
-                  to={routePaths.admin}
-                  color="inherit"
-                >
-                  Admin
-                </Button>
+                <NavLink to={routePaths.admin} end={false}>{t('nav.admin', 'Admin')}</NavLink>
               ) : null}
             </Stack>
 
@@ -217,19 +233,18 @@ export function AuthenticatedLayout() {
                     to={routePaths.profileSettings}
                     onClick={closeAccountMenu}
                   >
-                    <ListItemText primary="Profile settings" />
+                    <ListItemText primary={t('nav.profileSettings', 'Profile settings')} />
                   </MenuItem>
                   <MenuItem
                     onClick={() => void changePreferredLanguage()}
                     disabled={updateProfileMutation.isPending}
                   >
                     <ListItemText
-                      primary="Language settings"
-                      secondary={`Current: ${currentUser.profile.preferredLanguage.toUpperCase()} · Switch to ${
-                        currentUser.profile.preferredLanguage === 'en'
-                          ? 'VI'
-                          : 'EN'
-                      }`}
+                      primary={t('nav.languageSettings', 'Language settings')}
+                      secondary={t('nav.languageCurrent', `Current: ${currentUser.profile.preferredLanguage.toUpperCase()} · Switch to ${currentUser.profile.preferredLanguage === 'en' ? 'VI' : 'EN'}`, {
+                        current: currentUser.profile.preferredLanguage.toUpperCase(),
+                        target: currentUser.profile.preferredLanguage === 'en' ? 'VI' : 'EN',
+                      })}
                     />
                   </MenuItem>
                   <Divider />
@@ -239,7 +254,9 @@ export function AuthenticatedLayout() {
                   >
                     <ListItemText
                       primary={
-                        logoutMutation.isPending ? 'Signing out…' : 'Sign out'
+                        logoutMutation.isPending
+                          ? t('nav.signingOut', 'Signing out…')
+                          : t('nav.signOut', 'Sign out')
                       }
                     />
                   </MenuItem>
@@ -252,7 +269,7 @@ export function AuthenticatedLayout() {
                 variant="outlined"
                 disabled={isInitializing}
               >
-                Sign In
+                {t('nav.signIn', 'Sign In')}
               </Button>
             )}
           </Toolbar>
@@ -264,7 +281,12 @@ export function AuthenticatedLayout() {
         component="main"
         maxWidth="lg"
         tabIndex={-1}
-        sx={{ py: { xs: 4, md: 6 } }}
+        sx={{
+          pt: { xs: 1.5, md: 2 },
+          pb: { xs: 4, md: 6 },
+          maxWidth: '100%',
+          overflowX: 'hidden',
+        }}
       >
         <Outlet />
       </Container>

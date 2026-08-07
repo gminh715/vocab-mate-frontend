@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import { ArticleCefrChip } from '@/components/Article/ArticleChips'
 import { ArticleRenderer } from '@/components/Article/ArticleRenderer'
@@ -20,7 +21,7 @@ import {
 } from '@/hooks/Reading/useReading'
 import { useReadingProgressPersistence } from '@/hooks/Reading/useReadingProgressPersistence'
 import type { ReaderArticleData } from '@/types/Reading/reading'
-import { articlePath, routePaths } from '@/utils/paths'
+import { routePaths } from '@/utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'long',
@@ -44,19 +45,9 @@ const visuallyHidden = {
 
 const termInstructionsId = 'reader-term-instructions'
 
-const readerErrorMessage = (error: unknown): string => {
-  const apiError = normalizeApiError(error)
-
-  if (apiError.status === 400) {
-    return 'This article address is not valid. Return to the article library and choose another article.'
-  }
-
-  return apiError.status === 0
-    ? apiError.message
-    : 'The article reader could not be loaded. Try again.'
-}
-
 function ReaderLoading() {
+  const { t } = useTranslation('articles')
+
   return (
     <Paper
       variant="outlined"
@@ -65,7 +56,7 @@ function ReaderLoading() {
       <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
         <CircularProgress size={36} />
         <Typography color="text.secondary">
-          Loading article reader…
+          {t('reader.loading')}
         </Typography>
       </Stack>
     </Paper>
@@ -73,6 +64,8 @@ function ReaderLoading() {
 }
 
 function ReaderNotFound() {
+  const { t } = useTranslation('articles')
+
   return (
     <Paper
       variant="outlined"
@@ -86,18 +79,17 @@ function ReaderNotFound() {
     >
       <Stack spacing={2} sx={{ alignItems: 'center', maxWidth: 540 }}>
         <Typography component="h1" variant="h1" sx={{ fontSize: 40 }}>
-          Article not found
+          {t('reader.notFound.title')}
         </Typography>
         <Typography color="text.secondary">
-          This article may be unavailable or no longer published. Choose
-          another article from the library.
+          {t('reader.notFound.subtitle')}
         </Typography>
         <Button
           component={RouterLink}
           to={routePaths.articles}
           variant="outlined"
         >
-          Back to articles
+          {t('reader.notFound.backButton')}
         </Button>
       </Stack>
     </Paper>
@@ -105,6 +97,8 @@ function ReaderNotFound() {
 }
 
 function DisabledAccountState() {
+  const { t } = useTranslation('articles')
+
   return (
     <Paper
       variant="outlined"
@@ -117,11 +111,10 @@ function DisabledAccountState() {
     >
       <Stack spacing={2.5} sx={{ width: '100%', maxWidth: 580 }}>
         <Typography component="h1" variant="h1" sx={{ fontSize: 40 }}>
-          Reading unavailable
+          {t('reader.disabled.title')}
         </Typography>
         <Alert severity="warning">
-          This account is suspended or disabled. Contact an administrator for
-          help.
+          {t('reader.disabled.alert')}
         </Alert>
         <Button
           component={RouterLink}
@@ -129,7 +122,7 @@ function DisabledAccountState() {
           variant="outlined"
           sx={{ alignSelf: 'flex-start' }}
         >
-          Back to articles
+          {t('reader.disabled.backButton')}
         </Button>
       </Stack>
     </Paper>
@@ -137,6 +130,7 @@ function DisabledAccountState() {
 }
 
 function ReaderContent({ data }: { data: ReaderArticleData }) {
+  const { t } = useTranslation('articles')
   const [selectedTermId, setSelectedTermId] = useState<string | null>(null)
   const [isLookupOpen, setIsLookupOpen] = useState(false)
   const [isLookupModeEnabled, setIsLookupModeEnabled] = useState(false)
@@ -177,11 +171,11 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
   }
   const publishedDate = article.publishedAt
     ? dateFormatter.format(new Date(article.publishedAt))
-    : 'Date unavailable'
+    : t('list.dateUnavailable')
   const progressLabel =
     progress.status === 'COMPLETED'
-      ? 'Complete'
-      : `${progressFormatter.format(progress.progressPercent)}% read`
+      ? t('reader.progress.complete')
+      : t('reader.progress.percent', { value: progressFormatter.format(progress.progressPercent) })
   const completeAtEnd = useCallback(async () => {
     if (
       automaticCompletionAttemptedRef.current ||
@@ -226,11 +220,13 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
   }
 
   return (
-    <Stack spacing={{ xs: 3, md: 4 }}>
+    <Stack spacing={{ xs: 1, md: 1.5 }} sx={{ minWidth: 0, maxWidth: '100%', overflowX: 'hidden' }}>
       <Box
         sx={(theme) => ({
           position: 'fixed',
-          inset: '0 0 auto',
+          top: 0,
+          left: 0,
+          right: 0,
           zIndex: theme.zIndex.appBar + 1,
           bgcolor: 'background.paper',
         })}
@@ -240,7 +236,7 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
           aria-live="polite"
           sx={visuallyHidden}
         >
-          Reading progress: {progressLabel}
+          {t('reader.progress.label', { label: progressLabel })}
         </Typography>
         <LinearProgress
           variant="determinate"
@@ -255,11 +251,11 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
 
       <Button
         component={RouterLink}
-        to={articlePath(article.slug)}
+        to={routePaths.articles}
         color="inherit"
-        sx={{ alignSelf: 'flex-start' }}
+        sx={{ alignSelf: 'flex-start', minWidth: 0 }}
       >
-        ← Article overview
+        {t('reader.backButton')}
       </Button>
 
       <Paper
@@ -269,9 +265,17 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
           overflow: 'hidden',
           borderTop: 5,
           borderTopColor: 'primary.main',
+          minWidth: 0,
+          maxWidth: '100%',
         }}
       >
-        <Stack spacing={2.5} sx={{ p: { xs: 2.5, sm: 4, md: 5 } }}>
+        <Stack
+          spacing={1.25}
+          sx={{
+            py: { xs: 1.25, sm: 1.5, md: 2 },
+            px: { xs: 2, sm: 3, md: 4 },
+          }}
+        >
           <Stack
             direction="row"
             spacing={1}
@@ -286,25 +290,26 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
             variant="h1"
             sx={{
               maxWidth: 900,
-              fontSize: { xs: 38, sm: 50, md: 58 },
-              overflowWrap: 'anywhere',
+              fontSize: { xs: 24, sm: 30, md: 36 },
               textWrap: 'balance',
             }}
           >
             {article.title}
           </Typography>
 
-          <Typography
-            color="text.secondary"
-            sx={{
-              maxWidth: 760,
-              fontSize: { xs: 16, sm: 18 },
-              lineHeight: 1.65,
-              textWrap: 'pretty',
-            }}
-          >
-            {article.summary}
-          </Typography>
+          {article.summary ? (
+            <Typography
+              color="text.secondary"
+              sx={{
+                maxWidth: 820,
+                fontSize: { xs: 15, sm: 17 },
+                lineHeight: 1.65,
+                textWrap: 'pretty',
+              }}
+            >
+              {article.summary}
+            </Typography>
+          ) : null}
 
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
@@ -321,7 +326,7 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
             <Typography variant="body2">{publishedDate}</Typography>
             {article.authorName ? (
               <Typography variant="body2">
-                By {article.authorName}
+                {t('reader.meta.by', { name: article.authorName })}
               </Typography>
             ) : null}
             {article.sourceName ? (
@@ -340,12 +345,11 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
                   color="inherit"
                   onClick={retryAutomaticCompletion}
                 >
-                  Try again
+                  {t('reader.errors.retryCompletion')}
                 </Button>
               }
             >
-              You reached the end, but the article could not be marked
-              complete.
+              {t('reader.errors.completionFailed')}
             </Alert>
           ) : null}
         </Stack>
@@ -360,6 +364,8 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
           },
           gap: { xs: 3, md: 4 },
           alignItems: 'start',
+          minWidth: 0,
+          maxWidth: '100%',
         }}
       >
         <Paper
@@ -383,7 +389,7 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
             />
           ) : (
             <Alert severity="info">
-              Article content is currently unavailable.
+              {t('reader.errors.contentUnavailable')}
             </Alert>
           )}
         </Paper>
@@ -405,12 +411,12 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
               component="h2"
               sx={{ fontSize: 19, fontWeight: 800 }}
             >
-              Vocabulary
+              {t('reader.vocabulary.panelTitle')}
             </Typography>
             <Typography color="text.secondary" variant="body2">
               {highlightedTermIds.length === 0
-                ? 'No terms are highlighted for your current level. You can still look up vocabulary prepared for this article.'
-                : 'Highlighted words match your learning level. Turn on lookup to explore any vocabulary prepared for this article, including easier terms.'}
+                ? t('reader.vocabulary.noHighlights')
+                : t('reader.vocabulary.hasHighlights')}
             </Typography>
             <Button
               type="button"
@@ -420,28 +426,27 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
               fullWidth
             >
               {isLookupModeEnabled
-                ? 'Turn off vocabulary lookup'
-                : 'Turn on vocabulary lookup'}
+                ? t('reader.vocabulary.turnOff')
+                : t('reader.vocabulary.turnOn')}
             </Button>
             <Typography
               aria-live="polite"
               sx={{ fontSize: 14, fontWeight: 750 }}
             >
               {!isLookupModeEnabled
-                ? 'Vocabulary lookup is off.'
+                ? t('reader.vocabulary.statusOff')
                 : selectedTermId
                   ? isLookupOpen
-                    ? 'Vocabulary details are open.'
-                    : 'Term selected. Activate it again to reopen details.'
-                  : 'Lookup is on. Select a marked word in the article.'}
+                    ? t('reader.vocabulary.statusOpen')
+                    : t('reader.vocabulary.statusSelected')
+                  : t('reader.vocabulary.statusOn')}
             </Typography>
           </Stack>
         </Paper>
       </Box>
 
       <Typography id={termInstructionsId} sx={visuallyHidden}>
-        Vocabulary term. Press Enter or Space to select it. Use arrow keys
-        to move between marked terms.
+        {t('reader.termInstructions')}
       </Typography>
 
       <ContextualTermDrawer
@@ -455,6 +460,7 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
 }
 
 export function ArticleReaderPage() {
+  const { t } = useTranslation('articles')
   const { slug = '' } = useParams()
   const readerQuery = useReaderArticleQuery(slug)
 
@@ -466,6 +472,11 @@ export function ArticleReaderPage() {
     if (apiError.status === 403) return <DisabledAccountState />
     if (apiError.status === 404) return <ReaderNotFound />
 
+    const getErrorMessage = (): string => {
+      if (apiError.status === 400) return t('reader.errors.invalidAddress')
+      return apiError.status === 0 ? apiError.message : t('reader.errors.loadError')
+    }
+
     return (
       <Stack spacing={2}>
         <Button
@@ -474,17 +485,17 @@ export function ArticleReaderPage() {
           color="inherit"
           sx={{ alignSelf: 'flex-start' }}
         >
-          ← Back to articles
+          {t('reader.backButton')}
         </Button>
         <Alert
           severity="error"
           action={
             <Button color="inherit" onClick={() => readerQuery.refetch()}>
-              Try again
+              {t('reader.errors.tryAgain')}
             </Button>
           }
         >
-          {readerErrorMessage(readerQuery.error)}
+          {getErrorMessage()}
         </Alert>
       </Stack>
     )

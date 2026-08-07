@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 import { useDueVocabulariesQuery } from '@/hooks/Vocabulary/useVocabularies'
 
 interface DueVocabularyHeaderProps {
@@ -15,6 +16,7 @@ export function DueVocabularyHeader({
   dueOnly,
   onToggleDueOnly,
 }: DueVocabularyHeaderProps) {
+  const { t } = useTranslation('vocabulary')
   const { data: dueData, isLoading } = useDueVocabulariesQuery({ limit: 1 })
   const totalDue = dueData?.meta.total ?? 0
 
@@ -41,16 +43,16 @@ export function DueVocabularyHeader({
             onClick={() => onToggleDueOnly(false)}
             sx={{ fontWeight: 700 }}
           >
-            Show All Vocabulary
+            {t('dueHeader.showAllVocabulary')}
           </Button>
         }
       >
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
           <Typography variant="body2" sx={{ fontWeight: 700 }}>
-            Showing Due Vocabulary Items Only
+            {t('dueHeader.showingDueOnly')}
           </Typography>
           <Chip
-            label={`${totalDue} Due`}
+            label={t('dueHeader.dueCount', { count: totalDue })}
             size="small"
             color="primary"
             sx={{ fontWeight: 700 }}
@@ -84,12 +86,12 @@ export function DueVocabularyHeader({
       >
         <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
           <Chip
-            label={`${totalDue} Due`}
+            label={t('dueHeader.dueCount', { count: totalDue })}
             color="secondary"
             sx={{ fontWeight: 800, fontSize: 13 }}
           />
           <Typography variant="body1" sx={{ fontWeight: 650, color: 'text.primary' }}>
-            You have {totalDue} {totalDue === 1 ? 'word' : 'words'} due for review today.
+            {t('dueHeader.youHaveDue', { count: totalDue })}
           </Typography>
         </Stack>
 
@@ -100,7 +102,7 @@ export function DueVocabularyHeader({
           onClick={() => onToggleDueOnly(true)}
           sx={{ whiteSpace: 'nowrap' }}
         >
-          View Due Items
+          {t('dueHeader.viewDueItems')}
         </Button>
       </Stack>
     </Box>

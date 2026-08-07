@@ -1,11 +1,11 @@
 import { lazy } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import {
   GuestRoute,
   ProtectedRoute,
   RoleRoute,
 } from '@/components/Auth/AuthRouteGuards'
-import { routePaths } from '@/utils/paths'
+import { readerPath, routePaths } from '@/utils/paths'
 
 const AuthenticatedLayout = lazy(() =>
   import('@/components/Layout/AuthenticatedLayout').then(
@@ -143,14 +143,6 @@ const ArticlesPage = lazy(() =>
   })),
 )
 
-const ArticleDetailPage = lazy(() =>
-  import('@/pages/Article/ArticleDetailPage').then(
-    ({ ArticleDetailPage: Component }) => ({
-      default: Component,
-    }),
-  ),
-)
-
 const ArticleReaderPage = lazy(() =>
   import('@/pages/Article/ArticleReaderPage').then(
     ({ ArticleReaderPage: Component }) => ({
@@ -231,6 +223,11 @@ const RegisterPage = lazy(() =>
   })),
 )
 
+function ArticleDetailRedirect() {
+  const { slug = '' } = useParams()
+  return <Navigate to={readerPath(slug)} replace />
+}
+
 export function AppRoutes() {
   return (
     <Routes>
@@ -243,7 +240,7 @@ export function AppRoutes() {
         <Route path={routePaths.articles} element={<ArticlesPage />} />
         <Route
           path={routePaths.articleDetail}
-          element={<ArticleDetailPage />}
+          element={<ArticleDetailRedirect />}
         />
 
         <Route element={<ProtectedRoute />}>
@@ -354,4 +351,3 @@ export function AppRoutes() {
     </Routes>
   )
 }
-

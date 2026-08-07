@@ -100,7 +100,7 @@ describe('Admin Guardian intake', () => {
       'https://www.theguardian.com/environment/climate-story',
     )
 
-    await user.click(screen.getByLabelText('Default category'))
+    await user.click(screen.getByLabelText('Category (optional override)'))
     await user.click(
       await screen.findByRole('option', { name: 'Environment' }),
     )

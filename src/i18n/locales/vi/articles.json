@@ -1,0 +1,138 @@
+{
+  "list": {
+    "heading": "Tìm bài đọc tiếng Anh tiếp theo",
+    "article_one": "bài viết",
+    "article_other": "bài viết",
+    "dateUnavailable": "Không có ngày",
+    "readAriaLabel": "Đọc {{title}}",
+    "filters": {
+      "ariaLabel": "Bộ lọc bài viết",
+      "search": "Tìm kiếm bài viết",
+      "searchPlaceholder": "Thử 'khí hậu' hay 'công nghệ'…",
+      "category": "Danh mục",
+      "allCategories": "Tất cả danh mục",
+      "cefrLevel": "Trình độ CEFR",
+      "allLevels": "Tất cả trình độ CEFR",
+      "sort": "Sắp xếp",
+      "newest": "Mới nhất trước",
+      "oldest": "Cũ nhất trước",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "loading": "Đang tải bài viết…",
+    "errors": {
+      "invalidFilters": "Các bộ lọc này không hợp lệ. Xóa chúng và thử lại.",
+      "loadError": "Không thể tải bài viết. Vui lòng thử lại.",
+      "tryAgain": "Thử lại",
+      "categoriesError": "Không thể tải danh mục. Bạn vẫn có thể tìm kiếm tất cả bài viết.",
+      "retryCategories": "Tải lại danh mục"
+    },
+    "empty": {
+      "withFilters": "Không có bài viết nào khớp bộ lọc",
+      "withFiltersSubtitle": "Thử tìm kiếm rộng hơn, trình độ khác hoặc danh mục khác.",
+      "noArticles": "Chưa có bài viết nào được xuất bản",
+      "noArticlesSubtitle": "Các bài đọc học tập mới sẽ xuất hiện ở đây khi được xuất bản."
+    },
+    "pagination": {
+      "ariaLabel": "Trang bài viết",
+      "resultsAriaLabel": "Kết quả bài viết"
+    }
+  },
+  "reader": {
+    "loading": "Đang tải trình đọc bài…",
+    "notFound": {
+      "title": "Không tìm thấy bài viết",
+      "subtitle": "Bài viết này có thể không còn khả dụng hoặc đã ngừng xuất bản. Hãy chọn bài khác từ thư viện.",
+      "backButton": "Quay lại bài viết"
+    },
+    "disabled": {
+      "title": "Không thể đọc bài",
+      "alert": "Tài khoản này đã bị tạm ngưng hoặc vô hiệu hóa. Liên hệ quản trị viên để được hỗ trợ.",
+      "backButton": "Quay lại bài viết"
+    },
+    "backButton": "← Quay lại bài viết",
+    "errors": {
+      "invalidAddress": "Địa chỉ bài viết này không hợp lệ. Quay lại thư viện bài viết và chọn bài khác.",
+      "loadError": "Không thể tải trình đọc bài. Vui lòng thử lại.",
+      "tryAgain": "Thử lại",
+      "contentUnavailable": "Nội dung bài viết hiện không khả dụng.",
+      "completionFailed": "Bạn đã đọc đến cuối, nhưng không thể đánh dấu bài là đã hoàn thành.",
+      "retryCompletion": "Thử lại"
+    },
+    "progress": {
+      "label": "Tiến độ đọc: {{label}}",
+      "complete": "Hoàn thành",
+      "percent": "Đã đọc {{value}}%"
+    },
+    "meta": {
+      "by": "Tác giả: {{name}}"
+    },
+    "vocabulary": {
+      "panelTitle": "Từ vựng",
+      "noHighlights": "Không có từ nào được tô sáng theo trình độ hiện tại. Bạn vẫn có thể tra cứu từ vựng được chuẩn bị cho bài này.",
+      "hasHighlights": "Các từ được tô sáng phù hợp với trình độ học tập của bạn. Bật tra cứu để khám phá toàn bộ từ vựng được chuẩn bị, kể cả các từ dễ hơn.",
+      "turnOn": "Bật tra cứu từ vựng",
+      "turnOff": "Tắt tra cứu từ vựng",
+      "statusOff": "Tra cứu từ vựng đang tắt.",
+      "statusOn": "Đã bật tra cứu. Chọn một từ được đánh dấu trong bài.",
+      "statusSelected": "Đã chọn từ. Nhấn lại để mở lại thông tin.",
+      "statusOpen": "Thông tin từ vựng đang mở."
+    },
+    "termInstructions": "Từ vựng. Nhấn Enter hoặc Space để chọn. Dùng phím mũi tên để di chuyển giữa các từ được đánh dấu."
+  },
+  "history": {
+    "title": "Lịch sử đọc",
+    "article_one": "bài viết",
+    "article_other": "bài viết",
+    "progressAriaLabel": "Tiến độ đọc của {{title}}",
+    "lastRead": "Đọc lần cuối {{date}}",
+    "status": {
+      "completed": "Đã hoàn thành",
+      "inProgress": "Đang đọc",
+      "archived": "Đã lưu trữ"
+    },
+    "progress": {
+      "complete": "Đã đọc xong",
+      "inProgress": "Tiến độ đọc"
+    },
+    "actions": {
+      "readAgain": "Đọc lại",
+      "continue": "Tiếp tục đọc",
+      "unavailable": "Bài viết không khả dụng",
+      "reset": "Đặt lại tiến độ"
+    },
+    "filters": {
+      "ariaLabel": "Bộ lọc lịch sử đọc",
+      "status": "Trạng thái",
+      "allStatuses": "Tất cả trạng thái",
+      "inProgress": "Đang đọc",
+      "completed": "Đã hoàn thành",
+      "sort": "Sắp xếp",
+      "recentlyRead": "Đọc gần đây",
+      "oldestActivity": "Hoạt động cũ nhất",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "loading": "Đang tải lịch sử đọc…",
+    "errors": {
+      "invalidFilters": "Các bộ lọc lịch sử này không hợp lệ. Xóa chúng và thử lại.",
+      "loadError": "Không thể tải lịch sử đọc. Vui lòng thử lại.",
+      "tryAgain": "Thử lại",
+      "resetError": "Không thể đặt lại tiến độ đọc. Vui lòng thử lại."
+    },
+    "empty": {
+      "withFilter": "Không có bài nào khớp bộ lọc này",
+      "withFilterSubtitle": "Chọn trạng thái khác hoặc xóa bộ lọc.",
+      "noHistory": "Lịch sử đọc của bạn đang trống",
+      "noHistorySubtitle": "Mở một bài viết và bắt đầu đọc để xem ở đây.",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "resetDialog": {
+      "title": "Đặt lại tiến độ đọc?",
+      "description": "Bài viết này sẽ bị xóa khỏi lịch sử đọc. Từ vựng đã lưu và lịch sử bài kiểm tra sẽ không bị xóa.",
+      "confirmLabel": "Đặt lại tiến độ"
+    },
+    "pagination": {
+      "ariaLabel": "Trang lịch sử đọc",
+      "resultsAriaLabel": "Kết quả lịch sử đọc"
+    }
+  }
+}

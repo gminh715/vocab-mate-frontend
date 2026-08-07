@@ -186,7 +186,7 @@ export function ArticleRenderer({
       onKeyDown={termsAreInteractive ? handleKeyDown : undefined}
       sx={{
         color: 'text.primary',
-        fontFamily: 'Georgia, "Times New Roman", serif',
+        fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
         fontSize: { xs: 18, sm: 19 },
         lineHeight: 1.88,
         overflowWrap: 'anywhere',

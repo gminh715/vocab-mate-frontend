@@ -138,7 +138,7 @@ const currentUser = {
     avatarUrl: null,
     currentCefrLevel: 'B1',
     learningGoal: null,
-    preferredLanguage: 'vi',
+    preferredLanguage: 'en',
   },
 } as const
 
@@ -264,18 +264,6 @@ describe('HomePage', () => {
     expect(within(card).getByText('~1 min')).toBeInTheDocument()
     expect(within(card).getByRole('link', { name: 'Start Review' })).toHaveAttribute(
       'href',
-      '/review?sessionType=DAILY_REVIEW',
-    )
-  })
-
-  it('navigates from a quick action to daily review', () => {
-    renderDashboard()
-
-    fireEvent.click(
-      screen.getByRole('link', { name: /review due vocabulary/i }),
-    )
-
-    expect(screen.getByLabelText('Current path')).toHaveTextContent(
       '/review?sessionType=DAILY_REVIEW',
     )
   })

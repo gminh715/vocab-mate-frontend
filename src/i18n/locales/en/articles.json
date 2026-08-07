@@ -1,0 +1,138 @@
+{
+  "list": {
+    "heading": "Find your next English read",
+    "article_one": "article",
+    "article_other": "articles",
+    "dateUnavailable": "Date unavailable",
+    "readAriaLabel": "Read {{title}}",
+    "filters": {
+      "ariaLabel": "Article filters",
+      "search": "Search articles",
+      "searchPlaceholder": "Try 'climate' or 'technology'…",
+      "category": "Category",
+      "allCategories": "All categories",
+      "cefrLevel": "CEFR level",
+      "allLevels": "All CEFR levels",
+      "sort": "Sort",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "clearFilters": "Clear filters"
+    },
+    "loading": "Loading articles…",
+    "errors": {
+      "invalidFilters": "These filters are not valid. Clear them and try again.",
+      "loadError": "Articles could not be loaded. Try again.",
+      "tryAgain": "Try again",
+      "categoriesError": "Categories could not be loaded. You can still search all articles.",
+      "retryCategories": "Retry categories"
+    },
+    "empty": {
+      "withFilters": "No articles match these filters",
+      "withFiltersSubtitle": "Try a broader search, another level, or a different category.",
+      "noArticles": "No published articles yet",
+      "noArticlesSubtitle": "New learning reads will appear here when they are published."
+    },
+    "pagination": {
+      "ariaLabel": "Article pages",
+      "resultsAriaLabel": "Article results"
+    }
+  },
+  "reader": {
+    "loading": "Loading article reader…",
+    "notFound": {
+      "title": "Article not found",
+      "subtitle": "This article may be unavailable or no longer published. Choose another article from the library.",
+      "backButton": "Back to articles"
+    },
+    "disabled": {
+      "title": "Reading unavailable",
+      "alert": "This account is suspended or disabled. Contact an administrator for help.",
+      "backButton": "Back to articles"
+    },
+    "backButton": "← Back to articles",
+    "errors": {
+      "invalidAddress": "This article address is not valid. Return to the article library and choose another article.",
+      "loadError": "The article reader could not be loaded. Try again.",
+      "tryAgain": "Try again",
+      "contentUnavailable": "Article content is currently unavailable.",
+      "completionFailed": "You reached the end, but the article could not be marked complete.",
+      "retryCompletion": "Try again"
+    },
+    "progress": {
+      "label": "Reading progress: {{label}}",
+      "complete": "Complete",
+      "percent": "{{value}}% read"
+    },
+    "meta": {
+      "by": "By {{name}}"
+    },
+    "vocabulary": {
+      "panelTitle": "Vocabulary",
+      "noHighlights": "No terms are highlighted for your current level. You can still look up vocabulary prepared for this article.",
+      "hasHighlights": "Highlighted words match your learning level. Turn on lookup to explore any vocabulary prepared for this article, including easier terms.",
+      "turnOn": "Turn on vocabulary lookup",
+      "turnOff": "Turn off vocabulary lookup",
+      "statusOff": "Vocabulary lookup is off.",
+      "statusOn": "Lookup is on. Select a marked word in the article.",
+      "statusSelected": "Term selected. Activate it again to reopen details.",
+      "statusOpen": "Vocabulary details are open."
+    },
+    "termInstructions": "Vocabulary term. Press Enter or Space to select it. Use arrow keys to move between marked terms."
+  },
+  "history": {
+    "title": "Reading history",
+    "article_one": "article",
+    "article_other": "articles",
+    "progressAriaLabel": "Reading progress for {{title}}",
+    "lastRead": "Last read {{date}}",
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "archived": "Archived"
+    },
+    "progress": {
+      "complete": "Reading complete",
+      "inProgress": "Reading progress"
+    },
+    "actions": {
+      "readAgain": "Read again",
+      "continue": "Continue reading",
+      "unavailable": "Article unavailable",
+      "reset": "Reset progress"
+    },
+    "filters": {
+      "ariaLabel": "Reading history filters",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "sort": "Sort",
+      "recentlyRead": "Recently read",
+      "oldestActivity": "Oldest activity",
+      "clearFilters": "Clear filters"
+    },
+    "loading": "Loading reading history…",
+    "errors": {
+      "invalidFilters": "These history filters are not valid. Clear them and try again.",
+      "loadError": "Reading history could not be loaded. Try again.",
+      "tryAgain": "Try again",
+      "resetError": "Reading progress could not be reset. Try again."
+    },
+    "empty": {
+      "withFilter": "No reading matches this filter",
+      "withFilterSubtitle": "Choose another status or clear the filter.",
+      "noHistory": "Your reading history is empty",
+      "noHistorySubtitle": "Open an article and start reading to see it here.",
+      "clearFilters": "Clear filters"
+    },
+    "resetDialog": {
+      "title": "Reset Reading Progress?",
+      "description": "This article will be removed from reading history. Saved vocabulary and quiz history will not be deleted.",
+      "confirmLabel": "Reset Progress"
+    },
+    "pagination": {
+      "ariaLabel": "Reading history pages",
+      "resultsAriaLabel": "Reading history results"
+    }
+  }
+}

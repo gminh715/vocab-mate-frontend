@@ -1,0 +1,100 @@
+{
+  "title": "Phân Tích Chi Tiết",
+  "filters": {
+    "timePeriod": "Khoảng thời gian:",
+    "default30": "30 Ngày (Mặc định)",
+    "days7": "7 Ngày",
+    "days90": "90 Ngày",
+    "customDates": "Tùy chỉnh ngày",
+    "hideCustomDates": "Ẩn tùy chỉnh",
+    "reset": "Đặt lại",
+    "from": "Từ ngày",
+    "to": "Đến ngày (không bao gồm)",
+    "interval": "Khoảng thời gian",
+    "automatic": "Tự động",
+    "daily": "Theo ngày",
+    "weekly": "Theo tuần",
+    "monthly": "Theo tháng",
+    "rangeErrorSuffix": "Các yêu cầu phân tích tạm dừng.",
+    "filteredToArticle": "Phân tích bài kiểm tra theo bài đọc:"
+  },
+  "tabs": {
+    "vocabularyGrowth": "Tăng Trưởng Từ Vựng",
+    "readingProgress": "Tiến Độ Đọc",
+    "quizPerformance": "Kết Quả Kiểm Tra"
+  },
+  "sections": {
+    "vocabulary": {
+      "eyebrow": "Từ Vựng",
+      "title": "Tăng Trưởng Từ Vựng",
+      "refreshingLabel": "Đang làm mới tăng trưởng từ vựng",
+      "loadingLabel": "Đang tải tăng trưởng từ vựng"
+    },
+    "reading": {
+      "eyebrow": "Đọc Hiểu",
+      "title": "Tiến Độ Đọc",
+      "refreshingLabel": "Đang làm mới tiến độ đọc",
+      "loadingLabel": "Đang tải tiến độ đọc"
+    },
+    "quiz": {
+      "eyebrow": "Kiểm Tra",
+      "title": "Kết Quả Kiểm Tra",
+      "refreshingLabel": "Đang làm mới kết quả kiểm tra",
+      "loadingLabel": "Đang tải kết quả kiểm tra"
+    }
+  },
+  "errors": {
+    "invalidFilters": "Các bộ lọc phân tích không hợp lệ. Hãy kiểm tra khoảng ngày và thử lại.",
+    "loadError": "Không thể tải phần phân tích này. Vui lòng thử lại.",
+    "fixDateRange": "Hãy sửa khoảng thời gian chung để tải phần này.",
+    "tryAgain": "Thử lại"
+  },
+  "vocabulary": {
+    "totalSaved": "Tổng đã lưu",
+    "totalSavedDetail": "Kho từ vựng hiện tại",
+    "dueNow": "Cần ôn ngay",
+    "dueNowDetail": "Lịch ôn tập hiện tại",
+    "mastered": "Đã thành thạo",
+    "masteredDetail": "Kho từ đã thành thạo",
+    "learningStatus": "Trạng thái học tập",
+    "cefrDistribution": "Phân bổ theo CEFR",
+    "savedTrend": "Xu hướng lưu từ vựng",
+    "savedTrendLegend": "Chú giải xu hướng lưu từ vựng",
+    "vocabularySaved": "Từ đã lưu",
+    "wordsSaved": "Từ đã lưu",
+    "noDistributionActivity": "Không có dữ liệu cho phân bổ này.",
+    "noTrendActivity": "Không có hoạt động lưu từ vựng nào được ghi nhận."
+  },
+  "reading": {
+    "articlesOpened": "Bài đọc đã mở",
+    "articlesOpenedDetail": "Đã mở trong giai đoạn này",
+    "articlesCompleted": "Bài đọc hoàn thành",
+    "articlesCompletedDetail": "Hồ sơ hoàn thành",
+    "completionRate": "Tỷ lệ hoàn thành",
+    "completionRateDetailEmpty": "Chưa có bài đọc nào được mở",
+    "completionRateDetail": "Hoàn thành ÷ đã mở",
+    "byCategory": "Đọc theo danh mục",
+    "readingActivityTrend": "Xu hướng hoạt động đọc",
+    "readingActivityLegend": "Chú giải xu hướng đọc",
+    "opened": "Đã mở",
+    "completed": "Hoàn thành",
+    "articles": "Bài đọc",
+    "noTrendActivity": "Không có dữ liệu cho xu hướng này."
+  },
+  "quiz": {
+    "completedSessions": "Phiên hoàn thành",
+    "completedSessionsDetail": "Không tính phiên đang dở và bỏ dở",
+    "accuracy": "Độ chính xác",
+    "accuracyDetail": "Câu đúng ÷ tổng câu",
+    "averageScore": "Điểm trung bình",
+    "averageScoreDetail": "Điểm phiên hoàn thành đã chuẩn hóa",
+    "byQuestionType": "Hiệu suất theo loại câu hỏi",
+    "performanceTrend": "Xu hướng kết quả kiểm tra",
+    "trendPeriod": "Giai đoạn",
+    "trendSessions": "Phiên",
+    "trendAccuracy": "Độ chính xác",
+    "trendAverageScore": "Điểm trung bình",
+    "noDistributionActivity": "Không có dữ liệu cho phân bổ này.",
+    "noTrendActivity": "Không có dữ liệu cho xu hướng này."
+  }
+}

@@ -61,7 +61,7 @@ function AdminNavigation({ onNavigate }: AdminNavigationProps) {
             borderRadius: 2,
             color: 'primary.contrastText',
             bgcolor: 'primary.main',
-            fontFamily: 'Georgia, serif',
+            fontFamily: '"Merriweather", serif',
             fontSize: 21,
             fontWeight: 700,
           }}
@@ -72,7 +72,7 @@ function AdminNavigation({ onNavigate }: AdminNavigationProps) {
           <Typography
             sx={{
               color: 'text.primary',
-              fontFamily: 'Georgia, serif',
+              fontFamily: '"Merriweather", serif',
               fontSize: 20,
               fontWeight: 700,
               lineHeight: 1.15,

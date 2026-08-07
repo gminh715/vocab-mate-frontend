@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { SettingsNavigation } from '@/components/User/SettingsNavigation'
 import { normalizeApiError } from '@/config/apiClient'
 import {
@@ -27,14 +28,18 @@ interface PasswordVisibilityButtonProps {
   fieldLabel: string
   visible: boolean
   onToggle: () => void
+  showLabel: string
+  hideLabel: string
 }
 
 function PasswordVisibilityButton({
   fieldLabel,
   visible,
   onToggle,
+  showLabel,
+  hideLabel,
 }: PasswordVisibilityButtonProps) {
-  const action = visible ? 'Hide' : 'Show'
+  const action = visible ? hideLabel : showLabel
 
   return (
     <Button
@@ -52,20 +57,21 @@ function PasswordVisibilityButton({
   )
 }
 
-const safePasswordError = (error: unknown): string | null => {
+const safePasswordError = (error: unknown, serverMsg: string, genericMsg: string): string | null => {
   const apiError = normalizeApiError(error)
 
   if (apiError.status === 0) return apiError.message
   if (apiError.status >= 500) {
-    return 'Password could not be changed right now. Try again.'
+    return serverMsg
   }
   if (apiError.status !== 400 && apiError.status !== 401) {
-    return 'Password could not be changed. Try again.'
+    return genericMsg
   }
   return null
 }
 
 export function SecuritySettingsPage() {
+  const { t } = useTranslation('profile')
   const changePasswordMutation = useChangePasswordMutation()
   const clearSession = useClearAuthSession()
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
@@ -101,7 +107,17 @@ export function SecuritySettingsPage() {
       clearSession('PASSWORD_CHANGED')
     } catch (error: unknown) {
       const apiError = normalizeApiError(error)
-      const safeFormError = safePasswordError(error)
+      const safeFormError = safePasswordError(
+        error,
+        t(
+          'security.errors.serverError',
+          'Password could not be changed right now. Try again.',
+        ),
+        t(
+          'security.errors.genericError',
+          'Password could not be changed. Try again.',
+        ),
+      )
       changePasswordMutation.reset()
 
       if (apiError.status === 401) {
@@ -109,8 +125,10 @@ export function SecuritySettingsPage() {
           'currentPassword',
           {
             type: 'server',
-            message:
+            message: t(
+              'security.form.currentPasswordIncorrect',
               'Current password is incorrect. Check it and try again.',
+            ),
           },
           { shouldFocus: true },
         )
@@ -137,169 +155,182 @@ export function SecuritySettingsPage() {
   })
 
   return (
-    <Stack spacing={{ xs: 3, md: 4 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        gap: { xs: 3, md: 4 },
+        alignItems: 'flex-start',
+      }}
+    >
       <SettingsNavigation />
+      <Stack spacing={{ xs: 3, md: 4 }} sx={{ flexGrow: 1, width: '100%', minWidth: 0 }}>
+        <Box>
+          <Typography
+            component="h1"
+            variant="h1"
+            sx={{
+              fontSize: { xs: 38, md: 50 },
+              textWrap: 'balance',
+            }}
+          >
+            {t('security.title', 'Account security')}
+          </Typography>
+        </Box>
 
-      <Box>
-        <Typography
+        <Box
           sx={{
-            color: 'primary.main',
-            fontSize: 12,
-            fontWeight: 850,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
+            width: '100%',
+            maxWidth: 760,
           }}
         >
-          Account protection
-        </Typography>
-        <Typography
-          component="h1"
-          variant="h1"
-          sx={{
-            mt: 0.5,
-            fontSize: { xs: 38, md: 50 },
-            textWrap: 'balance',
-          }}
-        >
-          Account security
-        </Typography>
-        <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 680 }}>
-          Choose a strong password you do not use elsewhere. After the
-          change, this session ends and you will sign in again.
-        </Typography>
-      </Box>
+          <Paper
+            component="form"
+            variant="outlined"
+            onSubmit={submit}
+            noValidate
+            sx={{ p: { xs: 2.5, sm: 3.5 } }}
+          >
+            <Stack spacing={2.5}>
+              <Box>
+                <Typography variant="h2" sx={{ fontSize: 27 }}>
+                  {t('security.form.title', 'Change password')}
+                </Typography>
+                <Typography color="text.secondary" sx={{ mt: 0.75 }}>
+                  {t('security.form.subtitle', 'All fields are required.')}
+                </Typography>
+              </Box>
 
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: 760,
-        }}
-      >
-        <Paper
-          component="form"
-          variant="outlined"
-          onSubmit={submit}
-          noValidate
-          sx={{ p: { xs: 2.5, sm: 3.5 } }}
-        >
-          <Stack spacing={2.5}>
-            <Box>
-              <Typography variant="h2" sx={{ fontSize: 27 }}>
-                Change password
-              </Typography>
-              <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-                All fields are required.
-              </Typography>
-            </Box>
+              {formError ? (
+                <Alert severity="error" role="alert">
+                  {formError}
+                </Alert>
+              ) : null}
 
-            {formError ? (
-              <Alert severity="error" role="alert">
-                {formError}
-              </Alert>
-            ) : null}
+              <TextField
+                label={t('security.form.currentPassword', 'Current password')}
+                type={showCurrentPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                error={Boolean(errors.currentPassword)}
+                helperText={errors.currentPassword?.message}
+                slotProps={{
+                  htmlInput: { maxLength: 72 },
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <PasswordVisibilityButton
+                          fieldLabel={t(
+                            'security.form.currentPassword',
+                            'Current password',
+                          )}
+                          visible={showCurrentPassword}
+                          showLabel={t('security.visibility.show', 'Show')}
+                          hideLabel={t('security.visibility.hide', 'Hide')}
+                          onToggle={() =>
+                            setShowCurrentPassword((current) => !current)
+                          }
+                        />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                {...register('currentPassword')}
+              />
 
-            <TextField
-              label="Current password"
-              type={showCurrentPassword ? 'text' : 'password'}
-              autoComplete="current-password"
-              error={Boolean(errors.currentPassword)}
-              helperText={errors.currentPassword?.message}
-              slotProps={{
-                htmlInput: { maxLength: 72 },
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <PasswordVisibilityButton
-                        fieldLabel="Current password"
-                        visible={showCurrentPassword}
-                        onToggle={() =>
-                          setShowCurrentPassword((current) => !current)
-                        }
-                      />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              {...register('currentPassword')}
-            />
+              <TextField
+                label={t('security.form.newPassword', 'New password')}
+                type={showNewPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                error={Boolean(errors.newPassword)}
+                helperText={
+                  errors.newPassword?.message ??
+                  t(
+                    'security.form.newPasswordHint',
+                    '8–72 characters with uppercase, lowercase, number, and special character.',
+                  )
+                }
+                slotProps={{
+                  htmlInput: { maxLength: 72 },
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <PasswordVisibilityButton
+                          fieldLabel={t(
+                            'security.form.newPassword',
+                            'New password',
+                          )}
+                          visible={showNewPassword}
+                          showLabel={t('security.visibility.show', 'Show')}
+                          hideLabel={t('security.visibility.hide', 'Hide')}
+                          onToggle={() =>
+                            setShowNewPassword((current) => !current)
+                          }
+                        />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                {...register('newPassword')}
+              />
 
-            <TextField
-              label="New password"
-              type={showNewPassword ? 'text' : 'password'}
-              autoComplete="new-password"
-              error={Boolean(errors.newPassword)}
-              helperText={
-                errors.newPassword?.message ??
-                '8–72 characters with uppercase, lowercase, number, and special character.'
-              }
-              slotProps={{
-                htmlInput: { maxLength: 72 },
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <PasswordVisibilityButton
-                        fieldLabel="New password"
-                        visible={showNewPassword}
-                        onToggle={() =>
-                          setShowNewPassword((current) => !current)
-                        }
-                      />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              {...register('newPassword')}
-            />
+              <TextField
+                label={t(
+                  'security.form.confirmNewPassword',
+                  'Confirm new password',
+                )}
+                type={showConfirmation ? 'text' : 'password'}
+                autoComplete="new-password"
+                error={Boolean(errors.confirmNewPassword)}
+                helperText={errors.confirmNewPassword?.message}
+                slotProps={{
+                  htmlInput: { maxLength: 72 },
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <PasswordVisibilityButton
+                          fieldLabel={t(
+                            'security.form.confirmNewPassword',
+                            'Confirm new password',
+                          )}
+                          visible={showConfirmation}
+                          showLabel={t('security.visibility.show', 'Show')}
+                          hideLabel={t('security.visibility.hide', 'Hide')}
+                          onToggle={() =>
+                            setShowConfirmation((current) => !current)
+                          }
+                        />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                {...register('confirmNewPassword')}
+              />
 
-            <TextField
-              label="Confirm new password"
-              type={showConfirmation ? 'text' : 'password'}
-              autoComplete="new-password"
-              error={Boolean(errors.confirmNewPassword)}
-              helperText={errors.confirmNewPassword?.message}
-              slotProps={{
-                htmlInput: { maxLength: 72 },
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <PasswordVisibilityButton
-                        fieldLabel="Confirm new password"
-                        visible={showConfirmation}
-                        onToggle={() =>
-                          setShowConfirmation((current) => !current)
-                        }
-                      />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              {...register('confirmNewPassword')}
-            />
-
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              disabled={changePasswordMutation.isPending}
-              sx={{ alignSelf: { sm: 'flex-end' } }}
-            >
-              {changePasswordMutation.isPending ? (
-                <>
-                  <CircularProgress
-                    size={18}
-                    color="inherit"
-                    aria-hidden="true"
-                    sx={{ mr: 1 }}
-                  />
-                  Changing password…
-                </>
-              ) : (
-                'Change password'
-              )}
-            </Button>
-          </Stack>
-        </Paper>
-      </Box>
-    </Stack>
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={changePasswordMutation.isPending}
+                sx={{ alignSelf: { sm: 'flex-end' } }}
+              >
+                {changePasswordMutation.isPending ? (
+                  <>
+                    <CircularProgress
+                      size={18}
+                      color="inherit"
+                      aria-hidden="true"
+                      sx={{ mr: 1 }}
+                    />
+                    {t('security.form.changing', 'Changing password…')}
+                  </>
+                ) : (
+                  t('security.form.submit', 'Change password')
+                )}
+              </Button>
+            </Stack>
+          </Paper>
+        </Box>
+      </Stack>
+    </Box>
   )
 }

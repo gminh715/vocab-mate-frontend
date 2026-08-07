@@ -133,7 +133,7 @@ function ReviewShell({ children }: { children: React.ReactNode }) {
           to={routePaths.home}
           sx={{
             color: 'primary.dark',
-            fontFamily: 'Georgia, serif',
+            fontFamily: '"Merriweather", serif',
             fontSize: 22,
             fontWeight: 700,
             textDecoration: 'none',

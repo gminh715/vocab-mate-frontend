@@ -34,7 +34,7 @@ const userAccount: CurrentUser = {
     avatarUrl: null,
     currentCefrLevel: 'B1',
     learningGoal: null,
-    preferredLanguage: 'vi',
+    preferredLanguage: 'en',
   },
 }
 

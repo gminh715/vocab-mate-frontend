@@ -1,19 +1,17 @@
-import { useState } from 'react'
 import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Pagination from '@mui/material/Pagination'
+import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTheme } from '@mui/material/styles'
-import { AddVocabularyToCollectionDialog } from '@/components/Vocabulary/AddVocabularyToCollectionDialog'
+import { useTranslation } from 'react-i18next'
 import { CollectionSidebar } from '@/components/Vocabulary/CollectionSidebar'
 import { DueVocabularyHeader } from '@/components/Vocabulary/DueVocabularyHeader'
 import { VocabularyFilterBar } from '@/components/Vocabulary/VocabularyFilterBar'
@@ -37,11 +35,10 @@ import {
 import { reviewStartPath } from '@/utils/paths'
 
 export function SavedVocabularyPage() {
+  const { t } = useTranslation('vocabulary')
   const [searchParams, setSearchParams] = useSearchParams()
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'))
-
-  const [isAddVocabOpen, setIsAddVocabOpen] = useState(false)
 
   const currentParams = vocabularyParamsFromSearchParams(searchParams)
 
@@ -57,9 +54,6 @@ export function SavedVocabularyPage() {
   const activeCollection = collections.find(
     (c: CollectionListItem) => c.id === currentParams.collectionId,
   )
-  const activeTitle = activeCollection
-    ? activeCollection.name
-    : 'All Saved Vocabulary'
 
   const updateStatusMutation = useUpdateVocabularyStatusMutation()
   const deleteMutation = useDeleteVocabularyMutation()
@@ -122,12 +116,23 @@ export function SavedVocabularyPage() {
 
   return (
     <Container maxWidth="lg" disableGutters sx={{ py: 1 }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 800, mb: 0.5 }}>
-          Saved Vocabulary
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Manage your saved vocabulary snapshots, review due words, and organize collections.
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          pb: { xs: 3, md: 4 },
+          mb: { xs: 3, md: 4 },
+        }}
+      >
+        <Typography
+          component="h1"
+          variant="h1"
+          sx={{
+            fontSize: { xs: 40, sm: 50, md: 58 },
+            textWrap: 'balance',
+          }}
+        >
+          {t('page.title', 'Saved Vocabulary')}
         </Typography>
       </Box>
 
@@ -143,176 +148,155 @@ export function SavedVocabularyPage() {
 
         {/* Right Column: Vocabulary List & Management */}
         <Grid size={{ xs: 12, md: 8.5 }}>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              mb: 2.5,
-              flexWrap: 'wrap',
-            }}
-          >
-            <Typography variant="h5" sx={{ fontWeight: 800 }}>
-              {activeTitle}
-            </Typography>
-
-            <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-              {activeCollection ? (
-                <Button
-                  component={RouterLink}
-                  to={reviewStartPath({
-                    sessionType: 'COLLECTION_REVIEW',
-                    collectionId: activeCollection.id,
-                  })}
-                  variant="contained"
-                >
-                  Review Collection
-                </Button>
-              ) : null}
+          {activeCollection ? (
+            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
               <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => setIsAddVocabOpen(true)}
-                sx={{ fontWeight: 750 }}
+                component={RouterLink}
+                to={reviewStartPath({
+                  sessionType: 'COLLECTION_REVIEW',
+                  collectionId: activeCollection.id,
+                })}
+                variant="contained"
+                size="small"
               >
-                + Add Vocabulary
+                {t('page.reviewCollection')}
               </Button>
-            </Stack>
-          </Stack>
+            </Box>
+          ) : null}
 
           <DueVocabularyHeader
             dueOnly={currentParams.dueOnly}
             onToggleDueOnly={handleToggleDueOnly}
           />
 
-          <VocabularyFilterBar
-            params={currentParams}
-            onFilterChange={handleFilterChange}
-            onClearFilters={handleClearFilters}
-          />
+          <Paper
+            elevation={0}
+            sx={{
+              overflow: 'hidden',
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              bgcolor: 'background.paper',
+            }}
+          >
+            <VocabularyFilterBar
+              params={currentParams}
+              onFilterChange={handleFilterChange}
+              onClearFilters={handleClearFilters}
+            />
 
-          {isError ? (
-            <Alert
-              severity="error"
-              sx={{ mb: 3, borderRadius: 2.5 }}
-              action={
-                <Button color="inherit" size="small" onClick={() => void refetch()}>
-                  Retry
-                </Button>
-              }
-            >
-              Failed to load saved vocabulary list. Check your connection and try again.
-            </Alert>
-          ) : null}
-
-          {isLoading ? (
-            <Stack spacing={2}>
-              {[1, 2, 3, 4].map((key) => (
-                <Skeleton
-                  key={key}
-                  variant="rectangular"
-                  height={100}
-                  sx={{ borderRadius: 3 }}
-                />
-              ))}
-            </Stack>
-          ) : !isError && total === 0 ? (
-            <Card
-              elevation={0}
-              sx={{
-                p: 4,
-                textAlign: 'center',
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-                bgcolor: 'background.paper',
-              }}
-            >
-              <CardContent>
-                {hasActiveFilters ? (
-                  <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      No Vocabulary Found
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 450 }}>
-                      No saved vocabulary matches your selected search filters. Try modifying your criteria or clearing filters.
-                    </Typography>
-                    <Button variant="outlined" color="primary" onClick={handleClearFilters}>
-                      Clear All Filters
+            <Box sx={{ p: { xs: 2, sm: 2.5 } }}>
+              {isError ? (
+                <Alert
+                  severity="error"
+                  sx={{ mb: 3, borderRadius: 2.5 }}
+                  action={
+                    <Button color="inherit" size="small" onClick={() => void refetch()}>
+                      {t('page.error.retry')}
                     </Button>
-                  </Stack>
-                ) : (
-                  <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      No Saved Vocabulary Yet
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 480 }}>
-                      You haven&apos;t saved any vocabulary terms yet. Read articles and click on highlighted words to save vocabulary to your collection!
-                    </Typography>
-                  </Stack>
-                )}
-              </CardContent>
-            </Card>
-          ) : !isError ? (
-            <Stack spacing={3}>
-              {isDesktop ? (
-                <VocabularyItemTable
-                  items={items}
-                  onUpdateStatus={handleUpdateStatus}
-                  onDelete={handleDelete}
-                  updatingId={
-                    updateStatusMutation.isPending
-                      ? updateStatusMutation.variables.userVocabularyId
-                      : null
                   }
-                  deletingId={
-                    deleteMutation.isPending ? deleteMutation.variables : null
-                  }
-                />
-              ) : (
-                <Grid container spacing={2}>
-                  {items.map((item) => (
-                    <Grid key={item.id} size={{ xs: 12 }}>
-                      <VocabularyItemCard
-                        item={item}
-                        onUpdateStatus={handleUpdateStatus}
-                        onDelete={handleDelete}
-                        isUpdating={
-                          updateStatusMutation.isPending &&
-                          updateStatusMutation.variables.userVocabularyId === item.id
-                        }
-                        isDeleting={
-                          deleteMutation.isPending &&
-                          deleteMutation.variables === item.id
-                        }
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
-
-              {totalPages > 1 ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
-                  <Pagination
-                    count={totalPages}
-                    page={currentParams.page}
-                    onChange={handlePageChange}
-                    color="primary"
-                    shape="rounded"
-                    size={isDesktop ? 'medium' : 'small'}
-                  />
-                </Box>
+                >
+                  {t('page.error.load')}
+                </Alert>
               ) : null}
-            </Stack>
-          ) : null}
+
+              {isLoading ? (
+                <Stack spacing={2}>
+                  {[1, 2, 3, 4].map((key) => (
+                    <Skeleton
+                      key={key}
+                      variant="rectangular"
+                      height={100}
+                      sx={{ borderRadius: 3 }}
+                    />
+                  ))}
+                </Stack>
+              ) : !isError && total === 0 ? (
+                <Box
+                  sx={{
+                    p: { xs: 2, sm: 3 },
+                    textAlign: 'center',
+                  }}
+                >
+                  {hasActiveFilters ? (
+                    <Stack spacing={2} sx={{ alignItems: 'center' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                        {t('page.empty.withFiltersTitle')}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 450 }}>
+                        {t('page.empty.withFiltersSubtitle')}
+                      </Typography>
+                      <Button variant="outlined" color="primary" onClick={handleClearFilters}>
+                        {t('page.empty.clearAllFilters')}
+                      </Button>
+                    </Stack>
+                  ) : (
+                    <Stack spacing={2} sx={{ alignItems: 'center' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                        {t('page.empty.noVocabTitle')}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 480 }}>
+                        {t('page.empty.noVocabSubtitle')}
+                      </Typography>
+                    </Stack>
+                  )}
+                </Box>
+              ) : !isError ? (
+                <Stack spacing={3}>
+                  {isDesktop ? (
+                    <VocabularyItemTable
+                      items={items}
+                      onUpdateStatus={handleUpdateStatus}
+                      onDelete={handleDelete}
+                      updatingId={
+                        updateStatusMutation.isPending
+                          ? updateStatusMutation.variables.userVocabularyId
+                          : null
+                      }
+                      deletingId={
+                        deleteMutation.isPending ? deleteMutation.variables : null
+                      }
+                    />
+                  ) : (
+                    <Grid container spacing={2}>
+                      {items.map((item) => (
+                        <Grid key={item.id} size={{ xs: 12 }}>
+                          <VocabularyItemCard
+                            item={item}
+                            onUpdateStatus={handleUpdateStatus}
+                            onDelete={handleDelete}
+                            isUpdating={
+                              updateStatusMutation.isPending &&
+                              updateStatusMutation.variables.userVocabularyId === item.id
+                            }
+                            isDeleting={
+                              deleteMutation.isPending &&
+                              deleteMutation.variables === item.id
+                            }
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  )}
+
+                  {totalPages > 1 ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
+                      <Pagination
+                        count={totalPages}
+                        page={currentParams.page}
+                        onChange={handlePageChange}
+                        color="primary"
+                        shape="rounded"
+                        size={isDesktop ? 'medium' : 'small'}
+                      />
+                    </Box>
+                  ) : null}
+                </Stack>
+              ) : null}
+            </Box>
+          </Paper>
         </Grid>
       </Grid>
-      <AddVocabularyToCollectionDialog
-        open={isAddVocabOpen}
-        onClose={() => setIsAddVocabOpen(false)}
-        defaultCollectionId={currentParams.collectionId}
-      />
     </Container>
   )
 }

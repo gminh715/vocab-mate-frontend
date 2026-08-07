@@ -31,7 +31,8 @@ export interface AdminNewsSearchData {
 
 export interface AdminNewsSyncRequest
   extends Omit<AdminNewsSearchParams, 'page'> {
-  defaultCategoryId: string
+  defaultCategoryId?: string
+  articleIds?: string[]
 }
 
 export type NewsSyncItemStatus =

@@ -1,0 +1,111 @@
+{
+  "nav": {
+    "skipToContent": "Bỏ qua đến nội dung chính",
+    "home": "Trang chủ",
+    "articles": "Bài đọc",
+    "readingHistory": "Lịch sử đọc",
+    "vocabulary": "Từ vựng",
+    "admin": "Quản trị",
+    "profileSettings": "Cài đặt hồ sơ",
+    "languageSettings": "Cài đặt ngôn ngữ",
+    "languageCurrent": "Hiện tại: {{current}} · Chuyển sang {{target}}",
+    "languageUpdated": "Đã đổi ngôn ngữ ưu tiên sang {{language}}.",
+    "languageError": "Không thể cập nhật ngôn ngữ ưu tiên. Vui lòng thử lại.",
+    "signOut": "Đăng xuất",
+    "signingOut": "Đang đăng xuất…",
+    "signIn": "Đăng nhập"
+  },
+  "header": {
+    "chip": "Bảng Học Tập",
+    "welcome": "Chào mừng trở lại, {{name}}.",
+    "continueLearning": "Tiếp Tục Học",
+    "browseArticles": "Khám Phá Bài Đọc"
+  },
+  "overview": {
+    "title": "Tổng Quan",
+    "rangeErrorAlert": "Hãy sửa khoảng thời gian phân tích bên dưới để tải tổng quan.",
+    "errorMessage": "Không thể tải tổng quan học tập. Vui lòng thử lại.",
+    "errorInvalidRange": "Khoảng thời gian phân tích không hợp lệ. Hãy tải lại trang để dùng phạm vi mặc định.",
+    "tryAgain": "Thử lại",
+    "metrics": {
+      "savedVocabulary": {
+        "label": "Từ đã lưu",
+        "detail": "Từ trong thư viện của bạn"
+      },
+      "dueToday": {
+        "label": "Ôn hôm nay",
+        "detail": "Sẵn sàng ôn tập hàng ngày"
+      },
+      "mastered": {
+        "label": "Đã thành thạo",
+        "detail": "Từ vựng đã thành thạo"
+      },
+      "articlesCompleted": {
+        "label": "Bài đọc hoàn thành",
+        "detail": "Bài đọc đã đọc xong"
+      },
+      "quizAccuracy": {
+        "label": "Độ chính xác",
+        "detail": "Điểm trung bình bài kiểm tra"
+      },
+      "sessions": {
+        "label": "Phiên ôn tập",
+        "detail": "Phiên ôn tập đã hoàn thành"
+      }
+    }
+  },
+  "empty": {
+    "title": "Bắt đầu hành trình học tập",
+    "subtitle": "Ba mốc nhỏ sẽ làm bảng điều khiển này trở nên sống động.",
+    "cta": "Tìm bài đọc đầu tiên",
+    "steps": {
+      "0": {
+        "title": "Đọc bài đầu tiên",
+        "body": "Chọn một bài đọc phù hợp với trình độ và bắt đầu hành trình của bạn."
+      },
+      "1": {
+        "title": "Lưu từ vựng hữu ích",
+        "body": "Chọn các từ được chuẩn bị sẵn trong khi đọc để xây dựng danh sách ôn tập."
+      },
+      "2": {
+        "title": "Hoàn thành bài kiểm tra đầu tiên",
+        "body": "Khi bài đọc có bài kiểm tra, hãy làm xong để bắt đầu theo dõi độ chính xác."
+      }
+    }
+  },
+  "continueReading": {
+    "title": "Tiếp Tục Đọc",
+    "historyButton": "Lịch sử đọc",
+    "loadingLabel": "Đang tải bài đọc đang dở",
+    "lastRead": "Đọc lần cuối {{date}}",
+    "archived": "Đã lưu trữ · Đọc lần cuối {{date}}",
+    "continueLabel": "Tiếp tục đọc {{title}}",
+    "empty": {
+      "title": "Chưa có bài đọc nào đang chờ",
+      "subtitle": "Bắt đầu một bài đọc và nó sẽ xuất hiện ở đây cho đến khi bạn hoàn thành.",
+      "cta": "Khám phá bài đọc"
+    },
+    "errorMessage": "Tổng quan vẫn khả dụng, nhưng không thể tải bài đọc đang dở.",
+    "tryAgain": "Thử lại"
+  },
+  "review": {
+    "loadingLabel": "Đang tải bài ôn hôm nay",
+    "errorMessage": "Không thể tải thông tin ôn tập.",
+    "dailyReview": "Ôn Tập Hàng Ngày",
+    "sessionInProgress": "Phiên đang diễn ra",
+    "readyChip": "Sẵn sàng",
+    "pickUpTitle": "Tiếp tục từ chỗ bạn dừng",
+    "keepWordsTitle": "Giữ từ quen thuộc trong tầm tay",
+    "wordReady_one": "từ sẵn sàng",
+    "wordReady_other": "từ sẵn sàng",
+    "estTime": "thời gian ôn ước tính",
+    "resumeReview": "Tiếp Tục Ôn",
+    "startReview": "Bắt Đầu Ôn",
+    "noReviewsDue": "Không Có Bài Ôn"
+  },
+  "accessibility": {
+    "loadingOverview": "Đang tải tổng quan học tập",
+    "loadingArticles": "Đang tải bài đọc đang dở",
+    "viewMetric": "Xem {{label}}"
+  }
+}

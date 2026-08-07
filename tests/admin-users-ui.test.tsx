@@ -25,7 +25,7 @@ const detail: AdminUserDetail = {
     avatarUrl: null,
     currentCefrLevel: 'B2',
     learningGoal: 'Read one article each day',
-    preferredLanguage: 'vi',
+    preferredLanguage: 'en',
   },
   learningSummary: {
     savedVocabularyCount: 12,

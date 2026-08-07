@@ -52,7 +52,7 @@ export function ArticleCover({
           <Typography
             sx={{
               color: 'primary.dark',
-              fontFamily: 'Georgia, serif',
+              fontFamily: '"Merriweather", serif',
               fontSize: 48,
               fontWeight: 700,
             }}

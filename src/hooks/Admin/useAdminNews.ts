@@ -25,7 +25,6 @@ export const adminNewsSearchQueryOptions = (
   queryOptions({
     queryKey: adminNewsQueryKeys.search(params),
     queryFn: () => adminNewsApi.search(params),
-    enabled: Boolean(params.q || params.section),
     placeholderData: keepPreviousData,
     retry: false,
   })

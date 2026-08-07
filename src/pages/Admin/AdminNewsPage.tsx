@@ -2,9 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import Link from '@mui/material/Link'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
@@ -106,11 +108,12 @@ const syncStatusColor = (
 export function AdminNewsPage() {
   const [urlSearchParams, setUrlSearchParams] = useSearchParams()
   const params = searchParamsFromUrl(urlSearchParams)
-  const hasSearch = Boolean(params.q || params.section)
   const searchQuery = useAdminNewsSearchQuery(params)
   const syncMutation = useAdminNewsSyncMutation()
   const categoriesQuery = useAdminCategoryOptionsQuery(true)
   const [categoryId, setCategoryId] = useState('')
+  const [selectedArticleIds, setSelectedArticleIds] = useState<string[]>([])
+
   const {
     control,
     register,
@@ -133,6 +136,7 @@ export function AdminNewsPage() {
 
   const submitSearch = (values: AdminNewsSearchFormOutput) => {
     syncMutation.reset()
+    setSelectedArticleIds([])
     const next = new URLSearchParams()
     if (values.q) next.set('q', values.q)
     if (values.section) next.set('section', values.section)
@@ -153,17 +157,65 @@ export function AdminNewsPage() {
     })
   }
 
-  const runSync = () => {
-    if (!categoryId) return
-    syncMutation.mutate({
-      ...(params.q ? { q: params.q } : {}),
-      ...(params.section ? { section: params.section } : {}),
-      ...(params.fromDate ? { fromDate: params.fromDate } : {}),
-      ...(params.toDate ? { toDate: params.toDate } : {}),
-      orderBy: params.orderBy,
-      pageSize: Math.min(params.pageSize, 5),
-      defaultCategoryId: categoryId,
-    })
+  const toggleSelectArticle = (externalId: string) => {
+    setSelectedArticleIds((current) =>
+      current.includes(externalId)
+        ? current.filter((id) => id !== externalId)
+        : [...current, externalId],
+    )
+  }
+
+  const articlesOnPage = searchQuery.data?.articles ?? []
+  const allPageIds = articlesOnPage.map((a) => a.externalId)
+  const isAllPageSelected =
+    allPageIds.length > 0 &&
+    allPageIds.every((id) => selectedArticleIds.includes(id))
+
+  const toggleSelectAll = () => {
+    if (isAllPageSelected) {
+      setSelectedArticleIds((current) =>
+        current.filter((id) => !allPageIds.includes(id)),
+      )
+    } else {
+      setSelectedArticleIds((current) =>
+        Array.from(new Set([...current, ...allPageIds])),
+      )
+    }
+  }
+
+  const runSync = (idsToSync?: string[]) => {
+    const articleIds =
+      idsToSync && idsToSync.length > 0
+        ? idsToSync
+        : selectedArticleIds.length > 0
+          ? selectedArticleIds
+          : undefined
+
+    syncMutation.mutate(
+      {
+        ...(params.q ? { q: params.q } : {}),
+        ...(params.section ? { section: params.section } : {}),
+        ...(params.fromDate ? { fromDate: params.fromDate } : {}),
+        ...(params.toDate ? { toDate: params.toDate } : {}),
+        orderBy: params.orderBy,
+        pageSize: articleIds?.length
+          ? articleIds.length
+          : Math.min(params.pageSize, 5),
+        ...(categoryId ? { defaultCategoryId: categoryId } : {}),
+        ...(articleIds?.length ? { articleIds } : {}),
+      },
+      {
+        onSuccess: () => {
+          if (idsToSync) {
+            setSelectedArticleIds((current) =>
+              current.filter((id) => !idsToSync.includes(id)),
+            )
+          } else {
+            setSelectedArticleIds([])
+          }
+        },
+      },
+    )
   }
 
   return (
@@ -193,12 +245,11 @@ export function AdminNewsPage() {
             Find source articles
           </Typography>
           <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 720 }}>
-            Review Guardian metadata, then import a small result page as draft
-            articles. Publication always remains a separate admin action.
+            Browse Guardian news articles, select specific stories across pages, and import them directly into draft articles. Categories are automatically matched from Guardian sections.
           </Typography>
         </Box>
         <Chip
-          label="Guardian · max 5 imports per sync"
+          label="Guardian intake"
           color="primary"
           variant="outlined"
           sx={{ alignSelf: { xs: 'flex-start', md: 'center' } }}
@@ -227,14 +278,14 @@ export function AdminNewsPage() {
             }}
           >
             <TextField
-              label="Search phrase"
+              label="Search phrase (optional)"
               placeholder="climate technology"
               error={Boolean(errors.q)}
               helperText={errors.q?.message}
               {...register('q')}
             />
             <TextField
-              label="Guardian section"
+              label="Guardian section (optional)"
               placeholder="technology"
               error={Boolean(errors.section)}
               helperText={errors.section?.message}
@@ -273,27 +324,16 @@ export function AdminNewsPage() {
               disabled={searchQuery.isFetching}
               sx={{ minHeight: 56 }}
             >
-              {searchQuery.isFetching ? 'Searching…' : 'Search Guardian'}
+              {searchQuery.isFetching ? 'Searching…' : 'Filter Guardian'}
             </Button>
           </Box>
           <Typography color="text.secondary" variant="body2">
-            Results contain metadata only. Article body HTML is requested and
-            sanitized by the backend only when you import.
+            Articles are fetched live from The Guardian. Select articles to import — category is automatically matched to each story's section.
           </Typography>
         </Stack>
       </Paper>
 
-      {!hasSearch ? (
-        <Paper variant="outlined" sx={{ p: { xs: 3, md: 5 } }}>
-          <Typography variant="h2" sx={{ fontSize: 27 }}>
-            Start with a focused search
-          </Typography>
-          <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 620 }}>
-            Enter a phrase or section. Keeping searches narrow protects the
-            Guardian Developer quota and makes editorial review easier.
-          </Typography>
-        </Paper>
-      ) : searchQuery.isPending ? (
+      {searchQuery.isPending ? (
         <Paper
           variant="outlined"
           sx={{ minHeight: 280, display: 'grid', placeItems: 'center' }}
@@ -301,7 +341,7 @@ export function AdminNewsPage() {
           <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
             <CircularProgress size={32} />
             <Typography color="text.secondary">
-              Searching Guardian…
+              Loading Guardian articles…
             </Typography>
           </Stack>
         </Paper>
@@ -326,12 +366,39 @@ export function AdminNewsPage() {
             >
               <Box>
                 <Typography sx={{ fontWeight: 800 }}>
-                  {searchQuery.data.totalArticles.toLocaleString()} matches
+                  {searchQuery.data.totalArticles.toLocaleString()} Guardian articles
                 </Typography>
-                <Typography color="text.secondary" variant="body2">
-                  Importing repeats these discovery filters for the first five
-                  matching items.
-                </Typography>
+                {articlesOnPage.length > 0 ? (
+                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mt: 0.5 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={isAllPageSelected}
+                          indeterminate={
+                            selectedArticleIds.some((id) => allPageIds.includes(id)) &&
+                            !isAllPageSelected
+                          }
+                          onChange={toggleSelectAll}
+                        />
+                      }
+                      label={
+                        selectedArticleIds.length > 0
+                          ? `Selected ${selectedArticleIds.length} article(s)`
+                          : 'Select all on page'
+                      }
+                      sx={{ m: 0 }}
+                    />
+                    {selectedArticleIds.length > 0 ? (
+                      <Button
+                        size="small"
+                        color="inherit"
+                        onClick={() => setSelectedArticleIds([])}
+                      >
+                        Clear selection
+                      </Button>
+                    ) : null}
+                  </Stack>
+                ) : null}
               </Box>
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
@@ -341,12 +408,12 @@ export function AdminNewsPage() {
                 <TextField
                   select
                   fullWidth
-                  label="Default category"
+                  label="Category (optional override)"
                   value={categoryId}
                   disabled={categoriesQuery.isPending}
                   onChange={(event) => setCategoryId(event.target.value)}
                 >
-                  <MenuItem value="">Choose a category</MenuItem>
+                  <MenuItem value="">Auto-detect from Guardian section</MenuItem>
                   {categoriesQuery.data?.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
                       {category.name}
@@ -355,20 +422,18 @@ export function AdminNewsPage() {
                 </TextField>
                 <Button
                   variant="contained"
-                  disabled={!categoryId || syncMutation.isPending}
-                  onClick={runSync}
-                  sx={{ minWidth: 150 }}
+                  disabled={syncMutation.isPending}
+                  onClick={() => runSync()}
+                  sx={{ minWidth: 160 }}
                 >
-                  {syncMutation.isPending ? 'Importing…' : 'Import drafts'}
+                  {syncMutation.isPending
+                    ? 'Importing…'
+                    : selectedArticleIds.length > 0
+                      ? `Import selected (${selectedArticleIds.length})`
+                      : 'Import drafts'}
                 </Button>
               </Stack>
             </Stack>
-            {categoriesQuery.isError ? (
-              <Alert severity="error" sx={{ mt: 2 }}>
-                Categories could not be loaded. Create or activate a category
-                before importing.
-              </Alert>
-            ) : null}
           </Paper>
 
           {syncMutation.isError ? (
@@ -451,96 +516,129 @@ export function AdminNewsPage() {
             </Paper>
           ) : (
             <Stack spacing={1.5}>
-              {searchQuery.data.articles.map((article, index) => (
-                <Paper
-                  key={article.externalId}
-                  component="article"
-                  variant="outlined"
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: {
-                      xs: '4px minmax(0, 1fr)',
-                      sm: '4px 152px minmax(0, 1fr)',
-                    },
-                    overflow: 'hidden',
-                  }}
-                >
-                  <Box
-                    aria-hidden="true"
-                    sx={{ bgcolor: index === 0 ? 'secondary.main' : 'primary.main' }}
-                  />
-                  {article.imageUrl ? (
-                    <Box
-                      component="img"
-                      src={article.imageUrl}
-                      alt=""
-                      loading="lazy"
-                      referrerPolicy="no-referrer"
-                      sx={{
-                        display: { xs: 'none', sm: 'block' },
-                        width: '100%',
-                        height: '100%',
-                        minHeight: 170,
-                        objectFit: 'cover',
-                      }}
-                    />
-                  ) : (
+              {searchQuery.data.articles.map((article, index) => {
+                const isSelected = selectedArticleIds.includes(article.externalId)
+
+                return (
+                  <Paper
+                    key={article.externalId}
+                    component="article"
+                    variant="outlined"
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: {
+                        xs: '4px minmax(0, 1fr)',
+                        sm: '4px 152px minmax(0, 1fr)',
+                      },
+                      overflow: 'hidden',
+                      borderColor: isSelected ? 'primary.main' : 'divider',
+                      borderWidth: isSelected ? 2 : 1,
+                    }}
+                  >
                     <Box
                       aria-hidden="true"
-                      sx={{
-                        display: { xs: 'none', sm: 'grid' },
-                        minHeight: 170,
-                        placeItems: 'center',
-                        bgcolor: 'primary.light',
-                        color: 'primary.dark',
-                        fontFamily: 'Georgia, serif',
-                        fontSize: 36,
-                      }}
-                    >
-                      G
-                    </Box>
-                  )}
-                  <Stack spacing={1.25} sx={{ p: { xs: 2.5, md: 3 } }}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ flexWrap: 'wrap', alignItems: 'center' }}
-                    >
-                      <Chip
-                        size="small"
-                        label={article.sectionName ?? 'Guardian'}
-                        variant="outlined"
+                      sx={{ bgcolor: index === 0 ? 'secondary.main' : 'primary.main' }}
+                    />
+                    {article.imageUrl ? (
+                      <Box
+                        component="img"
+                        src={article.imageUrl}
+                        alt=""
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        sx={{
+                          display: { xs: 'none', sm: 'block' },
+                          width: '100%',
+                          height: '100%',
+                          minHeight: 170,
+                          objectFit: 'cover',
+                        }}
                       />
-                      <Typography color="text.secondary" variant="caption">
-                        {formatDate(article.publishedAt)}
-                      </Typography>
-                    </Stack>
-                    <Typography component="h2" variant="h2" sx={{ fontSize: 24 }}>
-                      {article.title}
-                    </Typography>
-                    <Typography color="text.secondary">
-                      {article.description}
-                    </Typography>
-                    <Stack
-                      direction={{ xs: 'column', sm: 'row' }}
-                      spacing={1}
-                      sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' } }}
-                    >
-                      <Typography variant="body2">
-                        {article.authorName ?? article.sourceName}
-                      </Typography>
-                      <Link
-                        href={article.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        sx={{ fontWeight: 750 }}
+                    ) : (
+                      <Box
+                        aria-hidden="true"
+                        sx={{
+                          display: { xs: 'none', sm: 'grid' },
+                          minHeight: 170,
+                          placeItems: 'center',
+                          bgcolor: 'primary.light',
+                          color: 'primary.dark',
+                          fontFamily: '"Merriweather", serif',
+                          fontSize: 36,
+                        }}
                       >
-                        View on The Guardian
-                      </Link>
+                        G
+                      </Box>
+                    )}
+                    <Stack spacing={1.25} sx={{ p: { xs: 2.5, md: 3 } }}>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                      >
+                        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+                          <Chip
+                            size="small"
+                            label={article.sectionName ?? 'Guardian'}
+                            variant="outlined"
+                          />
+                          <Typography color="text.secondary" variant="caption">
+                            {formatDate(article.publishedAt)}
+                          </Typography>
+                        </Stack>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={isSelected}
+                              onChange={() => toggleSelectArticle(article.externalId)}
+                              slotProps={{
+                                input: {
+                                  'aria-label': `Select ${article.title}`,
+                                },
+                              }}
+                            />
+                          }
+                          label="Select"
+                          sx={{ m: 0 }}
+                        />
+                      </Stack>
+                      <Typography component="h2" variant="h2" sx={{ fontSize: 24 }}>
+                        {article.title}
+                      </Typography>
+                      <Typography color="text.secondary">
+                        {article.description}
+                      </Typography>
+                      <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        spacing={1}
+                        sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' } }}
+                      >
+                        <Typography variant="body2">
+                          {article.authorName ?? article.sourceName}
+                        </Typography>
+                        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                          <Link
+                            href={article.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{ fontWeight: 750 }}
+                          >
+                            View on The Guardian
+                          </Link>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            disabled={syncMutation.isPending}
+                            onClick={() => runSync([article.externalId])}
+                          >
+                            Import
+                          </Button>
+                        </Stack>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </Paper>
-              ))}
+                  </Paper>
+                )
+              })}
               <TablePagination
                 component="div"
                 count={searchQuery.data.totalArticles}

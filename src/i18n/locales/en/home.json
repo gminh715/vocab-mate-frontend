@@ -1,0 +1,111 @@
+{
+  "nav": {
+    "skipToContent": "Skip to main content",
+    "home": "Home",
+    "articles": "Articles",
+    "readingHistory": "Reading history",
+    "vocabulary": "Vocabulary",
+    "admin": "Admin",
+    "profileSettings": "Profile settings",
+    "languageSettings": "Language settings",
+    "languageCurrent": "Current: {{current}} · Switch to {{target}}",
+    "languageUpdated": "Preferred language changed to {{language}}.",
+    "languageError": "Language preference could not be updated. Try again.",
+    "signOut": "Sign out",
+    "signingOut": "Signing out…",
+    "signIn": "Sign In"
+  },
+  "header": {
+    "chip": "Learning Dashboard",
+    "welcome": "Welcome back, {{name}}.",
+    "continueLearning": "Continue Learning",
+    "browseArticles": "Browse Articles"
+  },
+  "overview": {
+    "title": "Overview Metrics",
+    "rangeErrorAlert": "Fix the analytics date range below to load your overview.",
+    "errorMessage": "Your learning overview could not be loaded. Try again.",
+    "errorInvalidRange": "The analytics date range is invalid. Refresh the page to use the default range.",
+    "tryAgain": "Try again",
+    "metrics": {
+      "savedVocabulary": {
+        "label": "Saved vocabulary",
+        "detail": "Words in your library"
+      },
+      "dueToday": {
+        "label": "Due today",
+        "detail": "Ready for daily review"
+      },
+      "mastered": {
+        "label": "Mastered",
+        "detail": "Vocabulary mastered"
+      },
+      "articlesCompleted": {
+        "label": "Articles completed",
+        "detail": "Finished stories"
+      },
+      "quizAccuracy": {
+        "label": "Quiz accuracy",
+        "detail": "Average quiz score"
+      },
+      "sessions": {
+        "label": "Completed sessions",
+        "detail": "Review sessions completed"
+      }
+    }
+  },
+  "empty": {
+    "title": "Start your learning trail",
+    "subtitle": "Three small milestones will bring this dashboard to life.",
+    "cta": "Find your first article",
+    "steps": {
+      "0": {
+        "title": "Read your first article",
+        "body": "Choose a story at your level and begin your reading trail."
+      },
+      "1": {
+        "title": "Save useful vocabulary",
+        "body": "Select prepared terms while reading to build your review list."
+      },
+      "2": {
+        "title": "Complete your first quiz",
+        "body": "When an article has a published quiz, finish it to start tracking accuracy."
+      }
+    }
+  },
+  "continueReading": {
+    "title": "Continue Reading",
+    "historyButton": "Reading history",
+    "loadingLabel": "Loading in-progress articles",
+    "lastRead": "Last read {{date}}",
+    "archived": "Archived · Last read {{date}}",
+    "continueLabel": "Continue reading {{title}}",
+    "empty": {
+      "title": "No article is waiting for you",
+      "subtitle": "Start an article and it will appear here until you finish it.",
+      "cta": "Browse articles"
+    },
+    "errorMessage": "Your overview is still available, but in-progress articles could not be loaded.",
+    "tryAgain": "Try again"
+  },
+  "review": {
+    "loadingLabel": "Loading today's review",
+    "errorMessage": "Review details could not be loaded.",
+    "dailyReview": "Daily Review",
+    "sessionInProgress": "Session in progress",
+    "readyChip": "Ready",
+    "pickUpTitle": "Pick up where you left off",
+    "keepWordsTitle": "Keep familiar words close",
+    "wordReady_one": "word ready",
+    "wordReady_other": "words ready",
+    "estTime": "est. review time",
+    "resumeReview": "Resume Review",
+    "startReview": "Start Review",
+    "noReviewsDue": "No Reviews Due"
+  },
+  "accessibility": {
+    "loadingOverview": "Loading learning overview",
+    "loadingArticles": "Loading in-progress articles",
+    "viewMetric": "View {{label}}"
+  }
+}

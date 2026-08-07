@@ -12,6 +12,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Link as RouterLink,
   useSearchParams,
@@ -29,7 +30,7 @@ import {
   articleSearchParamsFromListParams,
   normalizeArticleSearchParams,
 } from '@/utils/Article/articleListParams'
-import { articlePath } from '@/utils/paths'
+import { readerPath } from '@/utils/paths'
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',
@@ -37,19 +38,7 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 
 const numberFormatter = new Intl.NumberFormat()
 
-const errorMessage = (error: unknown): string => {
-  const apiError = normalizeApiError(error)
-
-  if (apiError.status === 400) {
-    return 'These filters are not valid. Clear them and try again.'
-  }
-
-  return apiError.status === 0
-    ? apiError.message
-    : 'Articles could not be loaded. Try again.'
-}
-
-function ArticleCard({ article }: { article: ArticleListItem }) {
+function ArticleCard({ article, t }: { article: ArticleListItem; t: ReturnType<typeof useTranslation<'articles'>>['t'] }) {
   return (
     <Card
       component="article"
@@ -72,8 +61,8 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
     >
       <CardActionArea
         component={RouterLink}
-        to={articlePath(article.slug)}
-        aria-label={`Read ${article.title}`}
+        to={readerPath(article.slug)}
+        aria-label={t('list.readAriaLabel', { title: article.title })}
         sx={{
           display: 'flex',
           height: '100%',
@@ -104,7 +93,7 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
             >
               {article.publishedAt
                 ? dateFormatter.format(new Date(article.publishedAt))
-                : 'Date unavailable'}
+                : t('list.dateUnavailable')}
             </Typography>
           </Stack>
 
@@ -112,7 +101,7 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
             component="h2"
             sx={{
               color: 'text.primary',
-              fontFamily: 'Georgia, serif',
+              fontFamily: '"Merriweather", serif',
               fontSize: 23,
               fontWeight: 700,
               lineHeight: 1.24,
@@ -139,6 +128,7 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
 }
 
 export function ArticlesPage() {
+  const { t } = useTranslation('articles')
   const [searchParams, setSearchParams] = useSearchParams()
   const searchString = searchParams.toString()
   const params = articleListParamsFromSearchParams(searchParams)
@@ -197,6 +187,12 @@ export function ArticlesPage() {
     hasNarrowingFilters || params.sort !== 'newest'
   const listData = articlesQuery.data
 
+  const getErrorMessage = (error: unknown): string => {
+    const apiError = normalizeApiError(error)
+    if (apiError.status === 400) return t('list.errors.invalidFilters')
+    return apiError.status === 0 ? apiError.message : t('list.errors.loadError')
+  }
+
   return (
     <Stack spacing={{ xs: 3, md: 4 }}>
       <Box
@@ -212,17 +208,6 @@ export function ArticlesPage() {
       >
         <Stack spacing={1.25} sx={{ maxWidth: 760 }}>
           <Typography
-            sx={{
-              color: 'primary.main',
-              fontSize: 12,
-              fontWeight: 800,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Reading library
-          </Typography>
-          <Typography
             component="h1"
             variant="h1"
             sx={{
@@ -230,15 +215,9 @@ export function ArticlesPage() {
               textWrap: 'balance',
             }}
           >
-            Find your next English read
+            {t('list.heading')}
           </Typography>
-          <Typography
-            color="text.secondary"
-            sx={{ maxWidth: 660, fontSize: { sm: 18 }, textWrap: 'pretty' }}
-          >
-            Choose a topic and level, then build vocabulary through articles
-            that fit where you are learning now.
-          </Typography>
+
         </Stack>
         {listData ? (
           <Typography
@@ -246,16 +225,16 @@ export function ArticlesPage() {
             sx={{ fontVariantNumeric: 'tabular-nums' }}
           >
             {numberFormatter.format(listData.meta.total)}{' '}
-            {listData.meta.total === 1 ? 'article' : 'articles'}
+            {t('list.article', { count: listData.meta.total })}
           </Typography>
         ) : null}
       </Box>
 
       <Paper
         component="section"
-        aria-label="Article filters"
+        aria-label={t('list.filters.ariaLabel')}
         variant="outlined"
-        sx={{ p: { xs: 2, sm: 2.5 } }}
+        sx={{ p: { xs: 1.5, sm: 1.75 } }}
       >
         <Box
           sx={{
@@ -270,15 +249,17 @@ export function ArticlesPage() {
           }}
         >
           <DebouncedSearchField
+            size="small"
             key={params.q ?? ''}
             initialValue={params.q ?? ''}
-            label="Search articles"
-            placeholder="Try “climate” or “technology”…"
+            label={t('list.filters.search')}
+            placeholder={t('list.filters.searchPlaceholder')}
             onCommit={(q) => updateSearchParams({ q })}
           />
           <TextField
+            size="small"
             select
-            label="Category"
+            label={t('list.filters.category')}
             name="category"
             value={params.categorySlug ?? ''}
             disabled={categoriesQuery.isPending}
@@ -286,7 +267,7 @@ export function ArticlesPage() {
               updateSearchParams({ categorySlug: event.target.value })
             }
           >
-            <MenuItem value="">All categories</MenuItem>
+            <MenuItem value="">{t('list.filters.allCategories')}</MenuItem>
             {categoriesQuery.data?.items.map((category) => (
               <MenuItem key={category.id} value={category.slug}>
                 {category.name}
@@ -294,15 +275,16 @@ export function ArticlesPage() {
             ))}
           </TextField>
           <TextField
+            size="small"
             select
-            label="CEFR level"
+            label={t('list.filters.cefrLevel')}
             name="cefr"
             value={params.cefrLevel ?? ''}
             onChange={(event) =>
               updateSearchParams({ cefrLevel: event.target.value })
             }
           >
-            <MenuItem value="">All CEFR levels</MenuItem>
+            <MenuItem value="">{t('list.filters.allLevels')}</MenuItem>
             {CEFR_LEVELS.map((level) => (
               <MenuItem key={level} value={level}>
                 {level}
@@ -310,20 +292,21 @@ export function ArticlesPage() {
             ))}
           </TextField>
           <TextField
+            size="small"
             select
-            label="Sort"
+            label={t('list.filters.sort')}
             name="sort"
             value={params.sort}
             onChange={(event) =>
               updateSearchParams({ sort: event.target.value })
             }
           >
-            <MenuItem value="newest">Newest first</MenuItem>
-            <MenuItem value="oldest">Oldest first</MenuItem>
+            <MenuItem value="newest">{t('list.filters.newest')}</MenuItem>
+            <MenuItem value="oldest">{t('list.filters.oldest')}</MenuItem>
           </TextField>
           {hasChangedDefaults ? (
-            <Button color="inherit" onClick={clearFilters}>
-              Clear filters
+            <Button size="small" color="inherit" onClick={clearFilters}>
+              {t('list.filters.clearFilters')}
             </Button>
           ) : null}
         </Box>
@@ -337,17 +320,17 @@ export function ArticlesPage() {
                 color="inherit"
                 onClick={() => categoriesQuery.refetch()}
               >
-                Retry categories
+                {t('list.errors.retryCategories')}
               </Button>
             }
           >
-            Categories could not be loaded. You can still search all articles.
+            {t('list.errors.categoriesError')}
           </Alert>
         ) : null}
       </Paper>
 
       {articlesQuery.isFetching && !articlesQuery.isPending ? (
-        <LinearProgress aria-label="Updating articles" />
+        <LinearProgress aria-label={t('list.loading')} />
       ) : null}
 
       {articlesQuery.isPending ? (
@@ -357,7 +340,7 @@ export function ArticlesPage() {
         >
           <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
             <CircularProgress size={34} />
-            <Typography color="text.secondary">Loading articles…</Typography>
+            <Typography color="text.secondary">{t('list.loading')}</Typography>
           </Stack>
         </Paper>
       ) : articlesQuery.isError ? (
@@ -365,11 +348,11 @@ export function ArticlesPage() {
           severity="error"
           action={
             <Button color="inherit" onClick={() => articlesQuery.refetch()}>
-              Try again
+              {t('list.errors.tryAgain')}
             </Button>
           }
         >
-          {errorMessage(articlesQuery.error)}
+          {getErrorMessage(articlesQuery.error)}
         </Alert>
       ) : listData && listData.items.length === 0 ? (
         <Paper
@@ -385,13 +368,13 @@ export function ArticlesPage() {
           <Stack spacing={1.5} sx={{ alignItems: 'center', maxWidth: 480 }}>
             <Typography variant="h2" sx={{ fontSize: 28 }}>
               {hasNarrowingFilters
-                ? 'No articles match these filters'
-                : 'No published articles yet'}
+                ? t('list.empty.withFilters')
+                : t('list.empty.noArticles')}
             </Typography>
             <Typography color="text.secondary">
               {hasNarrowingFilters
-                ? 'Try a broader search, another level, or a different category.'
-                : 'New learning reads will appear here when they are published.'}
+                ? t('list.empty.withFiltersSubtitle')
+                : t('list.empty.noArticlesSubtitle')}
             </Typography>
           </Stack>
         </Paper>
@@ -399,7 +382,7 @@ export function ArticlesPage() {
         <>
           <Box
             component="section"
-            aria-label="Article results"
+            aria-label={t('list.pagination.resultsAriaLabel')}
             sx={{
               display: 'grid',
               gridTemplateColumns: {
@@ -411,14 +394,14 @@ export function ArticlesPage() {
             }}
           >
             {listData.items.map((article) => (
-              <ArticleCard key={article.id} article={article} />
+              <ArticleCard key={article.id} article={article} t={t} />
             ))}
           </Box>
 
           {listData.meta.totalPages > 1 ? (
             <Stack
               component="nav"
-              aria-label="Article pages"
+              aria-label={t('list.pagination.ariaLabel')}
               sx={{ alignItems: 'center' }}
             >
               <Pagination

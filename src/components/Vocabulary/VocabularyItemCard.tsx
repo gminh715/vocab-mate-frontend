@@ -15,6 +15,7 @@ import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   LEARNING_STATUSES,
   type LearningStatus,
@@ -57,6 +58,7 @@ export function VocabularyItemCard({
   isUpdating = false,
   isDeleting = false,
 }: VocabularyItemCardProps) {
+  const { t } = useTranslation('vocabulary')
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const isDue =
@@ -136,7 +138,7 @@ export function VocabularyItemCard({
 
             {isDue ? (
               <Chip
-                label="Due"
+                label={t('card.dueChip')}
                 size="small"
                 color="secondary"
                 sx={{ fontWeight: 800, fontSize: 11 }}
@@ -161,7 +163,7 @@ export function VocabularyItemCard({
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              <strong>Note:</strong> {item.personalNote}
+              <strong>{t('card.noteLabel')}</strong> {item.personalNote}
             </Typography>
           </Box>
         ) : null}
@@ -208,12 +210,12 @@ export function VocabularyItemCard({
               {LEARNING_STATUSES.map((status) => (
                 <MenuItem key={status} value={status}>
                   <Chip
-                    label={status}
+                    label={t(`statusLabels.${status}`)}
                     size="small"
                     color={statusColorMap[status]}
                     sx={{ fontWeight: 700, fontSize: 10, mr: 1 }}
                   />
-                  {status}
+                  {t(`statusLabels.${status}`)}
                 </MenuItem>
               ))}
             </Select>
@@ -227,16 +229,16 @@ export function VocabularyItemCard({
               variant="outlined"
               color="primary"
             >
-              Details
+              {t('card.detailsButton')}
             </Button>
 
-            <Tooltip title="Delete saved word">
+            <Tooltip title={t('card.deleteTooltip')}>
               <IconButton
                 size="small"
                 color="error"
                 onClick={() => setDeleteDialogOpen(true)}
                 disabled={isDeleting}
-                aria-label={`Delete ${item.savedWordDisplay}`}
+                aria-label={t('card.deleteAriaLabel', { word: item.savedWordDisplay })}
               >
                 🗑️
               </IconButton>
@@ -251,15 +253,15 @@ export function VocabularyItemCard({
         aria-labelledby={`delete-dialog-title-${item.id}`}
       >
         <DialogTitle id={`delete-dialog-title-${item.id}`}>
-          Remove Saved Vocabulary?
+          {t('card.dialog.title')}
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to remove &quot;{item.savedWordDisplay}&quot; from your saved vocabulary list? This action cannot be undone.
+            {t('card.dialog.description', { word: item.savedWordDisplay })}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => setDeleteDialogOpen(false)}>{t('card.dialog.cancel')}</Button>
           <Button
             onClick={() => {
               setDeleteDialogOpen(false)
@@ -268,7 +270,7 @@ export function VocabularyItemCard({
             color="error"
             variant="contained"
           >
-            Remove
+            {t('card.dialog.confirm')}
           </Button>
         </DialogActions>
       </Dialog>

@@ -12,6 +12,9 @@ if (typeof document !== 'undefined' && typeof Range !== 'undefined') {
   document.elementFromPoint = () => null
 }
 
-afterEach(() => {
+import i18n from '@/i18n/i18n'
+
+afterEach(async () => {
   cleanup()
+  await i18n.changeLanguage('en')
 })

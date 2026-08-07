@@ -38,7 +38,7 @@ export function UserAvatar({
         flexShrink: 0,
         bgcolor: 'primary.light',
         color: 'primary.dark',
-        fontFamily: 'Georgia, serif',
+        fontFamily: '"Merriweather", serif',
         fontSize: size * 0.42,
         fontWeight: 700,
       }}

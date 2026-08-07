@@ -371,12 +371,12 @@ export function ArticleTermDrawer(props: ArticleTermDrawerProps) {
             <Typography
               sx={{
                 mt: 1,
-                fontFamily: 'Georgia, "Times New Roman", serif',
+                fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
                 fontSize: 18,
                 lineHeight: 1.55,
               }}
             >
-              {props.sentence.sentenceText}
+              {props.sentence.sentenceText?.normalize('NFC')}
             </Typography>
           </Paper>
 

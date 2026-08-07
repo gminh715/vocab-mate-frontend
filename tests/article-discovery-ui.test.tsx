@@ -61,8 +61,8 @@ const renderPage = (initialEntry = '/articles') => {
           <Routes>
             <Route path="/articles" element={<ArticlesPage />} />
             <Route
-              path="/articles/:slug"
-              element={<h1>Article detail destination</h1>}
+              path="/read/:slug"
+              element={<h1>Article reader destination</h1>}
             />
           </Routes>
         </MemoryRouter>
@@ -152,7 +152,7 @@ describe('Article Discovery interactions', () => {
     ).toBeInTheDocument()
   })
 
-  it('navigates to article detail by the backend slug', async () => {
+  it('navigates directly to article reader by the backend slug', async () => {
     const user = userEvent.setup()
     renderPage()
 
@@ -164,7 +164,7 @@ describe('Article Discovery interactions', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: 'Article detail destination',
+        name: 'Article reader destination',
       }),
     ).toBeInTheDocument()
   })

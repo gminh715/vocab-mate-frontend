@@ -75,7 +75,7 @@ export function AuthPageLayout({
                 component="p"
                 sx={{
                   maxWidth: 430,
-                  fontFamily: 'Georgia, "Times New Roman", serif',
+                  fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
                   fontSize: { xs: 30, sm: 38 },
                   lineHeight: 1.15,
                   textWrap: 'balance',
@@ -97,7 +97,7 @@ export function AuthPageLayout({
             >
               <Typography
                 component="p"
-                sx={{ fontFamily: 'Georgia, serif', fontSize: 26 }}
+                sx={{ fontFamily: '"Merriweather", serif', fontSize: 26 }}
               >
                 curious
               </Typography>

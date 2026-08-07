@@ -119,12 +119,12 @@ export function ArticleSentenceEditor({
           sx={{
             m: 0,
             mt: 1.25,
-            fontFamily: 'Georgia, "Times New Roman", serif',
+            fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
             fontSize: 19,
             lineHeight: 1.55,
           }}
         >
-          {sentence.sentenceText}
+          {sentence.sentenceText?.normalize('NFC')}
         </Typography>
       </Paper>
 

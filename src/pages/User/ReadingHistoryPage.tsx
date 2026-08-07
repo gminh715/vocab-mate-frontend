@@ -12,6 +12,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import { ArticleCefrChip } from '@/components/Article/ArticleChips'
 import { ArticleCover } from '@/components/Article/ArticleCover'
@@ -43,24 +44,13 @@ const progressFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 1,
 })
 
-const historyErrorMessage = (error: unknown): string => {
-  const apiError = normalizeApiError(error)
-
-  if (apiError.status === 400) {
-    return 'These history filters are not valid. Clear them and try again.'
-  }
-
-  return apiError.status === 0
-    ? apiError.message
-    : 'Reading history could not be loaded. Try again.'
-}
-
 interface HistoryCardProps {
   item: ReadingHistoryItem
   onReset: (item: ReadingHistoryItem) => void
 }
 
 function HistoryCard({ item, onReset }: HistoryCardProps) {
+  const { t } = useTranslation('articles')
   const isCompleted = item.status === 'COMPLETED'
   const isAvailable = item.article.status === 'PUBLISHED'
 
@@ -92,10 +82,10 @@ function HistoryCard({ item, onReset }: HistoryCardProps) {
           <Chip
             size="small"
             color={isCompleted ? 'success' : 'default'}
-            label={isCompleted ? 'Completed' : 'In progress'}
+            label={isCompleted ? t('history.status.completed') : t('history.status.inProgress')}
           />
           {!isAvailable ? (
-            <Chip size="small" label="Archived" variant="outlined" />
+            <Chip size="small" label={t('history.status.archived')} variant="outlined" />
           ) : null}
         </Stack>
 
@@ -103,7 +93,7 @@ function HistoryCard({ item, onReset }: HistoryCardProps) {
           <Typography
             component="h2"
             sx={{
-              fontFamily: 'Georgia, serif',
+              fontFamily: '"Merriweather", serif',
               fontSize: { xs: 24, sm: 27 },
               fontWeight: 700,
               lineHeight: 1.2,
@@ -133,7 +123,7 @@ function HistoryCard({ item, onReset }: HistoryCardProps) {
             sx={{ justifyContent: 'space-between', mb: 0.75 }}
           >
             <Typography sx={{ fontSize: 13, fontWeight: 750 }}>
-              {isCompleted ? 'Reading complete' : 'Reading progress'}
+              {isCompleted ? t('history.progress.complete') : t('history.progress.inProgress')}
             </Typography>
             <Typography
               color="text.secondary"
@@ -145,7 +135,7 @@ function HistoryCard({ item, onReset }: HistoryCardProps) {
           <LinearProgress
             variant="determinate"
             value={item.progressPercent}
-            aria-label={`Reading progress for ${item.article.title}`}
+            aria-label={t('history.progressAriaLabel', { title: item.article.title })}
             sx={{ height: 7, borderRadius: 999 }}
           />
         </Box>
@@ -155,7 +145,7 @@ function HistoryCard({ item, onReset }: HistoryCardProps) {
           variant="body2"
           sx={{ fontVariantNumeric: 'tabular-nums' }}
         >
-          Last read {dateFormatter.format(new Date(item.lastReadAt))}
+          {t('history.lastRead', { date: dateFormatter.format(new Date(item.lastReadAt)) })}
         </Typography>
 
         <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
@@ -165,15 +155,15 @@ function HistoryCard({ item, onReset }: HistoryCardProps) {
               to={readerPath(item.article.slug)}
               variant="contained"
             >
-              {isCompleted ? 'Read again' : 'Continue reading'}
+              {isCompleted ? t('history.actions.readAgain') : t('history.actions.continue')}
             </Button>
           ) : (
             <Button disabled variant="contained">
-              Article unavailable
+              {t('history.actions.unavailable')}
             </Button>
           )}
           <Button color="inherit" onClick={() => onReset(item)}>
-            Reset progress
+            {t('history.actions.reset')}
           </Button>
         </Stack>
       </Stack>
@@ -182,6 +172,7 @@ function HistoryCard({ item, onReset }: HistoryCardProps) {
 }
 
 export function ReadingHistoryPage() {
+  const { t } = useTranslation('articles')
   const [searchParams, setSearchParams] = useSearchParams()
   const [resetItem, setResetItem] =
     useState<ReadingHistoryItem | null>(null)
@@ -237,6 +228,12 @@ export function ReadingHistoryPage() {
   const listData = historyQuery.data
   const hasFilter = params.status !== undefined
 
+  const getHistoryErrorMessage = (error: unknown): string => {
+    const apiError = normalizeApiError(error)
+    if (apiError.status === 400) return t('history.errors.invalidFilters')
+    return apiError.status === 0 ? apiError.message : t('history.errors.loadError')
+  }
+
   return (
     <Stack spacing={{ xs: 3, md: 4 }}>
       <Box
@@ -252,17 +249,6 @@ export function ReadingHistoryPage() {
       >
         <Stack spacing={1.25} sx={{ maxWidth: 720 }}>
           <Typography
-            sx={{
-              color: 'primary.main',
-              fontSize: 12,
-              fontWeight: 800,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Your reading trail
-          </Typography>
-          <Typography
             component="h1"
             variant="h1"
             sx={{
@@ -270,14 +256,7 @@ export function ReadingHistoryPage() {
               textWrap: 'balance',
             }}
           >
-            Reading history
-          </Typography>
-          <Typography
-            color="text.secondary"
-            sx={{ maxWidth: 640, fontSize: { sm: 18 }, textWrap: 'pretty' }}
-          >
-            Pick up an article where you left off or revisit a completed
-            read.
+            {t('history.title')}
           </Typography>
         </Stack>
         {listData ? (
@@ -286,16 +265,16 @@ export function ReadingHistoryPage() {
             sx={{ fontVariantNumeric: 'tabular-nums' }}
           >
             {numberFormatter.format(listData.meta.total)}{' '}
-            {listData.meta.total === 1 ? 'article' : 'articles'}
+            {t('history.article', { count: listData.meta.total })}
           </Typography>
         ) : null}
       </Box>
 
       <Paper
         component="section"
-        aria-label="Reading history filters"
+        aria-label={t('history.filters.ariaLabel')}
         variant="outlined"
-        sx={{ p: { xs: 2, sm: 2.5 } }}
+        sx={{ p: { xs: 1.5, sm: 1.75 } }}
       >
         <Box
           sx={{
@@ -309,8 +288,9 @@ export function ReadingHistoryPage() {
           }}
         >
           <TextField
+            size="small"
             select
-            label="Status"
+            label={t('history.filters.status')}
             name="status"
             value={params.status ?? ''}
             onChange={(event) =>
@@ -319,13 +299,14 @@ export function ReadingHistoryPage() {
               })
             }
           >
-            <MenuItem value="">All statuses</MenuItem>
-            <MenuItem value="READING">In progress</MenuItem>
-            <MenuItem value="COMPLETED">Completed</MenuItem>
+            <MenuItem value="">{t('history.filters.allStatuses')}</MenuItem>
+            <MenuItem value="READING">{t('history.filters.inProgress')}</MenuItem>
+            <MenuItem value="COMPLETED">{t('history.filters.completed')}</MenuItem>
           </TextField>
           <TextField
+            size="small"
             select
-            label="Sort"
+            label={t('history.filters.sort')}
             name="sort"
             value={params.sort}
             onChange={(event) =>
@@ -334,15 +315,16 @@ export function ReadingHistoryPage() {
               })
             }
           >
-            <MenuItem value="newest">Recently read</MenuItem>
-            <MenuItem value="oldest">Oldest activity</MenuItem>
+            <MenuItem value="newest">{t('history.filters.recentlyRead')}</MenuItem>
+            <MenuItem value="oldest">{t('history.filters.oldestActivity')}</MenuItem>
           </TextField>
           <Button
+            size="small"
             variant="outlined"
             disabled={!hasFilter && params.sort === 'newest'}
             onClick={() => setSearchParams(new URLSearchParams())}
           >
-            Clear filters
+            {t('history.filters.clearFilters')}
           </Button>
         </Box>
       </Paper>
@@ -355,7 +337,7 @@ export function ReadingHistoryPage() {
           <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
             <CircularProgress size={34} />
             <Typography color="text.secondary">
-              Loading reading history…
+              {t('history.loading')}
             </Typography>
           </Stack>
         </Paper>
@@ -364,11 +346,11 @@ export function ReadingHistoryPage() {
           severity="error"
           action={
             <Button color="inherit" onClick={() => historyQuery.refetch()}>
-              Try again
+              {t('history.errors.tryAgain')}
             </Button>
           }
         >
-          {historyErrorMessage(historyQuery.error)}
+          {getHistoryErrorMessage(historyQuery.error)}
         </Alert>
       ) : listData && listData.items.length === 0 ? (
         <Paper
@@ -384,20 +366,20 @@ export function ReadingHistoryPage() {
           <Stack spacing={1.5} sx={{ alignItems: 'center', maxWidth: 500 }}>
             <Typography variant="h2" sx={{ fontSize: 28 }}>
               {hasFilter
-                ? 'No reading matches this filter'
-                : 'Your reading history is empty'}
+                ? t('history.empty.withFilter')
+                : t('history.empty.noHistory')}
             </Typography>
             <Typography color="text.secondary">
               {hasFilter
-                ? 'Choose another status or clear the filter.'
-                : 'Open an article and start reading to see it here.'}
+                ? t('history.empty.withFilterSubtitle')
+                : t('history.empty.noHistorySubtitle')}
             </Typography>
             {hasFilter ? (
               <Button
                 variant="outlined"
                 onClick={() => setSearchParams(new URLSearchParams())}
               >
-                Clear filters
+                {t('history.empty.clearFilters')}
               </Button>
             ) : null}
           </Stack>
@@ -406,7 +388,7 @@ export function ReadingHistoryPage() {
         <>
           <Stack
             component="section"
-            aria-label="Reading history results"
+            aria-label={t('history.pagination.resultsAriaLabel')}
             spacing={2}
           >
             {listData.items.map((item) => (
@@ -424,7 +406,7 @@ export function ReadingHistoryPage() {
           {listData.meta.totalPages > 1 ? (
             <Stack
               component="nav"
-              aria-label="Reading history pages"
+              aria-label={t('history.pagination.ariaLabel')}
               sx={{ alignItems: 'center' }}
             >
               <Pagination
@@ -441,13 +423,13 @@ export function ReadingHistoryPage() {
 
       <ConfirmationDialog
         open={resetItem !== null}
-        title="Reset Reading Progress?"
-        description="This article will be removed from reading history. Saved vocabulary and quiz history will not be deleted."
-        confirmLabel="Reset Progress"
+        title={t('history.resetDialog.title')}
+        description={t('history.resetDialog.description')}
+        confirmLabel={t('history.resetDialog.confirmLabel')}
         isPending={resetMutation.isPending}
         errorMessage={
           resetMutation.error
-            ? 'Reading progress could not be reset. Try again.'
+            ? t('history.errors.resetError')
             : null
         }
         onCancel={() => {

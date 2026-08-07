@@ -123,7 +123,7 @@ export function ReviewSummaryPage() {
               { label: 'Accuracy', value: percentFormatter.format(result.accuracy) },
             ].map((metric) => (
               <Box key={metric.label} sx={{ p: 2, bgcolor: 'primary.light', borderRadius: 2 }}>
-                <Typography sx={{ fontFamily: 'Georgia, serif', fontSize: { xs: 30, sm: 36 }, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
+                <Typography sx={{ fontFamily: '"Merriweather", serif', fontSize: { xs: 30, sm: 36 }, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
                   {metric.value}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">{metric.label}</Typography>

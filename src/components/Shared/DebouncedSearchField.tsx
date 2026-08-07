@@ -13,6 +13,7 @@ interface DebouncedSearchFieldProps {
   onCommit: (value: string) => void
   delay?: number
   maxLength?: number
+  size?: 'small' | 'medium'
 }
 
 export function DebouncedSearchField({
@@ -22,6 +23,7 @@ export function DebouncedSearchField({
   onCommit,
   delay = 400,
   maxLength = 320,
+  size = 'small',
 }: DebouncedSearchFieldProps) {
   const [value, setValue] = useState(initialValue)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -45,6 +47,7 @@ export function DebouncedSearchField({
 
   return (
     <TextField
+      size={size}
       label={label}
       name="search"
       autoComplete="off"

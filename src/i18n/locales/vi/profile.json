@@ -1,0 +1,66 @@
+{
+  "navigation": {
+    "ariaLabel": "Các mục cài đặt",
+    "profile": "Hồ sơ",
+    "security": "Bảo mật"
+  },
+  "profile": {
+    "eyebrow": "Danh tính học tập của bạn",
+    "title": "Cài đặt hồ sơ",
+    "subtitle": "Cập nhật trình độ học tập và thông tin hồ sơ của bạn. Các từ được tô sáng trong bài đọc dựa theo trình độ CEFR hiện tại.",
+    "avatarAlt": "Xem trước ảnh đại diện",
+    "successMessage": "Đã lưu thay đổi hồ sơ.",
+    "cannotRemoveAvatar": "API hiện tại không thể xóa URL ảnh đại diện. Hãy nhập URL thay thế.",
+    "cannotClearGoal": "API hiện tại không thể xóa mục tiêu học tập. Hãy chọn trình độ thay thế.",
+    "account": {
+      "title": "Tài khoản",
+      "subtitle": "Các thông tin này được quản lý bởi tài khoản và không thể thay đổi tại đây.",
+      "email": "Email",
+      "role": "Vai trò",
+      "status": "Trạng thái"
+    },
+    "cefrCard": {
+      "title": "Trình độ học tập hiện tại",
+      "hint": "Lưu trình độ mới sẽ làm mới các từ được tô sáng trong bài đọc."
+    },
+    "form": {
+      "title": "Hồ sơ học tập",
+      "subtitle": "Thông tin này cá nhân hóa nội dung học tập được chuẩn bị sẵn cho bạn.",
+      "displayName": "Tên hiển thị",
+      "avatarUrl": "URL ảnh đại diện",
+      "avatarUrlHint": "Dán URL hình ảnh công khai. Không hỗ trợ tải file lên.",
+      "cefrLevel": "Trình độ CEFR hiện tại",
+      "cefrLevelHint": "Từ được tô sáng trong bài đọc dùng trình độ này.",
+      "learningGoal": "Mục tiêu học tập",
+      "learningGoalHint": "Chọn trình độ CEFR cao hơn trình độ hiện tại của bạn.",
+      "learningGoalNotSet": "Chưa đặt",
+      "unsavedChanges": "Chưa lưu thay đổi",
+      "saving": "Đang lưu…",
+      "saveChanges": "Lưu thay đổi"
+    }
+  },
+  "security": {
+    "eyebrow": "Bảo vệ tài khoản",
+    "title": "Bảo mật tài khoản",
+    "subtitle": "Chọn mật khẩu mạnh mà bạn không dùng ở nơi khác. Sau khi thay đổi, phiên này sẽ kết thúc và bạn cần đăng nhập lại.",
+    "form": {
+      "title": "Đổi mật khẩu",
+      "subtitle": "Tất cả các trường đều bắt buộc.",
+      "currentPassword": "Mật khẩu hiện tại",
+      "currentPasswordIncorrect": "Mật khẩu hiện tại không đúng. Vui lòng kiểm tra lại.",
+      "newPassword": "Mật khẩu mới",
+      "newPasswordHint": "8–72 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+      "confirmNewPassword": "Xác nhận mật khẩu mới",
+      "changing": "Đang đổi mật khẩu…",
+      "submit": "Đổi mật khẩu"
+    },
+    "errors": {
+      "serverError": "Không thể đổi mật khẩu lúc này. Vui lòng thử lại.",
+      "genericError": "Không thể đổi mật khẩu. Vui lòng thử lại."
+    },
+    "visibility": {
+      "show": "Hiện",
+      "hide": "Ẩn"
+    }
+  }
+}

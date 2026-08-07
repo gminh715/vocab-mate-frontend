@@ -1,0 +1,102 @@
+{
+  "page": {
+    "title": "Saved Vocabulary",
+    "reviewCollection": "Review Collection",
+    "error": {
+      "load": "Failed to load saved vocabulary list. Check your connection and try again.",
+      "retry": "Retry"
+    },
+    "empty": {
+      "withFiltersTitle": "No Vocabulary Found",
+      "withFiltersSubtitle": "No saved vocabulary matches your selected search filters. Try modifying your criteria or clearing filters.",
+      "clearAllFilters": "Clear All Filters",
+      "noVocabTitle": "No Saved Vocabulary Yet",
+      "noVocabSubtitle": "You haven't saved any vocabulary terms yet. Read articles and click on highlighted words to save vocabulary to your collection!"
+    }
+  },
+  "sidebar": {
+    "title": "My Collections",
+    "createTooltip": "Create new collection",
+    "allVocabulary": "All Vocabulary"
+  },
+  "filterBar": {
+    "searchPlaceholder": "Search saved word, lemma, note, or meaning…",
+    "filtersButton": "Filters",
+    "clearAll": "Clear all",
+    "popoverTitle": "Filters",
+    "status": "Status",
+    "allStatuses": "All Statuses",
+    "cefrLevel": "CEFR Level",
+    "allLevels": "All Levels",
+    "collection": "Collection",
+    "allCollections": "All Collections",
+    "sortBy": "Sort By",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
+    "dueOnly": "Due only"
+  },
+  "dueHeader": {
+    "showAllVocabulary": "Show All Vocabulary",
+    "showingDueOnly": "Showing Due Items Only",
+    "dueCount": "{{count}} Due",
+    "youHaveDue_one": "You have {{count}} word due for review today.",
+    "youHaveDue_other": "You have {{count}} words due for review today.",
+    "viewDueItems": "View Due Items"
+  },
+  "card": {
+    "noteLabel": "Note:",
+    "dueChip": "Due",
+    "detailsButton": "Details",
+    "deleteTooltip": "Delete saved word",
+    "deleteAriaLabel": "Delete {{word}}",
+    "dialog": {
+      "title": "Remove Saved Vocabulary?",
+      "description": "Are you sure you want to remove \"{{word}}\" from your saved vocabulary list? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Remove"
+    }
+  },
+  "table": {
+    "ariaLabel": "Saved vocabulary list table",
+    "colStatus": "Status",
+    "colVocabulary": "Vocabulary",
+    "colPhonetic": "Phonetic / IPA",
+    "colPos": "POS / Level",
+    "colMeaning": "Meaning & Examples",
+    "colActions": "Actions",
+    "notePrefix": "Note: ",
+    "listenTooltip": "Listen pronunciation",
+    "detailsTooltip": "View Details / Edit",
+    "detailsAriaLabel": "Details {{word}}",
+    "deleteTooltip": "Delete saved word",
+    "deleteAriaLabel": "Delete {{word}}",
+    "dueChip": "Due",
+    "dialog": {
+      "title": "Remove Saved Vocabulary?",
+      "description": "Are you sure you want to remove \"{{word}}\" from your saved vocabulary list? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Remove"
+    }
+  },
+  "statusLabels": {
+    "NEW": "New",
+    "LEARNING": "Learning",
+    "REVIEWING": "Reviewing",
+    "MASTERED": "Mastered",
+    "IGNORED": "Ignored"
+  },
+  "createCollection": {
+    "dialogTitle": "Create New Collection",
+    "nameLabel": "Collection Name",
+    "namePlaceholder": "e.g. Technology, Business, Daily Slang…",
+    "nameRequired": "Collection name is required.",
+    "nameTooLong": "Name must be 100 characters or fewer.",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "Short note about what terms belong in this collection…",
+    "descriptionTooLong": "Description must be 500 characters or fewer.",
+    "cancel": "Cancel",
+    "creating": "Creating…",
+    "submit": "Create Collection",
+    "errorCreate": "Failed to create collection. Name might already exist."
+  }
+}

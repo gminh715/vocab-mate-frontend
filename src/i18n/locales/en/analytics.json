@@ -1,0 +1,100 @@
+{
+  "title": "Detailed Analytics",
+  "filters": {
+    "timePeriod": "Time Period:",
+    "default30": "30 Days (Default)",
+    "days7": "7 Days",
+    "days90": "90 Days",
+    "customDates": "Custom Dates",
+    "hideCustomDates": "Hide Custom Dates",
+    "reset": "Reset",
+    "from": "From",
+    "to": "To (exclusive)",
+    "interval": "Interval",
+    "automatic": "Automatic",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "rangeErrorSuffix": "Analytics requests are paused.",
+    "filteredToArticle": "Quiz analytics filtered to article:"
+  },
+  "tabs": {
+    "vocabularyGrowth": "Vocabulary Growth",
+    "readingProgress": "Reading Progress",
+    "quizPerformance": "Quiz Performance"
+  },
+  "sections": {
+    "vocabulary": {
+      "eyebrow": "Vocabulary",
+      "title": "Vocabulary Growth",
+      "refreshingLabel": "Refreshing vocabulary growth",
+      "loadingLabel": "Loading vocabulary growth"
+    },
+    "reading": {
+      "eyebrow": "Reading",
+      "title": "Reading Progress",
+      "refreshingLabel": "Refreshing reading progress",
+      "loadingLabel": "Loading reading progress"
+    },
+    "quiz": {
+      "eyebrow": "Quizzes",
+      "title": "Quiz Performance",
+      "refreshingLabel": "Refreshing quiz performance",
+      "loadingLabel": "Loading quiz performance"
+    }
+  },
+  "errors": {
+    "invalidFilters": "These analytics filters are invalid. Check the date range and try again.",
+    "loadError": "This analytics section could not be loaded. Try again.",
+    "fixDateRange": "Fix the shared date range to load this section.",
+    "tryAgain": "Try again"
+  },
+  "vocabulary": {
+    "totalSaved": "Total saved",
+    "totalSavedDetail": "Current vocabulary stock",
+    "dueNow": "Due now",
+    "dueNowDetail": "Current review schedule",
+    "mastered": "Mastered",
+    "masteredDetail": "Current mastered stock",
+    "learningStatus": "Learning status",
+    "cefrDistribution": "CEFR distribution",
+    "savedTrend": "Saved vocabulary trend",
+    "savedTrendLegend": "Saved vocabulary trend legend",
+    "vocabularySaved": "Vocabulary saved",
+    "wordsSaved": "Words saved",
+    "noDistributionActivity": "No activity was recorded for this distribution.",
+    "noTrendActivity": "No saved vocabulary activity was recorded for this trend."
+  },
+  "reading": {
+    "articlesOpened": "Articles opened",
+    "articlesOpenedDetail": "Opened in this cohort",
+    "articlesCompleted": "Articles completed",
+    "articlesCompletedDetail": "Completed cohort records",
+    "completionRate": "Completion rate",
+    "completionRateDetailEmpty": "No opened articles",
+    "completionRateDetail": "Completed ÷ opened",
+    "byCategory": "Reading by category",
+    "readingActivityTrend": "Reading activity trend",
+    "readingActivityLegend": "Reading activity legend",
+    "opened": "Opened",
+    "completed": "Completed",
+    "articles": "Articles",
+    "noTrendActivity": "No activity was recorded for this trend."
+  },
+  "quiz": {
+    "completedSessions": "Completed sessions",
+    "completedSessionsDetail": "In-progress and abandoned excluded",
+    "accuracy": "Accuracy",
+    "accuracyDetail": "Correct answers ÷ total answers",
+    "averageScore": "Average score",
+    "averageScoreDetail": "Normalized completed-session score",
+    "byQuestionType": "Performance by question type",
+    "performanceTrend": "Quiz performance trend",
+    "trendPeriod": "Period",
+    "trendSessions": "Sessions",
+    "trendAccuracy": "Accuracy",
+    "trendAverageScore": "Average score",
+    "noDistributionActivity": "No activity was recorded for this distribution.",
+    "noTrendActivity": "No activity was recorded for this trend."
+  }
+}

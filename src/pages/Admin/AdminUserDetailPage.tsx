@@ -305,7 +305,7 @@ export function AdminUserDetailPage() {
             height: 64,
             bgcolor: 'primary.light',
             color: 'primary.dark',
-            fontFamily: 'Georgia, serif',
+                        fontFamily: '"Merriweather", serif',
             fontSize: 28,
           }}
         >
@@ -461,7 +461,7 @@ export function AdminUserDetailPage() {
                       component="dd"
                       sx={{
                         m: 0,
-                        fontFamily: 'Georgia, serif',
+                                    fontFamily: '"Merriweather", serif',
                         fontSize: 32,
                         fontWeight: 700,
                         color: 'primary.dark',

@@ -11,6 +11,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 import type { CollectionListItem } from '@/types/Vocabulary/vocabulary'
 import { useCollectionsQuery } from '@/hooks/Vocabulary/useCollections'
 import { CreateCollectionDialog } from '@/components/Vocabulary/CreateCollectionDialog'
@@ -26,6 +27,7 @@ export function CollectionSidebar({
   totalVocabularyCount,
   onSelectCollection,
 }: CollectionSidebarProps) {
+  const { t } = useTranslation('vocabulary')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const { data, isLoading } = useCollectionsQuery({ limit: 100 })
   const collections = data?.items ?? []
@@ -48,7 +50,7 @@ export function CollectionSidebar({
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary' }}>
-                My Collections
+                {t('sidebar.title', 'Collections')}
               </Typography>
               <Chip
                 label={collections.length}
@@ -59,7 +61,7 @@ export function CollectionSidebar({
               />
             </Box>
 
-            <Tooltip title="Create new collection">
+            <Tooltip title={t('sidebar.createTooltip', 'Create collection')}>
               <IconButton
                 size="small"
                 color="primary"
@@ -99,7 +101,7 @@ export function CollectionSidebar({
               <ListItemText
                 primary={
                   <Typography variant="body2" sx={{ fontWeight: isAllSelected ? 800 : 650 }}>
-                    All Vocabulary
+                    {t('sidebar.allVocabulary', 'All vocabulary')}
                   </Typography>
                 }
               />

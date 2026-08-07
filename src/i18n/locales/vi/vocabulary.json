@@ -1,0 +1,102 @@
+{
+  "page": {
+    "title": "Từ Vựng Đã Lưu",
+    "reviewCollection": "Ôn Bộ Sưu Tập",
+    "error": {
+      "load": "Không thể tải danh sách từ vựng. Kiểm tra kết nối và thử lại.",
+      "retry": "Thử lại"
+    },
+    "empty": {
+      "withFiltersTitle": "Không Tìm Thấy Từ Vựng",
+      "withFiltersSubtitle": "Không có từ vựng nào khớp với bộ lọc đã chọn. Hãy thử điều chỉnh tiêu chí hoặc xóa bộ lọc.",
+      "clearAllFilters": "Xóa Tất Cả Bộ Lọc",
+      "noVocabTitle": "Chưa Có Từ Vựng Nào",
+      "noVocabSubtitle": "Bạn chưa lưu từ vựng nào. Hãy đọc bài và nhấp vào từ được tô sáng để lưu vào bộ sưu tập!"
+    }
+  },
+  "sidebar": {
+    "title": "Bộ Sưu Tập",
+    "createTooltip": "Tạo bộ sưu tập mới",
+    "allVocabulary": "Tất Cả Từ Vựng"
+  },
+  "filterBar": {
+    "searchPlaceholder": "Tìm từ, dạng gốc, ghi chú hoặc nghĩa…",
+    "filtersButton": "Bộ lọc",
+    "clearAll": "Xóa tất cả",
+    "popoverTitle": "Bộ lọc",
+    "status": "Trạng thái",
+    "allStatuses": "Tất cả trạng thái",
+    "cefrLevel": "Trình độ CEFR",
+    "allLevels": "Tất cả trình độ",
+    "collection": "Bộ sưu tập",
+    "allCollections": "Tất cả bộ sưu tập",
+    "sortBy": "Sắp xếp",
+    "sortNewest": "Mới nhất",
+    "sortOldest": "Cũ nhất",
+    "dueOnly": "Chỉ đến hạn"
+  },
+  "dueHeader": {
+    "showAllVocabulary": "Xem Tất Cả Từ Vựng",
+    "showingDueOnly": "Đang Hiển Thị Chỉ Từ Đến Hạn",
+    "dueCount": "{{count}} Đến hạn",
+    "youHaveDue_one": "Bạn có {{count}} từ cần ôn tập hôm nay.",
+    "youHaveDue_other": "Bạn có {{count}} từ cần ôn tập hôm nay.",
+    "viewDueItems": "Xem Từ Đến Hạn"
+  },
+  "card": {
+    "noteLabel": "Ghi chú:",
+    "dueChip": "Đến hạn",
+    "detailsButton": "Chi tiết",
+    "deleteTooltip": "Xóa từ đã lưu",
+    "deleteAriaLabel": "Xóa {{word}}",
+    "dialog": {
+      "title": "Xóa Từ Vựng Đã Lưu?",
+      "description": "Bạn có chắc muốn xóa \"{{word}}\" khỏi danh sách từ vựng? Hành động này không thể hoàn tác.",
+      "cancel": "Hủy",
+      "confirm": "Xóa"
+    }
+  },
+  "table": {
+    "ariaLabel": "Bảng danh sách từ vựng đã lưu",
+    "colStatus": "Trạng thái",
+    "colVocabulary": "Từ vựng",
+    "colPhonetic": "Phiên âm / IPA",
+    "colPos": "Từ loại / Cấp độ",
+    "colMeaning": "Nghĩa & Ví dụ",
+    "colActions": "Hành động",
+    "notePrefix": "Ghi chú: ",
+    "listenTooltip": "Nghe phát âm",
+    "detailsTooltip": "Xem chi tiết / Chỉnh sửa",
+    "detailsAriaLabel": "Chi tiết {{word}}",
+    "deleteTooltip": "Xóa từ đã lưu",
+    "deleteAriaLabel": "Xóa {{word}}",
+    "dueChip": "Đến hạn",
+    "dialog": {
+      "title": "Xóa Từ Vựng Đã Lưu?",
+      "description": "Bạn có chắc muốn xóa \"{{word}}\" khỏi danh sách từ vựng? Hành động này không thể hoàn tác.",
+      "cancel": "Hủy",
+      "confirm": "Xóa"
+    }
+  },
+  "statusLabels": {
+    "NEW": "Mới",
+    "LEARNING": "Đang học",
+    "REVIEWING": "Đang ôn",
+    "MASTERED": "Thành thạo",
+    "IGNORED": "Bỏ qua"
+  },
+  "createCollection": {
+    "dialogTitle": "Tạo Bộ Sưu Tập Mới",
+    "nameLabel": "Tên bộ sưu tập",
+    "namePlaceholder": "Ví dụ: Công nghệ, Kinh doanh, Tiếng lóng hàng ngày…",
+    "nameRequired": "Tên bộ sưu tập là bắt buộc.",
+    "nameTooLong": "Tên không được vượt quá 100 ký tự.",
+    "descriptionLabel": "Mô tả (tùy chọn)",
+    "descriptionPlaceholder": "Ghi chú ngắn về các từ thuộc bộ sưu tập này…",
+    "descriptionTooLong": "Mô tả không được vượt quá 500 ký tự.",
+    "cancel": "Hủy",
+    "creating": "Đang tạo…",
+    "submit": "Tạo Bộ Sưu Tập",
+    "errorCreate": "Không thể tạo bộ sưu tập. Tên có thể đã tồn tại."
+  }
+}

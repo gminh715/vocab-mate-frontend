@@ -1,0 +1,66 @@
+{
+  "navigation": {
+    "ariaLabel": "Settings sections",
+    "profile": "Profile",
+    "security": "Security"
+  },
+  "profile": {
+    "eyebrow": "Your learning identity",
+    "title": "Profile settings",
+    "subtitle": "Keep your learning level and profile details up to date. Reader highlights follow your current CEFR level.",
+    "avatarAlt": "Avatar preview",
+    "successMessage": "Profile changes saved.",
+    "cannotRemoveAvatar": "The current API cannot remove an avatar URL. Enter a replacement URL.",
+    "cannotClearGoal": "The current API cannot clear a learning goal. Choose a replacement level.",
+    "account": {
+      "title": "Account",
+      "subtitle": "These details are managed with your account and cannot be changed here.",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status"
+    },
+    "cefrCard": {
+      "title": "Current learning level",
+      "hint": "Saving a new level refreshes personalized article highlights."
+    },
+    "form": {
+      "title": "Learning profile",
+      "subtitle": "This information personalizes your prepared learning content.",
+      "displayName": "Display name",
+      "avatarUrl": "Avatar URL",
+      "avatarUrlHint": "Paste a public image URL. File upload is not supported.",
+      "cefrLevel": "Current CEFR level",
+      "cefrLevelHint": "Reader highlights use this level.",
+      "learningGoal": "Learning goal",
+      "learningGoalHint": "Choose a CEFR level above your current level.",
+      "learningGoalNotSet": "Not set",
+      "unsavedChanges": "Unsaved changes",
+      "saving": "Saving…",
+      "saveChanges": "Save changes"
+    }
+  },
+  "security": {
+    "eyebrow": "Account protection",
+    "title": "Account security",
+    "subtitle": "Choose a strong password you do not use elsewhere. After the change, this session ends and you will sign in again.",
+    "form": {
+      "title": "Change password",
+      "subtitle": "All fields are required.",
+      "currentPassword": "Current password",
+      "currentPasswordIncorrect": "Current password is incorrect. Check it and try again.",
+      "newPassword": "New password",
+      "newPasswordHint": "8–72 characters with uppercase, lowercase, number, and special character.",
+      "confirmNewPassword": "Confirm new password",
+      "changing": "Changing password…",
+      "submit": "Change password"
+    },
+    "errors": {
+      "serverError": "Password could not be changed right now. Try again.",
+      "genericError": "Password could not be changed. Try again."
+    },
+    "visibility": {
+      "show": "Show",
+      "hide": "Hide"
+    }
+  }
+}

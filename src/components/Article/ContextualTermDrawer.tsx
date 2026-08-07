@@ -383,14 +383,14 @@ function LookupDetails({
         <Typography
           sx={{
             mt: 1,
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            fontSize: 25,
+            fontFamily: '"Be Vietnam Pro", "Inter", sans-serif',
+            fontSize: 22,
             fontWeight: 700,
             lineHeight: 1.35,
             overflowWrap: 'anywhere',
           }}
         >
-          {term.contextualMeaningVi ?? 'Vietnamese meaning unavailable'}
+          {(term.contextualMeaningVi ?? 'Vietnamese meaning unavailable').normalize('NFC')}
         </Typography>
       </Paper>
 
@@ -473,16 +473,16 @@ function LookupDetails({
         >
           <Typography
             sx={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
               fontSize: 19,
               lineHeight: 1.65,
             }}
           >
-            {parentSentence.sentenceText}
+            {parentSentence.sentenceText?.normalize('NFC')}
           </Typography>
           {hasText(parentSentence.translationVi) ? (
             <Typography color="text.secondary" sx={{ mt: 1.5, lineHeight: 1.6 }}>
-              {parentSentence.translationVi}
+              {parentSentence.translationVi?.normalize('NFC')}
             </Typography>
           ) : null}
         </Paper>

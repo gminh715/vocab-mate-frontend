@@ -32,15 +32,15 @@ export const appTheme = createTheme({
   },
   typography: {
     fontFamily:
-      'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      '"Be Vietnam Pro", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     h1: {
-      fontFamily: 'Georgia, "Times New Roman", serif',
+      fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
       fontWeight: 700,
       letterSpacing: '-0.035em',
       lineHeight: 1.08,
     },
     h2: {
-      fontFamily: 'Georgia, "Times New Roman", serif',
+      fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
       fontWeight: 700,
       letterSpacing: '-0.025em',
       lineHeight: 1.15,

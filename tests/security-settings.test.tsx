@@ -29,7 +29,7 @@ const currentUser: CurrentUser = {
     avatarUrl: null,
     currentCefrLevel: 'B1',
     learningGoal: 'C1',
-    preferredLanguage: 'vi',
+    preferredLanguage: 'en',
   },
 }
 
@@ -40,6 +40,7 @@ const renderSecurity = () => {
       mutations: { retry: false },
     },
   })
+  queryClient.setQueryData(authQueryKeys.currentUser(), currentUser)
   const router = createMemoryRouter(
     [{ path: '*', element: <AppRoutes /> }],
     { initialEntries: ['/settings/security'] },
@@ -101,9 +102,12 @@ describe('change-password schema and DTO', () => {
   })
 })
 
+import i18n from '@/i18n/i18n'
+
 describe('Security settings UI', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.restoreAllMocks()
+    await i18n.changeLanguage('en')
     vi.spyOn(authApi, 'restoreSession').mockResolvedValue(currentUser)
   })
 

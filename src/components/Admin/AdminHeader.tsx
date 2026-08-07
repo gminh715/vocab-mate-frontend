@@ -79,7 +79,7 @@ export function AdminHeader({
             aria-label="Admin"
             sx={{
               color: 'text.primary',
-              fontFamily: 'Georgia, serif',
+              fontFamily: '"Merriweather", serif',
               fontSize: { xs: 20, sm: 23 },
               fontWeight: 700,
               lineHeight: 1.15,

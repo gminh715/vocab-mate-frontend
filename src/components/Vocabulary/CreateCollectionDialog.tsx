@@ -10,6 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import {
   useCreateCollectionMutation,
@@ -20,12 +21,12 @@ const createCollectionSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, 'Collection name is required.')
-    .max(100, 'Name must be 100 characters or fewer.'),
+    .min(1, 'nameRequired')
+    .max(100, 'nameTooLong'),
   description: z
     .string()
     .trim()
-    .max(500, 'Description must be 500 characters or fewer.')
+    .max(500, 'descriptionTooLong')
     .optional()
     .or(z.literal('')),
 })
@@ -44,6 +45,7 @@ export function CreateCollectionDialog({
   onClose,
   onSuccess,
 }: CreateCollectionDialogProps) {
+  const { t } = useTranslation('vocabulary')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const createMutation = useCreateCollectionMutation()
 
@@ -63,6 +65,16 @@ export function CreateCollectionDialog({
     onClose()
   }
 
+  const resolveError = (key: string | undefined): string | undefined => {
+    if (!key) return undefined
+    const knownKeys = ['nameRequired', 'nameTooLong', 'descriptionTooLong'] as const
+    type KnownKey = typeof knownKeys[number]
+    if ((knownKeys as readonly string[]).includes(key)) {
+      return t(`createCollection.${key as KnownKey}`)
+    }
+    return key
+  }
+
   const onSubmit = (values: CreateCollectionFormOutput) => {
     setErrorMessage(null)
     const payload = {
@@ -80,7 +92,7 @@ export function CreateCollectionDialog({
         }
       },
       onError: () => {
-        setErrorMessage('Failed to create collection. Name might already exist.')
+        setErrorMessage(t('createCollection.errorCreate'))
       },
     })
   }
@@ -88,7 +100,7 @@ export function CreateCollectionDialog({
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
       <DialogTitle id="create-collection-dialog-title">
-        Create New Collection
+        {t('createCollection.dialogTitle')}
       </DialogTitle>
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -97,24 +109,24 @@ export function CreateCollectionDialog({
             {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
             <TextField
-              label="Collection Name"
-              placeholder="e.g. Technology, Business, Daily Slang…"
+              label={t('createCollection.nameLabel')}
+              placeholder={t('createCollection.namePlaceholder')}
               fullWidth
               autoFocus
               error={Boolean(errors.name)}
-              helperText={errors.name?.message}
+              helperText={resolveError(errors.name?.message)}
               slotProps={{ htmlInput: { maxLength: 100 } }}
               {...register('name')}
             />
 
             <TextField
-              label="Description (optional)"
-              placeholder="Short note about what terms belong in this collection…"
+              label={t('createCollection.descriptionLabel')}
+              placeholder={t('createCollection.descriptionPlaceholder')}
               multiline
               rows={3}
               fullWidth
               error={Boolean(errors.description)}
-              helperText={errors.description?.message}
+              helperText={resolveError(errors.description?.message)}
               slotProps={{ htmlInput: { maxLength: 500 } }}
               {...register('description')}
             />
@@ -123,7 +135,7 @@ export function CreateCollectionDialog({
 
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={handleClose} disabled={isSubmitting || createMutation.isPending}>
-            Cancel
+            {t('createCollection.cancel')}
           </Button>
           <Button
             type="submit"
@@ -131,7 +143,7 @@ export function CreateCollectionDialog({
             color="primary"
             disabled={isSubmitting || createMutation.isPending}
           >
-            {createMutation.isPending ? 'Creating…' : 'Create Collection'}
+            {createMutation.isPending ? t('createCollection.creating') : t('createCollection.submit')}
           </Button>
         </DialogActions>
       </Box>

@@ -158,7 +158,7 @@ function OverviewMetrics({ data }: { data: AdminAnalyticsOverview }) {
             <Typography
               sx={{
                 mt: 1,
-                fontFamily: 'Georgia, serif',
+                fontFamily: '"Merriweather", serif',
                 fontSize: 36,
                 fontWeight: 700,
                 fontVariantNumeric: 'tabular-nums',
@@ -547,7 +547,7 @@ export function AdminAnalyticsPage() {
               <Stack spacing={2.5}>
                 <Paper variant="outlined" sx={{ p: 2.5, borderTop: 4, borderTopColor: 'secondary.main' }}>
                   <Typography color="text.secondary" sx={{ fontWeight: 750 }}>Active learners</Typography>
-                  <Typography sx={{ mt: 1, fontFamily: 'Georgia, serif', fontSize: 36, fontWeight: 700 }}>
+                  <Typography sx={{ mt: 1, fontFamily: '"Merriweather", serif', fontSize: 36, fontWeight: 700 }}>
                     {formatInteger(users.activeLearners)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">Distinct learners with activity in this range.</Typography>

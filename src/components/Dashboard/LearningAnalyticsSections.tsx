@@ -2,20 +2,24 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import Collapse from '@mui/material/Collapse'
 import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import Tab from '@mui/material/Tab'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
+import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useEffect, useMemo, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { normalizeApiError } from '@/config/apiClient'
 import {
@@ -46,6 +50,12 @@ import {
   learningStatusLabel,
   questionTypeLabel,
 } from '@/utils/Analytics/analyticsPresentation'
+import {
+  BookOpenIcon,
+  BookmarkIcon,
+  FilterIcon,
+  TargetIcon,
+} from './DashboardIcons'
 
 const integerFormatter = new Intl.NumberFormat()
 const bucketFormatter = new Intl.DateTimeFormat(undefined, {
@@ -56,12 +66,12 @@ const bucketFormatter = new Intl.DateTimeFormat(undefined, {
 const formatBucket = (bucket: string): string =>
   bucketFormatter.format(new Date(`${bucket}T00:00:00Z`))
 
-const analyticsErrorMessage = (error: unknown): string => {
+const analyticsErrorMessage = (error: unknown, t: (key: string) => string): string => {
   const apiError = normalizeApiError(error)
 
   return apiError.status === 400
-    ? 'These analytics filters are invalid. Check the date range and try again.'
-    : 'This analytics section could not be loaded. Try again.'
+    ? t('errors.invalidFilters')
+    : t('errors.loadError')
 }
 
 function AnalyticsFiltersPanel({
@@ -75,6 +85,9 @@ function AnalyticsFiltersPanel({
   onChange: (changes: Partial<AnalyticsFilters>) => void
   onReset: () => void
 }) {
+  const { t } = useTranslation('analytics')
+  const [showCustom, setShowCustom] = useState(Boolean(filters.from || filters.to || filters.groupBy))
+
   const hasFilters = Boolean(
     filters.from ||
       filters.to ||
@@ -82,103 +95,162 @@ function AnalyticsFiltersPanel({
       filters.articleId,
   )
 
+  const handlePreset = (days: number | null) => {
+    if (days === null) {
+      onChange({ from: undefined, to: undefined })
+      return
+    }
+    const today = new Date()
+    const past = new Date()
+    past.setDate(today.getDate() - days)
+    onChange({
+      from: past.toISOString().split('T')[0],
+      to: undefined,
+    })
+  }
+
+  const isDefault30 = !filters.from && !filters.to
+
   return (
     <Paper
       component="section"
       aria-labelledby="analytics-filter-title"
       variant="outlined"
-      sx={{ p: { xs: 2, md: 2.5 } }}
+      sx={{ p: { xs: 2, md: 2.25 }, borderRadius: 3 }}
     >
       <Stack spacing={2}>
-        <Box>
-          <Typography
-            id="analytics-filter-title"
-            component="h2"
-            sx={{ fontWeight: 800 }}
-          >
-            Analytics range
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Dates use your local timezone. The end date is exclusive; leave
-            both blank for the backend&apos;s default 30-day range.
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(2, minmax(0, 1fr))',
-              md: 'repeat(3, minmax(0, 1fr)) auto',
-            },
-            gap: 1.5,
-            alignItems: 'start',
-          }}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1.5}
+          sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}
         >
-          <TextField
-            label="From"
-            name="from"
-            type="date"
-            value={filters.from ?? ''}
-            slotProps={{
-              htmlInput: {
-                autoComplete: 'off',
-                'aria-describedby': rangeError
-                  ? 'analytics-range-error'
-                  : undefined,
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography
+              id="analytics-filter-title"
+              sx={{ fontWeight: 700, fontSize: 14, mr: 1 }}
+            >
+              {t('filters.timePeriod')}
+            </Typography>
+            <Chip
+              label={t('filters.default30')}
+              size="small"
+              color={isDefault30 ? 'primary' : 'default'}
+              variant={isDefault30 ? 'filled' : 'outlined'}
+              onClick={() => handlePreset(null)}
+              sx={{ fontWeight: 600, cursor: 'pointer' }}
+            />
+            <Chip
+              label={t('filters.days7')}
+              size="small"
+              color={filters.from && !filters.to ? 'primary' : 'default'}
+              variant={filters.from && !filters.to ? 'filled' : 'outlined'}
+              onClick={() => handlePreset(7)}
+              sx={{ fontWeight: 600, cursor: 'pointer' }}
+            />
+            <Chip
+              label={t('filters.days90')}
+              size="small"
+              variant="outlined"
+              onClick={() => handlePreset(90)}
+              sx={{ fontWeight: 600, cursor: 'pointer' }}
+            />
+          </Stack>
+
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            <Button
+              size="small"
+              variant={showCustom ? 'contained' : 'outlined'}
+              startIcon={<FilterIcon size={16} />}
+              onClick={() => setShowCustom((prev) => !prev)}
+              sx={{ height: 32, borderRadius: 2, textTransform: 'none' }}
+            >
+              {showCustom ? t('filters.hideCustomDates') : t('filters.customDates')}
+            </Button>
+            {hasFilters ? (
+              <Button
+                size="small"
+                color="inherit"
+                onClick={onReset}
+                sx={{ height: 32, textTransform: 'none' }}
+              >
+                {t('filters.reset')}
+              </Button>
+            ) : null}
+          </Stack>
+        </Stack>
+
+        <Collapse in={showCustom}>
+          <Box
+            sx={{
+              pt: 1.5,
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(2, minmax(0, 1fr))',
+                md: 'repeat(3, minmax(0, 1fr)) auto',
               },
-              inputLabel: { shrink: true },
+              gap: 1.5,
+              alignItems: 'start',
             }}
-            error={Boolean(rangeError)}
-            onChange={(event) =>
-              onChange({ from: event.target.value || undefined })
-            }
-          />
-          <TextField
-            label="To (exclusive)"
-            name="to"
-            type="date"
-            value={filters.to ?? ''}
-            slotProps={{
-              htmlInput: {
-                autoComplete: 'off',
-                'aria-describedby': rangeError
-                  ? 'analytics-range-error'
-                  : undefined,
-              },
-              inputLabel: { shrink: true },
-            }}
-            error={Boolean(rangeError)}
-            onChange={(event) =>
-              onChange({ to: event.target.value || undefined })
-            }
-          />
-          <TextField
-            select
-            label="Vocabulary trend interval"
-            name="groupBy"
-            value={filters.groupBy ?? ''}
-            onChange={(event) =>
-              onChange({
-                groupBy:
-                  (event.target.value as AnalyticsFilters['groupBy']) ||
-                  undefined,
-              })
-            }
           >
-            <MenuItem value="">Automatic</MenuItem>
-            <MenuItem value="DAY">Daily</MenuItem>
-            <MenuItem value="WEEK">Weekly</MenuItem>
-            <MenuItem value="MONTH">Monthly</MenuItem>
-          </TextField>
-          <Button
-            variant="outlined"
-            disabled={!hasFilters}
-            onClick={onReset}
-          >
-            Reset filters
-          </Button>
-        </Box>
+            <TextField
+              label={t('filters.from')}
+              name="from"
+              type="date"
+              size="small"
+              value={filters.from ?? ''}
+              slotProps={{
+                htmlInput: {
+                  autoComplete: 'off',
+                  'aria-describedby': rangeError ? 'analytics-range-error' : undefined,
+                },
+                inputLabel: { shrink: true },
+              }}
+              error={Boolean(rangeError)}
+              onChange={(event) =>
+                onChange({ from: event.target.value || undefined })
+              }
+            />
+            <TextField
+              label={t('filters.to')}
+              name="to"
+              type="date"
+              size="small"
+              value={filters.to ?? ''}
+              slotProps={{
+                htmlInput: {
+                  autoComplete: 'off',
+                  'aria-describedby': rangeError ? 'analytics-range-error' : undefined,
+                },
+                inputLabel: { shrink: true },
+              }}
+              error={Boolean(rangeError)}
+              onChange={(event) =>
+                onChange({ to: event.target.value || undefined })
+              }
+            />
+            <TextField
+              select
+              label={t('filters.interval')}
+              name="groupBy"
+              size="small"
+              value={filters.groupBy ?? ''}
+              onChange={(event) =>
+                onChange({
+                  groupBy:
+                    (event.target.value as AnalyticsFilters['groupBy']) ||
+                    undefined,
+                })
+              }
+            >
+              <MenuItem value="">{t('filters.automatic')}</MenuItem>
+              <MenuItem value="DAY">{t('filters.daily')}</MenuItem>
+              <MenuItem value="WEEK">{t('filters.weekly')}</MenuItem>
+              <MenuItem value="MONTH">{t('filters.monthly')}</MenuItem>
+            </TextField>
+          </Box>
+        </Collapse>
+
         {rangeError ? (
           <Typography
             id="analytics-range-error"
@@ -186,7 +258,7 @@ function AnalyticsFiltersPanel({
             color="error.main"
             variant="body2"
           >
-            {rangeError} Analytics requests are paused.
+            {rangeError} {t('filters.rangeErrorSuffix')}
           </Typography>
         ) : null}
         {filters.articleId ? (
@@ -196,9 +268,10 @@ function AnalyticsFiltersPanel({
             sx={{ alignItems: 'center', flexWrap: 'wrap' }}
           >
             <Typography variant="body2" color="text.secondary">
-              Quiz analytics are filtered to one article:
+              {t('filters.filteredToArticle')}
             </Typography>
             <Chip
+              size="small"
               label={filters.articleId}
               onDelete={() => onChange({ articleId: undefined })}
             />
@@ -213,7 +286,8 @@ function SectionShell({
   id,
   eyebrow,
   title,
-  description,
+  refreshingLabel,
+  loadingLabel,
   isPending,
   isFetching,
   error,
@@ -224,7 +298,9 @@ function SectionShell({
   id: string
   eyebrow: string
   title: string
-  description: string
+  description?: string
+  refreshingLabel: string
+  loadingLabel: string
   isPending: boolean
   isFetching: boolean
   error: unknown | null
@@ -232,6 +308,8 @@ function SectionShell({
   onRetry: () => void
   children: ReactNode
 }) {
+  const { t } = useTranslation('analytics')
+
   return (
     <Paper
       component="section"
@@ -240,7 +318,7 @@ function SectionShell({
       sx={{ overflow: 'hidden' }}
     >
       {isFetching && !isPending ? (
-        <LinearProgress aria-label={`Refreshing ${title.toLowerCase()}`} />
+        <LinearProgress aria-label={refreshingLabel} />
       ) : (
         <Box sx={{ height: 4 }} />
       )}
@@ -270,18 +348,15 @@ function SectionShell({
           >
             {title}
           </Typography>
-          <Typography color="text.secondary" sx={{ mt: 0.75, maxWidth: 760 }}>
-            {description}
-          </Typography>
         </Box>
         {rangeError ? (
           <Alert severity="info">
-            Fix the shared date range to load this section.
+            {t('errors.fixDateRange')}
           </Alert>
         ) : isPending ? (
           <Box
             role="status"
-            aria-label={`Loading ${title.toLowerCase()}`}
+            aria-label={loadingLabel}
             sx={{
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
@@ -302,11 +377,11 @@ function SectionShell({
             severity="error"
             action={
               <Button color="inherit" onClick={onRetry}>
-                Try again
+                {t('errors.tryAgain')}
               </Button>
             }
           >
-            {analyticsErrorMessage(error)}
+            {analyticsErrorMessage(error, t)}
           </Alert>
         ) : (
           children
@@ -353,7 +428,7 @@ function MetricStrip({
             aria-label={`${item.label}: ${item.value}`}
             sx={{
               mt: 0.5,
-              fontFamily: 'Georgia, serif',
+              fontFamily: '"Merriweather", serif',
               fontSize: 32,
               fontWeight: 700,
               fontVariantNumeric: 'tabular-nums',
@@ -361,9 +436,6 @@ function MetricStrip({
             }}
           >
             {item.value}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {item.detail}
           </Typography>
         </Box>
       ))}
@@ -381,17 +453,19 @@ interface DistributionItem {
 
 function DistributionPanel({
   title,
-  summary,
   items,
   scaleMaximum,
   empty,
+  emptyMessage,
 }: {
   title: string
-  summary: string
+  summary?: string
   items: DistributionItem[]
   scaleMaximum?: number
   empty?: boolean
+  emptyMessage?: string
 }) {
+  const { t } = useTranslation('analytics')
   const dataMaximum = items.reduce(
     (largest, item) => Math.max(largest, item.value),
     0,
@@ -403,12 +477,9 @@ function DistributionPanel({
       <Typography component="h3" sx={{ fontWeight: 850 }}>
         {title}
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-        {summary}
-      </Typography>
       {empty ?? dataMaximum === 0 ? (
         <Typography color="text.secondary" sx={{ mt: 2 }}>
-          No activity was recorded for this distribution.
+          {emptyMessage ?? t('vocabulary.noDistributionActivity')}
         </Typography>
       ) : (
         <Stack component="ul" spacing={1.5} sx={{ m: 0, mt: 2, p: 0, listStyle: 'none' }}>
@@ -459,30 +530,30 @@ function DistributionPanel({
 
 function TrendPanel({
   title,
-  summary,
   headers,
   rows,
   empty,
+  emptyMessage,
 }: {
   title: string
-  summary: string
+  summary?: string
   headers: string[]
   rows: Array<{ key: string; cells: string[] }>
   empty: boolean
+  emptyMessage?: string
 }) {
+  const { t } = useTranslation('analytics')
+
   return (
     <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
       <Box sx={{ p: 2, pb: empty ? 2 : 1 }}>
         <Typography component="h3" sx={{ fontWeight: 850 }}>
           {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          {summary}
-        </Typography>
       </Box>
       {empty ? (
         <Typography color="text.secondary" sx={{ px: 2, pb: 2 }}>
-          No activity was recorded for this trend.
+          {emptyMessage ?? t('quiz.noTrendActivity')}
         </Typography>
       ) : (
         <TableContainer sx={{ maxHeight: 360 }}>
@@ -542,10 +613,9 @@ const niceCountMaximum = (value: number): number => {
 
 function VocabularyTrendChart({
   items,
-  summary,
 }: {
   items: VocabularyTrendBucket[]
-  summary: string
+  summary?: string
 }) {
   const chart = useMemo(() => {
     const width = 720
@@ -604,6 +674,8 @@ function VocabularyTrendChart({
 
   const hasActivity = items.some((item) => item.count > 0)
 
+  const { t } = useTranslation('analytics')
+
   return (
     <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
       <Box sx={{ p: 2, pb: hasActivity ? 1 : 2 }}>
@@ -612,15 +684,7 @@ function VocabularyTrendChart({
           component="h3"
           sx={{ fontWeight: 850 }}
         >
-          Saved vocabulary trend
-        </Typography>
-        <Typography
-          id="vocabulary-trend-summary"
-          variant="body2"
-          color="text.secondary"
-          sx={{ mt: 0.5 }}
-        >
-          {summary}
+          {t('vocabulary.savedTrend')}
         </Typography>
       </Box>
       {hasActivity ? (
@@ -628,7 +692,7 @@ function VocabularyTrendChart({
           <Stack
             direction="row"
             spacing={0.75}
-            aria-label="Saved vocabulary trend legend"
+            aria-label={t('vocabulary.savedTrendLegend')}
             sx={{ px: 2, py: 1, alignItems: 'center' }}
           >
             <Box
@@ -641,7 +705,7 @@ function VocabularyTrendChart({
               }}
             />
             <Typography variant="caption" color="text.secondary">
-              Vocabulary saved
+              {t('vocabulary.vocabularySaved')}
             </Typography>
           </Stack>
           <Box sx={{ overflowX: 'auto', px: 1, pb: 1.5 }}>
@@ -691,7 +755,7 @@ function VocabularyTrendChart({
                 textAnchor="middle"
                 transform={`rotate(-90 14 ${chart.margin.top + chart.plotHeight / 2})`}
               >
-                Words saved
+                {t('vocabulary.wordsSaved')}
               </text>
               {chart.labelIndexes.map((index) => (
                 <text
@@ -740,7 +804,7 @@ function VocabularyTrendChart({
         </>
       ) : (
         <Typography color="text.secondary" sx={{ px: 2, pb: 2 }}>
-          No saved vocabulary activity was recorded for this trend.
+          {t('vocabulary.noTrendActivity')}
         </Typography>
       )}
     </Paper>
@@ -749,10 +813,9 @@ function VocabularyTrendChart({
 
 function ReadingTrendChart({
   items,
-  summary,
 }: {
   items: ReadingTrendBucket[]
-  summary: string
+  summary?: string
 }) {
   const chart = useMemo(() => {
     const width = 720
@@ -810,19 +873,13 @@ function ReadingTrendChart({
     (item) => item.opened > 0 || item.completed > 0,
   )
 
+  const { t } = useTranslation('analytics')
+
   return (
     <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
       <Box sx={{ p: 2, pb: hasActivity ? 1 : 2 }}>
         <Typography id="reading-trend-title" component="h3" sx={{ fontWeight: 850 }}>
-          Reading activity trend
-        </Typography>
-        <Typography
-          id="reading-trend-summary"
-          variant="body2"
-          color="text.secondary"
-          sx={{ mt: 0.5 }}
-        >
-          {summary}
+          {t('reading.readingActivityTrend')}
         </Typography>
       </Box>
       {hasActivity ? (
@@ -830,12 +887,12 @@ function ReadingTrendChart({
           <Stack
             direction="row"
             spacing={2}
-            aria-label="Reading activity legend"
+            aria-label={t('reading.readingActivityLegend')}
             sx={{ px: 2, py: 1, flexWrap: 'wrap' }}
           >
             {[
-              { label: 'Opened', color: chartColors.opened },
-              { label: 'Completed', color: chartColors.completed },
+              { label: t('reading.opened'), color: chartColors.opened },
+              { label: t('reading.completed'), color: chartColors.completed },
             ].map((item) => (
               <Stack
                 key={item.label}
@@ -905,7 +962,7 @@ function ReadingTrendChart({
                 textAnchor="middle"
                 transform={`rotate(-90 14 ${chart.margin.top + chart.plotHeight / 2})`}
               >
-                Articles
+                {t('reading.articles')}
               </text>
               {chart.labelIndexes.map((index) => (
                 <text
@@ -972,7 +1029,7 @@ function ReadingTrendChart({
         </>
       ) : (
         <Typography color="text.secondary" sx={{ px: 2, pb: 2 }}>
-          No activity was recorded for this trend.
+          {t('reading.noTrendActivity')}
         </Typography>
       )}
     </Paper>
@@ -984,6 +1041,7 @@ function VocabularyAnalyticsContent({
 }: {
   data: VocabularyAnalytics
 }) {
+  const { t } = useTranslation('analytics')
   const statusSummary = data.byStatus
     .map((item) => `${learningStatusLabel(item.status)} ${integerFormatter.format(item.count)}`)
     .join(', ')
@@ -1000,19 +1058,19 @@ function VocabularyAnalyticsContent({
       <MetricStrip
         items={[
           {
-            label: 'Total saved',
+            label: t('vocabulary.totalSaved'),
             value: integerFormatter.format(data.totals.total),
-            detail: 'Current vocabulary stock',
+            detail: t('vocabulary.totalSavedDetail'),
           },
           {
-            label: 'Due now',
+            label: t('vocabulary.dueNow'),
             value: integerFormatter.format(data.totals.due),
-            detail: 'Current review schedule',
+            detail: t('vocabulary.dueNowDetail'),
           },
           {
-            label: 'Mastered',
+            label: t('vocabulary.mastered'),
             value: integerFormatter.format(data.totals.mastered),
-            detail: 'Current mastered stock',
+            detail: t('vocabulary.masteredDetail'),
           },
         ]}
       />
@@ -1024,8 +1082,9 @@ function VocabularyAnalyticsContent({
         }}
       >
         <DistributionPanel
-          title="Learning status"
+          title={t('vocabulary.learningStatus')}
           summary={`Status totals: ${statusSummary}.`}
+          emptyMessage={t('vocabulary.noDistributionActivity')}
           items={data.byStatus.map((item) => ({
             key: item.status,
             label: learningStatusLabel(item.status),
@@ -1034,8 +1093,9 @@ function VocabularyAnalyticsContent({
           }))}
         />
         <DistributionPanel
-          title="CEFR distribution"
+          title={t('vocabulary.cefrDistribution')}
           summary={`Saved vocabulary by level: ${cefrSummary}.`}
+          emptyMessage={t('vocabulary.noDistributionActivity')}
           items={data.byCefr.map((item) => ({
             key: item.cefrLevel,
             label: cefrLevelLabel(item.cefrLevel),
@@ -1053,6 +1113,7 @@ function VocabularyAnalyticsContent({
 }
 
 function ReadingAnalyticsContent({ data }: { data: ReadingAnalytics }) {
+  const { t } = useTranslation('analytics')
   const categorySummary = data.byCategory
     .map(
       (item) =>
@@ -1064,29 +1125,30 @@ function ReadingAnalyticsContent({ data }: { data: ReadingAnalytics }) {
       <MetricStrip
         items={[
           {
-            label: 'Articles opened',
+            label: t('reading.articlesOpened'),
             value: integerFormatter.format(data.opened),
-            detail: 'Opened in this cohort',
+            detail: t('reading.articlesOpenedDetail'),
           },
           {
-            label: 'Articles completed',
+            label: t('reading.articlesCompleted'),
             value: integerFormatter.format(data.completed),
-            detail: 'Completed cohort records',
+            detail: t('reading.articlesCompletedDetail'),
           },
           {
-            label: 'Completion rate',
+            label: t('reading.completionRate'),
             value: formatAnalyticsRatio(data.completionRate),
-            detail: data.opened === 0 ? 'No opened articles' : 'Completed ÷ opened',
+            detail: data.opened === 0 ? t('reading.completionRateDetailEmpty') : t('reading.completionRateDetail'),
           },
         ]}
       />
       <DistributionPanel
-        title="Reading by category"
+        title={t('reading.byCategory')}
         summary={
           categorySummary
             ? `Category summary: ${categorySummary}. Archived article history remains included.`
             : 'No category activity was returned. Archived article history remains eligible.'
         }
+        emptyMessage={t('reading.noTrendActivity')}
         items={data.byCategory.map((item) => ({
           key: item.categoryId,
           label: item.categoryName,
@@ -1104,6 +1166,7 @@ function ReadingAnalyticsContent({ data }: { data: ReadingAnalytics }) {
 }
 
 function QuizAnalyticsContent({ data }: { data: QuizAnalytics }) {
+  const { t } = useTranslation('analytics')
   const questionSummary = data.byQuestionType
     .map(
       (item) =>
@@ -1120,27 +1183,28 @@ function QuizAnalyticsContent({ data }: { data: QuizAnalytics }) {
       <MetricStrip
         items={[
           {
-            label: 'Completed sessions',
+            label: t('quiz.completedSessions'),
             value: integerFormatter.format(data.sessions),
-            detail: 'In-progress and abandoned excluded',
+            detail: t('quiz.completedSessionsDetail'),
           },
           {
-            label: 'Accuracy',
+            label: t('quiz.accuracy'),
             value: formatAnalyticsRatio(data.accuracy),
-            detail: 'Correct answers ÷ total answers',
+            detail: t('quiz.accuracyDetail'),
           },
           {
-            label: 'Average score',
+            label: t('quiz.averageScore'),
             value: formatAnalyticsRatio(data.averageScore),
-            detail: 'Normalized completed-session score',
+            detail: t('quiz.averageScoreDetail'),
           },
         ]}
       />
       <DistributionPanel
-        title="Performance by question type"
+        title={t('quiz.byQuestionType')}
         summary={`Question-type performance: ${questionSummary}. Only answers from completed sessions are included.`}
         scaleMaximum={1}
         empty={data.byQuestionType.every((item) => item.answers === 0)}
+        emptyMessage={t('quiz.noDistributionActivity')}
         items={data.byQuestionType.map((item) => ({
           key: item.questionType,
           label: questionTypeLabel(item.questionType),
@@ -1150,9 +1214,10 @@ function QuizAnalyticsContent({ data }: { data: QuizAnalytics }) {
         }))}
       />
       <TrendPanel
-        title="Quiz performance trend"
+        title={t('quiz.performanceTrend')}
         summary={`${integerFormatter.format(data.sessions)} completed sessions across ${integerFormatter.format(data.trend.length)} time buckets. Accuracy and score are backend-calculated ratios.`}
-        headers={['Period', 'Sessions', 'Accuracy', 'Average score']}
+        headers={[t('quiz.trendPeriod'), t('quiz.trendSessions'), t('quiz.trendAccuracy'), t('quiz.trendAverageScore')]}
+        emptyMessage={t('quiz.noTrendActivity')}
         rows={data.trend.map((item) => ({
           key: item.bucket,
           cells: [
@@ -1170,6 +1235,7 @@ function QuizAnalyticsContent({ data }: { data: QuizAnalytics }) {
 
 export function LearningAnalyticsSections() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const [activeTab, setActiveTab] = useState<number>(0)
   const searchString = searchParams.toString()
   const filters = useMemo(
     () => analyticsFiltersFromSearchParams(new URLSearchParams(searchString)),
@@ -1212,34 +1278,21 @@ export function LearningAnalyticsSections() {
     )
   }
 
+  const { t } = useTranslation('analytics')
+
   return (
-    <Stack spacing={2.5}>
+    <Stack spacing={3}>
       <Box>
         <Typography
-          sx={{
-            color: 'primary.main',
-            fontSize: 12,
-            fontWeight: 850,
-            letterSpacing: '0.13em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Detailed analytics
-        </Typography>
-        <Typography
+          id="analytics-title"
           component="h2"
           variant="h2"
           sx={{
-            mt: 0.75,
-            fontSize: { xs: 32, md: 40 },
-            textWrap: 'balance',
+            fontSize: { xs: 22, sm: 24 },
+            fontWeight: 700,
           }}
         >
-          See how your learning is taking shape
-        </Typography>
-        <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 740 }}>
-          Each section comes directly from its learner analytics endpoint and
-          can load or recover independently.
+          {t('title')}
         </Typography>
       </Box>
 
@@ -1250,51 +1303,100 @@ export function LearningAnalyticsSections() {
         onReset={() => setSearchParams(new URLSearchParams())}
       />
 
-      <SectionShell
-        id="vocabulary-analytics"
-        eyebrow="Vocabulary"
-        title="Vocabulary growth"
-        description="Current vocabulary stock and save activity during the selected range."
-        isPending={vocabularyQuery.isPending}
-        isFetching={vocabularyQuery.isFetching}
-        error={vocabularyQuery.isError ? vocabularyQuery.error : null}
-        rangeError={rangeError}
-        onRetry={() => void vocabularyQuery.refetch()}
-      >
-        {vocabularyQuery.data ? (
-          <VocabularyAnalyticsContent data={vocabularyQuery.data} />
-        ) : null}
-      </SectionShell>
+      <Paper variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden', p: 0.5 }}>
+        <Tabs
+          value={activeTab}
+          onChange={(_, newValue: number) => setActiveTab(newValue)}
+          variant="fullWidth"
+          sx={{
+            minHeight: 48,
+            '& .MuiTab-root': {
+              fontWeight: 700,
+              fontSize: 14,
+              textTransform: 'none',
+              borderRadius: 2,
+              minHeight: 44,
+            },
+          }}
+        >
+          <Tab
+            icon={<BookmarkIcon size={18} />}
+            iconPosition="start"
+            label={t('tabs.vocabularyGrowth')}
+            id="analytics-tab-0"
+            aria-controls="analytics-tabpanel-0"
+          />
+          <Tab
+            icon={<BookOpenIcon size={18} />}
+            iconPosition="start"
+            label={t('tabs.readingProgress')}
+            id="analytics-tab-1"
+            aria-controls="analytics-tabpanel-1"
+          />
+          <Tab
+            icon={<TargetIcon size={18} />}
+            iconPosition="start"
+            label={t('tabs.quizPerformance')}
+            id="analytics-tab-2"
+            aria-controls="analytics-tabpanel-2"
+          />
+        </Tabs>
+      </Paper>
 
-      <SectionShell
-        id="reading-analytics"
-        eyebrow="Reading"
-        title="Reading momentum"
-        description="Opened-article cohorts, completion, categories, and activity over time."
-        isPending={readingQuery.isPending}
-        isFetching={readingQuery.isFetching}
-        error={readingQuery.isError ? readingQuery.error : null}
-        rangeError={rangeError}
-        onRetry={() => void readingQuery.refetch()}
-      >
-        {readingQuery.data ? (
-          <ReadingAnalyticsContent data={readingQuery.data} />
-        ) : null}
-      </SectionShell>
+      {activeTab === 0 ? (
+        <SectionShell
+          id="vocabulary-analytics"
+          eyebrow={t('sections.vocabulary.eyebrow')}
+          title={t('sections.vocabulary.title')}
+          refreshingLabel={t('sections.vocabulary.refreshingLabel')}
+          loadingLabel={t('sections.vocabulary.loadingLabel')}
+          isPending={vocabularyQuery.isPending}
+          isFetching={vocabularyQuery.isFetching}
+          error={vocabularyQuery.isError ? vocabularyQuery.error : null}
+          rangeError={rangeError}
+          onRetry={() => void vocabularyQuery.refetch()}
+        >
+          {vocabularyQuery.data ? (
+            <VocabularyAnalyticsContent data={vocabularyQuery.data} />
+          ) : null}
+        </SectionShell>
+      ) : null}
 
-      <SectionShell
-        id="quiz-analytics"
-        eyebrow="Quizzes"
-        title="Quiz performance"
-        description="Backend-scored performance from completed review sessions only."
-        isPending={quizQuery.isPending}
-        isFetching={quizQuery.isFetching}
-        error={quizQuery.isError ? quizQuery.error : null}
-        rangeError={rangeError}
-        onRetry={() => void quizQuery.refetch()}
-      >
-        {quizQuery.data ? <QuizAnalyticsContent data={quizQuery.data} /> : null}
-      </SectionShell>
+      {activeTab === 1 ? (
+        <SectionShell
+          id="reading-analytics"
+          eyebrow={t('sections.reading.eyebrow')}
+          title={t('sections.reading.title')}
+          refreshingLabel={t('sections.reading.refreshingLabel')}
+          loadingLabel={t('sections.reading.loadingLabel')}
+          isPending={readingQuery.isPending}
+          isFetching={readingQuery.isFetching}
+          error={readingQuery.isError ? readingQuery.error : null}
+          rangeError={rangeError}
+          onRetry={() => void readingQuery.refetch()}
+        >
+          {readingQuery.data ? (
+            <ReadingAnalyticsContent data={readingQuery.data} />
+          ) : null}
+        </SectionShell>
+      ) : null}
+
+      {activeTab === 2 ? (
+        <SectionShell
+          id="quiz-analytics"
+          eyebrow={t('sections.quiz.eyebrow')}
+          title={t('sections.quiz.title')}
+          refreshingLabel={t('sections.quiz.refreshingLabel')}
+          loadingLabel={t('sections.quiz.loadingLabel')}
+          isPending={quizQuery.isPending}
+          isFetching={quizQuery.isFetching}
+          error={quizQuery.isError ? quizQuery.error : null}
+          rangeError={rangeError}
+          onRetry={() => void quizQuery.refetch()}
+        >
+          {quizQuery.data ? <QuizAnalyticsContent data={quizQuery.data} /> : null}
+        </SectionShell>
+      ) : null}
     </Stack>
   )
 }

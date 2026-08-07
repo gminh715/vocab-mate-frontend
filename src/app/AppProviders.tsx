@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
 import { AuthProvider } from '@/components/Auth/AuthProvider'
+import { I18nLanguageSync } from '@/components/Auth/I18nLanguageSync'
 import { setSessionExpiredHandler } from '@/config/apiClient'
 import { clearAuthSession } from '@/hooks/Auth/useAuth'
 import { appTheme } from '@/theme'
@@ -27,7 +28,10 @@ export function AppProviders({ children }: PropsWithChildren) {
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <I18nLanguageSync />
+          {children}
+        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   )

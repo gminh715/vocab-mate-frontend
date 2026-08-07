@@ -279,7 +279,7 @@ function EditorToolbar({ editor, disabled }: ToolbarProps) {
             borderRadius: 1.25,
             '& .MuiSelect-select': {
               py: 0.75,
-              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
               fontSize: 14,
               fontWeight: 700,
             },
@@ -290,7 +290,7 @@ function EditorToolbar({ editor, disabled }: ToolbarProps) {
               key={style.value}
               value={style.value}
               sx={{
-                fontFamily: 'Georgia, "Times New Roman", serif',
+                fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
                 fontSize:
                   index === 0
                     ? 15
@@ -330,7 +330,7 @@ function EditorToolbar({ editor, disabled }: ToolbarProps) {
           <Typography
             component="span"
             aria-hidden="true"
-            sx={{ fontFamily: 'Georgia, serif', fontSize: 17, fontStyle: 'italic' }}
+            sx={{ fontFamily: '"Merriweather", serif', fontSize: 17, fontStyle: 'italic' }}
           >
             I
           </Typography>
@@ -425,7 +425,7 @@ function EditorToolbar({ editor, disabled }: ToolbarProps) {
           <Typography
             component="span"
             aria-hidden="true"
-            sx={{ fontFamily: 'Georgia, serif', fontSize: 22, lineHeight: 1 }}
+            sx={{ fontFamily: '"Merriweather", serif', fontSize: 22, lineHeight: 1 }}
           >
             “
           </Typography>
@@ -557,7 +557,7 @@ function EditorPage({ editor }: Omit<ToolbarProps, 'disabled'>) {
             top: { xs: 32, sm: 54 },
             left: { xs: 24, sm: 64 },
             color: 'text.disabled',
-            fontFamily: 'Georgia, "Times New Roman", serif',
+            fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
             fontSize: { xs: 17, sm: 18 },
             pointerEvents: 'none',
           }}
@@ -748,7 +748,7 @@ export function ArticleRichTextEditor({
               borderRadius: 0.75,
               color: 'primary.dark',
               bgcolor: 'primary.light',
-              fontFamily: 'Georgia, serif',
+              fontFamily: '"Merriweather", serif',
               fontSize: 14,
               fontWeight: 700,
               '&::after': {
@@ -797,7 +797,7 @@ export function ArticleRichTextEditor({
               outline: 0,
               overflowWrap: 'anywhere',
               color: 'text.primary',
-              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
               fontSize: { xs: 17, sm: 18 },
               lineHeight: 1.78,
             },

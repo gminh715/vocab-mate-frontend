@@ -6,7 +6,7 @@ Vocab Mate is a Vite + React + TypeScript frontend for learning English vocabula
 
 Current MVP constraints:
 
-- No AI or AI Agent features.
+- This project is an AI Agent that helps learners review vocabulary. You are encouraged to build agentic features.
 - Admins manually manage article content, sentence translations, vocabulary metadata, examples, and quizzes.
 - The frontend consumes prepared backend data and follows the existing API contract.
 - Expected stack: Material UI, React Router, TanStack Query, Axios, React Hook Form, and Zod.
@@ -18,7 +18,7 @@ These instructions apply to the entire repository unless a nearer nested `AGENTS
 - Follow the existing repository architecture and naming conventions before introducing new patterns.
 - Treat Swagger/OpenAPI, backend DTOs, and existing API code as the source of truth.
 - Do not invent request fields, response fields, enum values, pagination shapes, cookie behavior, or error formats.
-- Do not add AI-generated explanations, translations, summaries, recommendations, or quizzes to the MVP.
+- You are encouraged to add AI-generated explanations, translations, summaries, recommendations, and quizzes.
 - Do not refactor unrelated modules or redesign unrelated screens.
 - Do not add dependencies or architectural layers without a demonstrated need.
 - Preserve unrelated working-tree changes.
@@ -165,7 +165,6 @@ Do not:
 - Reparse article sentences into a competing frontend model.
 - Guess term offsets.
 - Modify article HTML through brittle string replacement.
-- Generate explanations, translations, examples, summaries, or vocabulary recommendations.
 
 ### CEFR highlighting
 

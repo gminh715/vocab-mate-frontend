@@ -21,7 +21,9 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 import { normalizeApiError } from '@/config/apiClient'
+import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 import {
+  useAbandonReviewSessionMutation,
   useReviewSessionQuery,
   useSkipReviewItemMutation,
   useStartReviewSessionMutation,
@@ -105,7 +107,13 @@ const startRequestFromSearch = (
   return null
 }
 
-function ReviewShell({ children }: { children: React.ReactNode }) {
+function ReviewShell({
+  children,
+  actions,
+}: {
+  children: React.ReactNode
+  actions?: React.ReactNode
+}) {
   return (
     <Box
       sx={{
@@ -141,9 +149,11 @@ function ReviewShell({ children }: { children: React.ReactNode }) {
         >
           Vocab Mate
         </Typography>
-        <Button component={RouterLink} to={routePaths.home} color="inherit">
-          Exit
-        </Button>
+        {actions ?? (
+          <Button component={RouterLink} to={routePaths.home} color="inherit">
+            Exit
+          </Button>
+        )}
       </Stack>
       <Box component="main" sx={{ maxWidth: 860, mx: 'auto', mt: { xs: 2, sm: 4 } }}>
         {children}
@@ -243,12 +253,17 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   const sessionQuery = useReviewSessionQuery(sessionId)
   const answerMutation = useSubmitReviewAnswerMutation(sessionId)
   const skipMutation = useSkipReviewItemMutation(sessionId)
+  const abandonMutation = useAbandonReviewSessionMutation(sessionId)
   const [transitionItem, setTransitionItem] = useState<ReviewSessionItem | null>(null)
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
   const [answerText, setAnswerText] = useState('')
   const [hintsUsed, setHintsUsed] = useState(0)
   const [feedback, setFeedback] = useState<SubmittedReviewAnswer | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [hasStaleConflict, setHasStaleConflict] = useState(false)
+  const [staleRecoveryReady, setStaleRecoveryReady] = useState(false)
+  const [endDialogOpen, setEndDialogOpen] = useState(false)
+  const [endSessionError, setEndSessionError] = useState<string | null>(null)
   const [isLocked, setIsLocked] = useState(false)
   const questionStartedAtRef = useRef(0)
   const submissionLockRef = useRef(false)
@@ -263,6 +278,8 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     setHintsUsed(0)
     setFeedback(null)
     setActionError(null)
+    setHasStaleConflict(false)
+    setStaleRecoveryReady(false)
     questionStartedAtRef.current = Date.now()
     submissionLockRef.current = false
     setIsLocked(false)
@@ -321,8 +338,37 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   )
   const isBusy =
     isLocked ||
+    hasStaleConflict ||
     answerMutation.isPending ||
-    skipMutation.isPending
+    skipMutation.isPending ||
+    abandonMutation.isPending
+
+  const refreshAfterStaleConflict = async () => {
+    const refreshed = await sessionQuery.refetch()
+    const canRecover = Boolean(
+      refreshed.data?.nextItem ||
+        refreshed.data?.session.status === 'COMPLETED',
+    )
+    setStaleRecoveryReady(canRecover)
+    setActionError(
+      canRecover
+        ? 'This question changed in another request. The latest review state is ready.'
+        : 'The latest review state could not be loaded. Try refreshing again.',
+    )
+  }
+
+  const recoverFromStaleConflict = () => {
+    const latestState = sessionQuery.data
+    if (latestState?.session.status === 'COMPLETED') {
+      navigate(reviewSummaryPath(sessionId), { replace: true })
+      return
+    }
+    if (!latestState?.nextItem) {
+      void refreshAfterStaleConflict()
+      return
+    }
+    resetQuestion(latestState.nextItem)
+  }
 
   const submitAnswer = async () => {
     if (
@@ -336,6 +382,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     submissionLockRef.current = true
     setIsLocked(true)
     setActionError(null)
+    setTransitionItem(displayItem)
 
     try {
       const elapsed = Math.min(
@@ -356,11 +403,16 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       submissionLockRef.current = false
       setIsLocked(false)
       const apiError = normalizeApiError(error)
-      setActionError(
-        apiError.status === 409
-          ? 'This question was already updated. Reload the review to continue.'
-          : 'Your answer could not be saved. Check your connection and try again.',
-      )
+      if (apiError.status === 409) {
+        setHasStaleConflict(true)
+        setStaleRecoveryReady(false)
+        setActionError('This question changed. Loading the latest review state…')
+        await refreshAfterStaleConflict()
+      } else {
+        setActionError(
+          'Your answer could not be saved. Check your connection and try again.',
+        )
+      }
     }
   }
 
@@ -387,10 +439,30 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       submissionLockRef.current = false
       setIsLocked(false)
       const apiError = normalizeApiError(error)
-      setActionError(
+      if (apiError.status === 409) {
+        setHasStaleConflict(true)
+        setStaleRecoveryReady(false)
+        setActionError('This question changed. Loading the latest review state…')
+        await refreshAfterStaleConflict()
+      } else {
+        setActionError(
+          'This word could not be skipped. Check your connection and try again.',
+        )
+      }
+    }
+  }
+
+  const endSession = async () => {
+    setEndSessionError(null)
+    try {
+      await abandonMutation.mutateAsync()
+      navigate(routePaths.home, { replace: true })
+    } catch (error: unknown) {
+      const apiError = normalizeApiError(error)
+      setEndSessionError(
         apiError.status === 409
-          ? 'This question was already updated. Reload the review to continue.'
-          : 'This word could not be skipped. Check your connection and try again.',
+          ? 'This session changed before it could be ended. Close this dialog and refresh the review.'
+          : 'The session could not be ended. Check your connection and try again.',
       )
     }
   }
@@ -429,7 +501,31 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   }
 
   return (
-    <ReviewShell>
+    <ReviewShell
+      actions={
+        <Stack direction="row" spacing={0.5}>
+          <Button
+            component={RouterLink}
+            to={routePaths.home}
+            color="inherit"
+            disabled={isBusy}
+          >
+            Save and exit
+          </Button>
+          <Button
+            color="error"
+            disabled={isBusy}
+            onClick={() => {
+              setEndSessionError(null)
+              abandonMutation.reset()
+              setEndDialogOpen(true)
+            }}
+          >
+            End session
+          </Button>
+        </Stack>
+      }
+    >
       <Stack spacing={{ xs: 2.5, sm: 3.5 }}>
         <Box>
           <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -546,7 +642,21 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
             ) : null}
 
             {actionError ? (
-              <Alert severity="error" sx={{ mt: 2 }}>
+              <Alert
+                severity="error"
+                sx={{ mt: 2 }}
+                action={
+                  hasStaleConflict ? (
+                    <Button
+                      color="inherit"
+                      disabled={sessionQuery.isFetching}
+                      onClick={recoverFromStaleConflict}
+                    >
+                      {staleRecoveryReady ? 'Use latest question' : 'Refresh'}
+                    </Button>
+                  ) : undefined
+                }
+              >
                 {actionError}
               </Alert>
             ) : null}
@@ -585,6 +695,22 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           </Box>
         </Paper>
       </Stack>
+      <ConfirmationDialog
+        open={endDialogOpen}
+        title="End this review session?"
+        description="This closes the current session, so it will no longer be available to resume. Choose Save and exit instead if you want to continue later."
+        confirmLabel="End session"
+        pendingLabel="Ending…"
+        isPending={abandonMutation.isPending}
+        errorMessage={endSessionError}
+        onCancel={() => {
+          if (abandonMutation.isPending) return
+          setEndDialogOpen(false)
+          setEndSessionError(null)
+          abandonMutation.reset()
+        }}
+        onConfirm={() => void endSession()}
+      />
     </ReviewShell>
   )
 }

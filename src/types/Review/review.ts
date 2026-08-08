@@ -109,6 +109,11 @@ export interface SkippedReviewItem {
   completionSummary?: ReviewResult
 }
 
+export interface AbandonedReviewSession {
+  id: string
+  status: 'ABANDONED'
+}
+
 export interface CompletedReviewAnswer {
   quizQuestionId: string
   questionType: QuestionType

@@ -4,21 +4,39 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type {
+  CompletedReviewResult,
   ReviewSessionItem,
   ReviewSessionState,
   SubmittedReviewAnswer,
 } from "@/types/Review/review";
 
-const { queryState, submitAnswer, skipItem } = vi.hoisted(() => ({
+const {
+  queryState,
+  submitAnswer,
+  skipItem,
+  abandonSession,
+  abandonReset,
+  summaryQueryHook,
+} = vi.hoisted(() => ({
   queryState: {
     data: undefined as ReviewSessionState | undefined,
     isPending: false,
     isError: false,
     error: null as unknown,
     refetch: vi.fn(),
+    summary: {
+      data: undefined as CompletedReviewResult | undefined,
+      isPending: false,
+      isError: false,
+      error: null as unknown,
+      refetch: vi.fn(),
+    },
   },
   submitAnswer: vi.fn(),
   skipItem: vi.fn(),
+  abandonSession: vi.fn(),
+  abandonReset: vi.fn(),
+  summaryQueryHook: vi.fn(),
 }));
 
 vi.mock("@/hooks/Review/useReviews", () => ({
@@ -31,6 +49,15 @@ vi.mock("@/hooks/Review/useReviews", () => ({
     mutateAsync: skipItem,
     isPending: false,
   }),
+  useAbandonReviewSessionMutation: () => ({
+    mutateAsync: abandonSession,
+    reset: abandonReset,
+    isPending: false,
+  }),
+  useReviewSummaryQuery: (sessionId: string) => {
+    summaryQueryHook(sessionId)
+    return queryState.summary
+  },
   useStartReviewSessionMutation: () => ({
     mutate: vi.fn(),
     reset: vi.fn(),
@@ -41,6 +68,8 @@ vi.mock("@/hooks/Review/useReviews", () => ({
 }));
 
 import { ReviewPage } from "@/pages/Review/ReviewPage";
+import { ReviewSummaryPage } from "@/pages/Review/ReviewSummaryPage";
+import { ApiError } from "@/config/apiClient";
 import { appTheme } from "@/theme";
 
 const firstItem: ReviewSessionItem = {
@@ -126,6 +155,7 @@ const renderReview = () =>
             path="/review/:sessionId/summary"
             element={<h1>Session Summary</h1>}
           />
+          <Route path="/" element={<h1>Home</h1>} />
         </Routes>
       </MemoryRouter>
     </ThemeProvider>,
@@ -147,6 +177,15 @@ describe("ReviewPage", () => {
     queryState.error = null;
     submitAnswer.mockReset();
     skipItem.mockReset();
+    abandonSession.mockReset();
+    abandonReset.mockReset();
+    summaryQueryHook.mockReset();
+    queryState.refetch.mockReset();
+    queryState.summary.data = undefined;
+    queryState.summary.isPending = false;
+    queryState.summary.isError = false;
+    queryState.summary.error = null;
+    queryState.summary.refetch.mockReset();
   });
 
   it("restores the server-provided active item and reveals progressive hints", () => {
@@ -288,5 +327,136 @@ describe("ReviewPage", () => {
       reviewSessionItemId: "item-1",
       quizQuestionId: "question-1",
     });
+  });
+
+  it("saves an in-progress session for resume without abandoning it", () => {
+    renderReview();
+
+    fireEvent.click(screen.getByRole("link", { name: "Save and exit" }));
+
+    expect(screen.getByText("Home")).toBeInTheDocument();
+    expect(abandonSession).not.toHaveBeenCalled();
+  });
+
+  it("confirms before ending and abandons the session", async () => {
+    abandonSession.mockResolvedValue({ id: "session-1", status: "ABANDONED" });
+    renderReview();
+
+    fireEvent.click(screen.getByRole("button", { name: "End session" }));
+    expect(
+      screen.getByRole("dialog", { name: "End this review session?" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Save and exit instead/i)).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "End session" }),
+    );
+
+    await waitFor(() => expect(abandonSession).toHaveBeenCalledTimes(1));
+    expect(screen.getByText("Home")).toBeInTheDocument();
+  });
+
+  it("refetches after a stale conflict and offers the latest question", async () => {
+    submitAnswer.mockRejectedValue(
+      new ApiError({
+        status: 409,
+        code: "CONFLICT",
+        message: "Stale item",
+      }),
+    );
+    queryState.refetch.mockImplementation(async () => {
+      queryState.data = sessionState(retryItem);
+      return { data: queryState.data };
+    });
+    renderReview();
+
+    fireEvent.click(screen.getByRole("button", { name: /tác động/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Check Answer" }));
+
+    expect(
+      await screen.findByRole("button", { name: "Use latest question" }),
+    ).toBeInTheDocument();
+    expect(queryState.refetch).toHaveBeenCalledTimes(1);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Use latest question" }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Complete the original sentence." }),
+    ).toBeInTheDocument();
+  });
+});
+
+const persistedSummary: CompletedReviewResult = {
+  result: {
+    score: 1,
+    totalPoints: 2,
+    accuracy: 0.5,
+    correctCount: 1,
+    completedAt: "2026-08-03T02:00:00.000Z",
+  },
+  answers: [
+    {
+      quizQuestionId: "question-1",
+      questionType: "SELECT_MEANING",
+      prompt: "Choose the saved meaning.",
+      selectedOption: null,
+      userAnswerText: null,
+      correctAnswer: "tÃ¡c Ä‘á»™ng",
+      explanation: "The saved contextual meaning.",
+      isCorrect: false,
+      points: 1,
+      earnedPoints: 0,
+      answeredAt: "2026-08-03T01:30:00.000Z",
+    },
+  ],
+};
+
+const renderSummary = (state?: unknown) =>
+  render(
+    <ThemeProvider theme={appTheme}>
+      <MemoryRouter
+        initialEntries={[{ pathname: "/review/session-1/summary", state }]}
+      >
+        <Routes>
+          <Route
+            path="/review/:sessionId/summary"
+            element={<ReviewSummaryPage />}
+          />
+        </Routes>
+      </MemoryRouter>
+    </ThemeProvider>,
+  );
+
+describe("ReviewSummaryPage", () => {
+  beforeEach(() => {
+    summaryQueryHook.mockReset();
+    queryState.summary.data = undefined;
+    queryState.summary.isPending = false;
+    queryState.summary.isError = false;
+    queryState.summary.error = null;
+    queryState.summary.refetch.mockReset();
+  });
+
+  it("always requests persisted summary and prefers it over navigation state", () => {
+    queryState.summary.data = persistedSummary;
+    renderSummary({
+      result: {
+        ...persistedSummary.result,
+        accuracy: 1,
+        correctCount: 2,
+      },
+    });
+
+    expect(summaryQueryHook).toHaveBeenCalledWith("session-1");
+    expect(screen.getByText("50%")).toBeInTheDocument();
+    expect(screen.getByText("Words to revisit")).toBeInTheDocument();
+  });
+
+  it("uses navigation state only as a loading placeholder", () => {
+    queryState.summary.isPending = true;
+    renderSummary({ result: persistedSummary.result });
+
+    expect(summaryQueryHook).toHaveBeenCalledWith("session-1");
+    expect(screen.getByRole("status")).toHaveTextContent(/temporary results/i);
+    expect(screen.getByText("50%")).toBeInTheDocument();
   });
 });

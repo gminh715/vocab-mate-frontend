@@ -1,5 +1,6 @@
 import { apiClient } from '@/config/apiClient'
 import type {
+  AbandonedReviewSession,
   CompletedReviewResult,
   DueReviews,
   ReviewSessionState,
@@ -43,6 +44,11 @@ export const reviewsApi = {
     apiClient.post<SkippedReviewItem>(
       `${reviewSessionsPath}/${encodeURIComponent(sessionId)}/skip`,
       request,
+    ),
+
+  abandon: (sessionId: string): Promise<AbandonedReviewSession> =>
+    apiClient.post<AbandonedReviewSession>(
+      `${reviewSessionsPath}/${encodeURIComponent(sessionId)}/abandon`,
     ),
 
   summary: (sessionId: string): Promise<CompletedReviewResult> =>

@@ -11,6 +11,7 @@ interface ConfirmationDialogProps {
   title: string
   description: string
   confirmLabel: string
+  pendingLabel?: string
   isPending?: boolean
   errorMessage?: string | null
   onCancel: () => void
@@ -22,6 +23,7 @@ export function ConfirmationDialog({
   title,
   description,
   confirmLabel,
+  pendingLabel = 'Saving…',
   isPending = false,
   errorMessage,
   onCancel,
@@ -32,6 +34,7 @@ export function ConfirmationDialog({
       open={open}
       onClose={isPending ? undefined : onCancel}
       aria-labelledby="confirmation-dialog-title"
+      aria-describedby="confirmation-dialog-description"
       maxWidth="xs"
       fullWidth
       slotProps={{
@@ -40,7 +43,9 @@ export function ConfirmationDialog({
     >
       <DialogTitle id="confirmation-dialog-title">{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>{description}</DialogContentText>
+        <DialogContentText id="confirmation-dialog-description">
+          {description}
+        </DialogContentText>
         {errorMessage ? (
           <Alert severity="error" sx={{ mt: 2 }}>
             {errorMessage}
@@ -56,7 +61,7 @@ export function ConfirmationDialog({
           variant="contained"
           disabled={isPending}
         >
-          {isPending ? 'Saving…' : confirmLabel}
+          {isPending ? pendingLabel : confirmLabel}
         </Button>
       </DialogActions>
     </Dialog>

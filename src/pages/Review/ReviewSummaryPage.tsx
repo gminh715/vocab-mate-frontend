@@ -58,8 +58,8 @@ export function ReviewSummaryPage() {
   const { sessionId = '' } = useParams()
   const location = useLocation()
   const navigationResult = resultFromLocationState(location.state)
-  const summaryQuery = useReviewSummaryQuery(sessionId, !navigationResult)
-  const result = navigationResult ?? summaryQuery.data?.result
+  const summaryQuery = useReviewSummaryQuery(sessionId)
+  const result = summaryQuery.data?.result ?? navigationResult
   const incorrectAnswers = summaryQuery.data?.answers.filter((answer) => !answer.isCorrect) ?? []
 
   if (!result && summaryQuery.isPending) {
@@ -77,7 +77,15 @@ export function ReviewSummaryPage() {
     const error = normalizeApiError(summaryQuery.error)
     return (
       <Box component="main" sx={{ minHeight: '100svh', bgcolor: 'background.default', p: { xs: 2, sm: 4 } }}>
-        <Alert severity="error" sx={{ maxWidth: 760, mx: 'auto' }}>
+        <Alert
+          severity="error"
+          sx={{ maxWidth: 760, mx: 'auto' }}
+          action={
+            <Button color="inherit" onClick={() => void summaryQuery.refetch()}>
+              Try Again
+            </Button>
+          }
+        >
           {error.status === 409
             ? 'This review is still in progress. Return to it before opening the summary.'
             : 'This review summary could not be loaded.'}
@@ -99,6 +107,23 @@ export function ReviewSummaryPage() {
       }}
     >
       <Stack spacing={3} sx={{ maxWidth: 760, mx: 'auto' }}>
+        {!summaryQuery.data && navigationResult && summaryQuery.isPending ? (
+          <Alert severity="info" role="status">
+            Showing temporary results while the saved review summary loads…
+          </Alert>
+        ) : null}
+        {!summaryQuery.data && navigationResult && summaryQuery.isError ? (
+          <Alert
+            severity="error"
+            action={
+              <Button color="inherit" onClick={() => void summaryQuery.refetch()}>
+                Retry
+              </Button>
+            }
+          >
+            The saved summary could not be loaded. These temporary results may be incomplete.
+          </Alert>
+        ) : null}
         <Paper variant="outlined" sx={{ p: { xs: 3, sm: 5 }, textAlign: 'center', borderTop: 6, borderTopColor: 'primary.main' }}>
           <Typography sx={{ color: 'primary.main', fontSize: 12, fontWeight: 850, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
             Review complete

@@ -1,12 +1,22 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query'
 import { reviewsApi } from '@/api/Review/ReviewsApi'
 import { analyticsQueryKeys } from '@/hooks/Analytics/useAnalytics'
 import { vocabularyQueryKeys } from '@/hooks/Vocabulary/useVocabularies'
 import type {
+  ReviewSessionState,
   SkipReviewItemRequest,
+  SkippedReviewItem,
   StartReviewSessionRequest,
   SubmitReviewAnswerRequest,
+  SubmittedReviewAnswer,
 } from '@/types/Review/review'
+
+type ReviewTransition = SubmittedReviewAnswer | SkippedReviewItem
 
 export const reviewQueryKeys = {
   all: ['reviews'] as const,
@@ -72,35 +82,138 @@ export const useStartReviewSessionMutation = () => {
   })
 }
 
-const useReviewProgressInvalidation = () => {
-  const queryClient = useQueryClient()
+const stateFromTransition = (
+  current: ReviewSessionState,
+  transition: ReviewTransition,
+): ReviewSessionState => ({
+  session: transition.sessionCompleted
+    ? {
+        ...current.session,
+        status: 'COMPLETED',
+        completedAt:
+          transition.completionSummary?.completedAt ??
+          current.session.completedAt,
+      }
+    : current.session,
+  progress: transition.progress,
+  ...(transition.nextQuestion ? { nextItem: transition.nextQuestion } : {}),
+})
 
-  return () => {
-    void queryClient.invalidateQueries({ queryKey: reviewQueryKeys.today() })
+const applyTransitionToCache = (
+  queryClient: QueryClient,
+  sessionId: string,
+  transition: ReviewTransition,
+) => {
+  const sessionKey = reviewQueryKeys.session(sessionId)
+  const activeKey = reviewQueryKeys.active()
+  const cachedSession = queryClient.getQueryData<ReviewSessionState>(sessionKey)
+  const cachedActive = queryClient.getQueryData<ReviewSessionState>(activeKey)
+  const current =
+    cachedSession ??
+    (cachedActive?.session.id === sessionId ? cachedActive : undefined)
+
+  if (current) {
+    const nextState = stateFromTransition(current, transition)
+    queryClient.setQueryData(sessionKey, nextState)
+    if (!transition.sessionCompleted && cachedActive?.session.id === sessionId) {
+      queryClient.setQueryData(activeKey, nextState)
+    }
+  }
+
+  if (transition.sessionCompleted) {
+    queryClient.removeQueries({ queryKey: activeKey, exact: true })
+    queryClient.removeQueries({
+      queryKey: reviewQueryKeys.summary(sessionId),
+      exact: true,
+    })
+  }
+}
+
+const cancelTransitionQueries = (
+  queryClient: QueryClient,
+  sessionId: string,
+) =>
+  Promise.all([
+    queryClient.cancelQueries({
+      queryKey: reviewQueryKeys.session(sessionId),
+      exact: true,
+    }),
+    queryClient.cancelQueries({
+      queryKey: reviewQueryKeys.active(),
+      exact: true,
+    }),
+  ])
+
+const invalidateReviewProgress = (
+  queryClient: QueryClient,
+  sessionCompleted: boolean,
+) => {
+  void queryClient.invalidateQueries({ queryKey: reviewQueryKeys.today() })
+  void queryClient.invalidateQueries({ queryKey: vocabularyQueryKeys.all })
+  void queryClient.invalidateQueries({ queryKey: analyticsQueryKeys.all })
+  if (sessionCompleted) {
     void queryClient.invalidateQueries({ queryKey: reviewQueryKeys.active() })
-    void queryClient.invalidateQueries({ queryKey: vocabularyQueryKeys.all })
-    void queryClient.invalidateQueries({ queryKey: analyticsQueryKeys.all })
   }
 }
 
 export const useSubmitReviewAnswerMutation = (sessionId: string) => {
-  const invalidate = useReviewProgressInvalidation()
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (request: SubmitReviewAnswerRequest) =>
       reviewsApi.answer(sessionId, request),
-    onSuccess: invalidate,
+    onMutate: () => cancelTransitionQueries(queryClient, sessionId),
+    onSuccess: (transition) => {
+      applyTransitionToCache(queryClient, sessionId, transition)
+      invalidateReviewProgress(queryClient, transition.sessionCompleted)
+    },
     retry: false,
   })
 }
 
 export const useSkipReviewItemMutation = (sessionId: string) => {
-  const invalidate = useReviewProgressInvalidation()
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (request: SkipReviewItemRequest) =>
       reviewsApi.skip(sessionId, request),
-    onSuccess: invalidate,
+    onMutate: () => cancelTransitionQueries(queryClient, sessionId),
+    onSuccess: (transition) => {
+      applyTransitionToCache(queryClient, sessionId, transition)
+      invalidateReviewProgress(queryClient, transition.sessionCompleted)
+    },
+    retry: false,
+  })
+}
+
+export const useAbandonReviewSessionMutation = (sessionId: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => reviewsApi.abandon(sessionId),
+    onMutate: () => cancelTransitionQueries(queryClient, sessionId),
+    onSuccess: (abandoned) => {
+      queryClient.setQueryData<ReviewSessionState>(
+        reviewQueryKeys.session(sessionId),
+        (current) =>
+          current
+            ? {
+                ...current,
+                session: {
+                  ...current.session,
+                  status: abandoned.status,
+                },
+                nextItem: undefined,
+              }
+            : current,
+      )
+      queryClient.removeQueries({
+        queryKey: reviewQueryKeys.active(),
+        exact: true,
+      })
+      void queryClient.invalidateQueries({ queryKey: reviewQueryKeys.active() })
+      void queryClient.invalidateQueries({ queryKey: reviewQueryKeys.today() })
+    },
     retry: false,
   })
 }

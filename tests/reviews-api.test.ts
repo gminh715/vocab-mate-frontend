@@ -53,6 +53,7 @@ describe('reviewsApi', () => {
       reviewSessionItemId: 'item-id',
       quizQuestionId: 'question-id',
     })
+    await reviewsApi.abandon('session/id')
 
     expect(apiPost).toHaveBeenNthCalledWith(
       1,
@@ -68,5 +69,9 @@ describe('reviewsApi', () => {
       },
     )
     expect(request).not.toHaveProperty('attemptNumber')
+    expect(apiPost).toHaveBeenNthCalledWith(
+      3,
+      '/review-sessions/session%2Fid/abandon',
+    )
   })
 })

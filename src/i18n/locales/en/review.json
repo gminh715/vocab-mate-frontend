@@ -41,5 +41,9 @@
     "delayed": "The learning note is taking longer than expected. Continue from your saved progress or leave and resume later.",
     "continue": "Continue from Saved Progress",
     "notReady": "Your saved progress is not ready yet. Try again in a moment."
+  },
+  "session": {
+    "ended": "This review session has ended and cannot be resumed.",
+    "backHome": "Back Home"
   }
 }

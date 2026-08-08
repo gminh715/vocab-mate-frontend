@@ -35,6 +35,9 @@ export function ReviewReadyCard() {
   const dueCount = todayQuery.data?.dueVocabularyCount ?? 0
   const hasExpectedMissingActiveSession =
     activeQuery.isError && normalizeApiError(activeQuery.error).status === 404
+  const hasReviewQueryError =
+    todayQuery.isError ||
+    (activeQuery.isError && !hasExpectedMissingActiveSession)
   const activeRemaining = activeSession?.progress.remainingCount
   const durationCount = activeRemaining ?? dueCount
   const destination = activeSession
@@ -127,7 +130,7 @@ export function ReviewReadyCard() {
             <Skeleton width={120} height={20} />
             <Skeleton width={180} height={36} />
           </Stack>
-        ) : todayQuery.isError && !hasExpectedMissingActiveSession ? (
+        ) : hasReviewQueryError ? (
           <Alert severity="warning" sx={{ py: 0.5 }}>
             {t('review.errorMessage')}
           </Alert>

@@ -15,6 +15,9 @@ import type {
 const {
   queryState,
   mutationState,
+  startSession,
+  startReset,
+  activeQueryHook,
   submitAnswer,
   skipItem,
   abandonSession,
@@ -34,8 +37,17 @@ const {
       error: null as unknown,
       refetch: vi.fn(),
     },
+    active: {
+      data: undefined as ReviewSessionState | undefined,
+      isPending: false,
+      isError: false,
+      error: null as unknown,
+    },
   },
-  mutationState: { answerPending: false },
+  mutationState: { answerPending: false, startPending: false },
+  startSession: vi.fn(),
+  startReset: vi.fn(),
+  activeQueryHook: vi.fn(),
   submitAnswer: vi.fn(),
   skipItem: vi.fn(),
   abandonSession: vi.fn(),
@@ -44,6 +56,10 @@ const {
 }));
 
 vi.mock("@/hooks/Review/useReviews", () => ({
+  useActiveReviewSessionQuery: (refetchInterval: number | false) => {
+    activeQueryHook(refetchInterval)
+    return queryState.active
+  },
   useReviewSessionQuery: () => queryState,
   useSubmitReviewAnswerMutation: () => ({
     mutateAsync: submitAnswer,
@@ -63,9 +79,9 @@ vi.mock("@/hooks/Review/useReviews", () => ({
     return queryState.summary
   },
   useStartReviewSessionMutation: () => ({
-    mutate: vi.fn(),
-    reset: vi.fn(),
-    isPending: false,
+    mutate: startSession,
+    reset: startReset,
+    isPending: mutationState.startPending,
     isError: false,
     error: null,
   }),
@@ -196,6 +212,14 @@ describe("ReviewPage", () => {
     queryState.isError = false;
     queryState.error = null;
     mutationState.answerPending = false;
+    mutationState.startPending = false;
+    startSession.mockReset();
+    startReset.mockReset();
+    activeQueryHook.mockReset();
+    queryState.active.data = undefined;
+    queryState.active.isPending = false;
+    queryState.active.isError = false;
+    queryState.active.error = null;
     submitAnswer.mockReset();
     skipItem.mockReset();
     abandonSession.mockReset();
@@ -207,6 +231,23 @@ describe("ReviewPage", () => {
     queryState.summary.isError = false;
     queryState.summary.error = null;
     queryState.summary.refetch.mockReset();
+  });
+
+  it("recovers a session persisted while the first start request is still pending", async () => {
+    mutationState.startPending = true;
+    const { rerender } = renderReviewStarter();
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Preparing your review…",
+    );
+    expect(activeQueryHook).toHaveBeenCalledWith(1_000);
+
+    queryState.active.data = sessionState();
+    rerender();
+
+    expect(
+      await screen.findByRole("heading", { name: "A Focused Practice Set" }),
+    ).toBeInTheDocument();
   });
 
   it("renders the current session plan before the question", () => {
@@ -325,6 +366,25 @@ describe("ReviewPage", () => {
         { timeout: 1_500 },
       ),
     ).toBeInTheDocument();
+  });
+
+  it("does not leave an abandoned session in an endless restore state", () => {
+    queryState.data = {
+      ...sessionState(),
+      session: { ...sessionState().session, status: "ABANDONED" },
+      nextItem: undefined,
+    };
+
+    renderReview();
+
+    expect(
+      screen.getByText("This review session has ended and cannot be resumed."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Back Home" })).toHaveAttribute(
+      "href",
+      "/",
+    );
+    expect(screen.queryByText("Restoring your reviewâ€¦")).not.toBeInTheDocument();
   });
 
   it("restores persisted coaching with an accessible announcement", () => {
@@ -536,6 +596,31 @@ describe("ReviewPage", () => {
       screen.getByRole("heading", { name: "Complete the original sentence." }),
     ).toBeInTheDocument();
   });
+
+  it("does not offer stale cached question data when conflict recovery refetch fails", async () => {
+    submitAnswer.mockRejectedValue(
+      new ApiError({
+        status: 409,
+        code: "CONFLICT",
+        message: "Stale item",
+      }),
+    );
+    queryState.refetch.mockResolvedValue({
+      data: queryState.data,
+      isError: true,
+    });
+    renderReview();
+
+    fireEvent.click(screen.getByRole("button", { name: /trang/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Check Answer" }));
+
+    expect(
+      await screen.findByRole("button", { name: "Refresh" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Use latest question" }),
+    ).not.toBeInTheDocument();
+  });
 });
 
 const persistedSummary: CompletedReviewResult = {
@@ -578,6 +663,23 @@ const renderSummary = (state?: unknown) =>
       </MemoryRouter>
     </ThemeProvider>,
   );
+
+const renderReviewStarter = () => {
+  const element = () => (
+    <ThemeProvider theme={appTheme}>
+      <MemoryRouter initialEntries={["/review"]}>
+        <Routes>
+          <Route path="/review" element={<ReviewPage />} />
+          <Route path="/review/:sessionId" element={<ReviewPage />} />
+          <Route path="/" element={<h1>Home</h1>} />
+        </Routes>
+      </MemoryRouter>
+    </ThemeProvider>
+  );
+  const view = render(element());
+
+  return { rerender: () => view.rerender(element()) };
+};
 
 describe("ReviewSummaryPage", () => {
   beforeEach(() => {

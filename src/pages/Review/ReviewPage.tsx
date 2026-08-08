@@ -26,6 +26,7 @@ import { AgentFeedbackCard } from '@/components/Review/AgentFeedbackCard'
 import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 import {
   useAbandonReviewSessionMutation,
+  useActiveReviewSessionQuery,
   useReviewSessionQuery,
   useSkipReviewItemMutation,
   useStartReviewSessionMutation,
@@ -48,6 +49,7 @@ import {
 const CORRECT_FEEDBACK_DELAY_MS = 900
 const COACHING_WAIT_LIMIT_MS = 5_000
 const MAX_RESPONSE_TIME_MS = 2_147_483_647
+const ACTIVE_SESSION_RECOVERY_INTERVAL_MS = 1_000
 
 interface ReviewSummaryNavigationState {
   result: ReviewResult
@@ -169,6 +171,9 @@ function ReviewStarter() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const mutation = useStartReviewSessionMutation()
+  const activeSessionQuery = useActiveReviewSessionQuery(
+    mutation.isPending ? ACTIVE_SESSION_RECOVERY_INTERVAL_MS : false,
+  )
   const startedRef = useRef(false)
   const searchString = searchParams.toString()
   const request = useMemo(
@@ -189,6 +194,17 @@ function ReviewStarter() {
   useEffect(() => {
     if (!startedRef.current) start()
   }, [start])
+
+  const recoveredSessionId =
+    activeSessionQuery.data?.session.status === 'IN_PROGRESS'
+      ? activeSessionQuery.data.session.id
+      : null
+
+  useEffect(() => {
+    if (recoveredSessionId) {
+      navigate(reviewSessionPath(recoveredSessionId), { replace: true })
+    }
+  }, [navigate, recoveredSessionId])
 
   if (!request) {
     return (
@@ -367,8 +383,9 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   const refreshAfterStaleConflict = async () => {
     const refreshed = await sessionQuery.refetch()
     const canRecover = Boolean(
-      refreshed.data?.nextItem ||
-        refreshed.data?.session.status === 'COMPLETED',
+      !refreshed.isError &&
+        (refreshed.data?.nextItem ||
+          refreshed.data?.session.status === 'COMPLETED'),
     )
     setStaleRecoveryReady(canRecover)
     setActionError(
@@ -535,6 +552,23 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           {error.status === 404
             ? 'This review session is not available.'
             : 'Your review could not be restored. Try again.'}
+        </Alert>
+      </ReviewShell>
+    )
+  }
+
+  if (sessionQuery.data?.session.status === 'ABANDONED') {
+    return (
+      <ReviewShell>
+        <Alert
+          severity="info"
+          action={
+            <Button component={RouterLink} to={routePaths.home} color="inherit">
+              {t('session.backHome')}
+            </Button>
+          }
+        >
+          {t('session.ended')}
         </Alert>
       </ReviewShell>
     )

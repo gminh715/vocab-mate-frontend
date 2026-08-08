@@ -38,12 +38,15 @@ export const useTodayReviewsQuery = () =>
     staleTime: 60_000,
   })
 
-export const useActiveReviewSessionQuery = () =>
+export const useActiveReviewSessionQuery = (
+  refetchInterval: number | false = false,
+) =>
   useQuery({
     queryKey: reviewQueryKeys.active(),
     queryFn: reviewsApi.active,
     retry: false,
     staleTime: 30_000,
+    refetchInterval,
   })
 
 export const useReviewSessionQuery = (sessionId: string) =>

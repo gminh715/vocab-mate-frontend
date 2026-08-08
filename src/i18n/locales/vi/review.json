@@ -41,5 +41,9 @@
     "delayed": "Ghi chú học tập đang mất nhiều thời gian hơn dự kiến. Bạn có thể tiếp tục từ tiến độ đã lưu hoặc rời đi và quay lại sau.",
     "continue": "Tiếp Tục Từ Tiến Độ Đã Lưu",
     "notReady": "Tiến độ đã lưu chưa sẵn sàng. Hãy thử lại sau giây lát."
+  },
+  "session": {
+    "ended": "Phiên ôn tập này đã kết thúc và không thể tiếp tục.",
+    "backHome": "Về Trang Chủ"
   }
 }

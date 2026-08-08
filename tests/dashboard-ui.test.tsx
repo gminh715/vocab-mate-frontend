@@ -4,6 +4,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/AuthContext'
+import { ApiError } from '@/config/apiClient'
 import { HomePage } from '@/pages/Home/HomePage'
 import { appTheme } from '@/theme'
 import type { AnalyticsOverview } from '@/types/Analytics/analytics'
@@ -211,7 +212,11 @@ describe('HomePage', () => {
       data: undefined,
       isSuccess: false,
       isError: true,
-      error: { status: 404 },
+      error: new ApiError({
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Active review session not found',
+      }),
     }
   })
 
@@ -290,6 +295,21 @@ describe('HomePage', () => {
       'href',
       '/review/active-session',
     )
+  })
+
+  it('shows a review warning when due-count loading fails and no active session is expected', () => {
+    queryState.review.today = {
+      data: { dueVocabularyCount: 0, recommendedQuizzes: [] },
+      isPending: false,
+      isError: true,
+      error: new Error('offline'),
+    }
+
+    renderDashboard()
+
+    expect(
+      screen.getByText('Review details could not be loaded.'),
+    ).toBeInTheDocument()
   })
 
   it('navigates to the backend-provided article slug', () => {

@@ -1,0 +1,45 @@
+{
+  "plan": {
+    "eyebrow": "Kế Hoạch Ôn Tập",
+    "title": "Một Lượt Luyện Tập Có Trọng Tâm",
+    "summary": "{{sessionType}} · {{count}} câu hỏi được chọn từ các từ bạn đã lưu.",
+    "sessionTypes": {
+      "DAILY_REVIEW": "Ôn tập hằng ngày",
+      "ARTICLE_REVIEW": "Ôn theo bài đọc",
+      "COLLECTION_REVIEW": "Ôn theo bộ sưu tập",
+      "QUIZ": "Ôn theo bài kiểm tra"
+    }
+  },
+  "feedback": {
+    "eyebrow": "Ghi Chú Học Tập",
+    "title": "Điểm Cần Chú Ý",
+    "focus": "Trọng tâm: {{skill}}",
+    "pattern": "Dạng lỗi: {{error}}",
+    "example": "Ví dụ",
+    "retest": "Từ này sẽ xuất hiện lại sau {{count}} câu nữa trong một dạng bài khác.",
+    "skills": {
+      "RECOGNITION": "Nhận diện",
+      "RECALL": "Gợi nhớ",
+      "SPELLING": "Chính tả",
+      "CONTEXT": "Nghĩa trong ngữ cảnh",
+      "PRODUCTION": "Sử dụng từ"
+    },
+    "errors": {
+      "LOW_RECALL": "Bạn chưa dễ dàng nhớ lại từ này",
+      "MEANING_CONFUSION": "Bạn đã nhầm lẫn về nghĩa",
+      "CONFUSABLE_WORD": "Một từ tương tự đã gây nhầm lẫn",
+      "SPELLING_ERROR": "Cách viết cần được xem lại",
+      "WORD_FORM_ERROR": "Dạng từ chưa phù hợp",
+      "COLLOCATION_ERROR": "Cụm từ kết hợp còn chưa quen",
+      "CONTEXT_MISUNDERSTANDING": "Ngữ cảnh câu chưa được hiểu đúng",
+      "CARELESS_ERROR": "Bạn đã bỏ sót một chi tiết nhỏ",
+      "UNKNOWN": "Kỹ năng này cần được thử lại"
+    }
+  },
+  "coaching": {
+    "loading": "Câu trả lời được lưu trước. Ghi chú học tập ngắn có thể vẫn đang được chuẩn bị…",
+    "delayed": "Ghi chú học tập đang mất nhiều thời gian hơn dự kiến. Bạn có thể tiếp tục từ tiến độ đã lưu hoặc rời đi và quay lại sau.",
+    "continue": "Tiếp Tục Từ Tiến Độ Đã Lưu",
+    "notReady": "Tiến độ đã lưu chưa sẵn sàng. Hãy thử lại sau giây lát."
+  }
+}

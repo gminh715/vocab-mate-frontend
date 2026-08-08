@@ -20,7 +20,9 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { normalizeApiError } from '@/config/apiClient'
+import { AgentFeedbackCard } from '@/components/Review/AgentFeedbackCard'
 import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 import {
   useAbandonReviewSessionMutation,
@@ -44,6 +46,7 @@ import {
 } from '@/utils/paths'
 
 const CORRECT_FEEDBACK_DELAY_MS = 900
+const COACHING_WAIT_LIMIT_MS = 5_000
 const MAX_RESPONSE_TIME_MS = 2_147_483_647
 
 interface ReviewSummaryNavigationState {
@@ -249,6 +252,7 @@ function ReviewStarter() {
 }
 
 function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
+  const { t } = useTranslation('review')
   const navigate = useNavigate()
   const sessionQuery = useReviewSessionQuery(sessionId)
   const answerMutation = useSubmitReviewAnswerMutation(sessionId)
@@ -265,8 +269,11 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   const [endDialogOpen, setEndDialogOpen] = useState(false)
   const [endSessionError, setEndSessionError] = useState<string | null>(null)
   const [isLocked, setIsLocked] = useState(false)
+  const [coachingWaitExpired, setCoachingWaitExpired] = useState(false)
   const questionStartedAtRef = useRef(0)
   const submissionLockRef = useRef(false)
+  const activeSubmissionRef = useRef(0)
+  const questionHeadingRef = useRef<HTMLHeadingElement>(null)
   const displayItem = transitionItem ?? sessionQuery.data?.nextItem ?? null
   const displayItemId = displayItem?.id
   const displayQuestionId = displayItem?.question.id
@@ -280,6 +287,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     setActionError(null)
     setHasStaleConflict(false)
     setStaleRecoveryReady(false)
+    setCoachingWaitExpired(false)
     questionStartedAtRef.current = Date.now()
     submissionLockRef.current = false
     setIsLocked(false)
@@ -316,7 +324,17 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   useEffect(() => {
     if (!displayItemId) return
     questionStartedAtRef.current = Date.now()
+    questionHeadingRef.current?.focus()
   }, [displayItemId, displayQuestionId])
+
+  useEffect(() => {
+    if (!answerMutation.isPending) return
+    const timer = window.setTimeout(
+      () => setCoachingWaitExpired(true),
+      COACHING_WAIT_LIMIT_MS,
+    )
+    return () => window.clearTimeout(timer)
+  }, [answerMutation.isPending])
 
   useEffect(() => {
     if (!feedback?.isCorrect) return
@@ -328,6 +346,9 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   }, [feedback, finishOrAdvance])
 
   const progress = feedback?.progress ?? sessionQuery.data?.progress
+  const persistedPlanSummary = sessionQuery.data?.session.planSummary?.trim()
+  const visibleAgentFeedback =
+    feedback?.agentFeedback ?? sessionQuery.data?.agentFeedback
   const question = displayItem?.question
   const hints = question ? questionHints(question) : []
   const isFillBlank = question?.questionType === 'FILL_BLANK'
@@ -370,6 +391,27 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     resetQuestion(latestState.nextItem)
   }
 
+  const continueFromSavedProgress = async () => {
+    setActionError(null)
+    const refreshed = await sessionQuery.refetch()
+    if (refreshed.data?.session.status === 'COMPLETED') {
+      activeSubmissionRef.current += 1
+      navigate(reviewSummaryPath(sessionId), { replace: true })
+      return
+    }
+    const latestItem = refreshed.data?.nextItem
+    if (
+      latestItem &&
+      (latestItem.id !== displayItemId ||
+        latestItem.question.id !== displayQuestionId)
+    ) {
+      activeSubmissionRef.current += 1
+      resetQuestion(latestItem)
+      return
+    }
+    setActionError(t('coaching.notReady'))
+  }
+
   const submitAnswer = async () => {
     if (
       !displayItem ||
@@ -380,7 +422,10 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       skipMutation.isPending
     ) return
     submissionLockRef.current = true
+    const submissionId = activeSubmissionRef.current + 1
+    activeSubmissionRef.current = submissionId
     setIsLocked(true)
+    setCoachingWaitExpired(false)
     setActionError(null)
     setTransitionItem(displayItem)
 
@@ -394,14 +439,20 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
         quizQuestionId: question.id,
         ...(isFillBlank
           ? { userAnswerText: answerText.trim() }
-          : { selectedOptionId: selectedOptionId! }),
+          : selectedOptionId
+            ? { selectedOptionId }
+            : {}),
         responseTimeMs: elapsed,
         hintsUsed,
       })
+      if (submissionId !== activeSubmissionRef.current) return
+      setCoachingWaitExpired(false)
       setFeedback(result)
     } catch (error: unknown) {
+      if (submissionId !== activeSubmissionRef.current) return
       submissionLockRef.current = false
       setIsLocked(false)
+      setCoachingWaitExpired(false)
       const apiError = normalizeApiError(error)
       if (apiError.status === 409) {
         setHasStaleConflict(true)
@@ -508,7 +559,9 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
             component={RouterLink}
             to={routePaths.home}
             color="inherit"
-            disabled={isBusy}
+            disabled={
+              isBusy && !(answerMutation.isPending && coachingWaitExpired)
+            }
           >
             Save and exit
           </Button>
@@ -527,6 +580,46 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       }
     >
       <Stack spacing={{ xs: 2.5, sm: 3.5 }}>
+        <Paper
+          component="section"
+          aria-labelledby="review-plan-heading"
+          variant="outlined"
+          sx={{
+            p: { xs: 2, sm: 2.5 },
+            bgcolor: 'primary.light',
+            borderColor: 'primary.main',
+          }}
+        >
+          <Typography
+            sx={{
+              color: 'primary.dark',
+              fontSize: 12,
+              fontWeight: 850,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {t('plan.eyebrow')}
+          </Typography>
+          <Typography
+            id="review-plan-heading"
+            component="h1"
+            variant="h5"
+            sx={{ mt: 0.5, fontWeight: 850, textWrap: 'balance' }}
+          >
+            {t('plan.title')}
+          </Typography>
+          <Typography sx={{ mt: 0.75, overflowWrap: 'anywhere' }}>
+            {persistedPlanSummary ||
+              t('plan.summary', {
+                sessionType: t(
+                  `plan.sessionTypes.${sessionQuery.data.session.sessionType}`,
+                ),
+                count: progress.totalQuestions,
+              })}
+          </Typography>
+        </Paper>
+
         <Box>
           <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
             <Typography sx={{ fontWeight: 800 }}>
@@ -557,9 +650,20 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           </Typography>
           <Typography
             id="review-question"
-            component="h1"
+            ref={questionHeadingRef}
+            tabIndex={-1}
+            component="h2"
             variant="h1"
-            sx={{ mt: 1.25, fontSize: { xs: 30, sm: 40 }, textWrap: 'balance' }}
+            sx={{
+              mt: 1.25,
+              fontSize: { xs: 30, sm: 40 },
+              textWrap: 'balance',
+              overflowWrap: 'anywhere',
+              '&:focus-visible': {
+                outline: '3px solid rgba(23, 107, 75, 0.28)',
+                outlineOffset: 4,
+              },
+            }}
           >
             {question.prompt}
           </Typography>
@@ -572,6 +676,10 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
                 {question.blankSentence}
               </Typography>
             </Box>
+          ) : null}
+
+          {visibleAgentFeedback ? (
+            <AgentFeedbackCard feedback={visibleAgentFeedback} />
           ) : null}
 
           <Box component="form" onSubmit={(event) => { event.preventDefault(); void submitAnswer() }} sx={{ mt: 3 }}>
@@ -632,13 +740,40 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
                   <Typography variant="body2" sx={{ mt: 0.5 }}>
                     {feedback.explanation}
                   </Typography>
-                  {feedback.willReturnLater ? (
+                  {feedback.willReturnLater &&
+                  !feedback.agentFeedback?.retestAfterItems ? (
                     <Typography variant="body2" sx={{ mt: 1, fontWeight: 750 }}>
                       You’ll see this word again near the end with a different question.
                     </Typography>
                   ) : null}
                 </Alert>
               )
+            ) : null}
+
+            {answerMutation.isPending ? (
+              <Alert
+                severity="info"
+                role="status"
+                aria-live="polite"
+                sx={{ mt: 2 }}
+                action={
+                  coachingWaitExpired ? (
+                    <Button
+                      color="inherit"
+                      disabled={sessionQuery.isFetching}
+                      onClick={() => void continueFromSavedProgress()}
+                    >
+                      {t('coaching.continue')}
+                    </Button>
+                  ) : undefined
+                }
+              >
+                {t(
+                  coachingWaitExpired
+                    ? 'coaching.delayed'
+                    : 'coaching.loading',
+                )}
+              </Alert>
             ) : null}
 
             {actionError ? (

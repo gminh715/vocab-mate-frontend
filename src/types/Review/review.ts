@@ -9,6 +9,28 @@ export const REVIEW_SESSION_TYPES = [
 
 export type ReviewSessionType = (typeof REVIEW_SESSION_TYPES)[number]
 export type ReviewSessionStatus = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED'
+export type ReviewDecisionSource = 'AI' | 'RULE'
+export type ReviewAgentAction =
+  | 'CONTINUE'
+  | 'REQUEUE_WITH_NEW_TYPE'
+  | 'TEACH_AND_REQUEUE'
+  | 'FLAG_FOR_FUTURE_FOCUS'
+export type ReviewSkillDimension =
+  | 'RECOGNITION'
+  | 'RECALL'
+  | 'SPELLING'
+  | 'CONTEXT'
+  | 'PRODUCTION'
+export type ReviewErrorType =
+  | 'LOW_RECALL'
+  | 'MEANING_CONFUSION'
+  | 'CONFUSABLE_WORD'
+  | 'SPELLING_ERROR'
+  | 'WORD_FORM_ERROR'
+  | 'COLLOCATION_ERROR'
+  | 'CONTEXT_MISUNDERSTANDING'
+  | 'CARELESS_ERROR'
+  | 'UNKNOWN'
 
 export interface ReviewSession {
   id: string
@@ -16,6 +38,7 @@ export interface ReviewSession {
   quizId: string | null
   articleId: string | null
   collectionId: string | null
+  planSummary: string | null
   status: ReviewSessionStatus
   startedAt: string
   completedAt: string | null
@@ -51,10 +74,26 @@ export interface ReviewProgress {
   progressPercent: number
 }
 
+export interface ReviewAgentMicroLesson {
+  title: string
+  explanation: string
+  example: string
+}
+
+export interface ReviewAgentFeedback {
+  source: ReviewDecisionSource
+  action: ReviewAgentAction
+  skillDimension: ReviewSkillDimension
+  errorType: ReviewErrorType
+  microLesson?: ReviewAgentMicroLesson
+  retestAfterItems?: number
+}
+
 export interface ReviewSessionState {
   session: ReviewSession
   progress: ReviewProgress
   nextItem?: ReviewSessionItem
+  agentFeedback?: ReviewAgentFeedback
 }
 
 export interface StartReviewSessionRequest {
@@ -98,6 +137,7 @@ export interface SubmittedReviewAnswer {
   sessionCompleted: boolean
   progress: ReviewProgress
   nextQuestion?: ReviewSessionItem
+  agentFeedback?: ReviewAgentFeedback
   completionSummary?: ReviewResult
 }
 

@@ -1,0 +1,45 @@
+{
+  "plan": {
+    "eyebrow": "Your Review Plan",
+    "title": "A Focused Practice Set",
+    "summary": "{{sessionType}} · {{count}} questions selected from your saved vocabulary.",
+    "sessionTypes": {
+      "DAILY_REVIEW": "Daily review",
+      "ARTICLE_REVIEW": "Article review",
+      "COLLECTION_REVIEW": "Collection review",
+      "QUIZ": "Quiz review"
+    }
+  },
+  "feedback": {
+    "eyebrow": "Learning Note",
+    "title": "What to Notice",
+    "focus": "Focus: {{skill}}",
+    "pattern": "Pattern: {{error}}",
+    "example": "Example",
+    "retest": "This word will return after {{count}} more questions in a different activity.",
+    "skills": {
+      "RECOGNITION": "Recognition",
+      "RECALL": "Recall",
+      "SPELLING": "Spelling",
+      "CONTEXT": "Meaning in context",
+      "PRODUCTION": "Using the word"
+    },
+    "errors": {
+      "LOW_RECALL": "The word was hard to recall",
+      "MEANING_CONFUSION": "The meaning was mixed up",
+      "CONFUSABLE_WORD": "A similar word caused confusion",
+      "SPELLING_ERROR": "The spelling needs another look",
+      "WORD_FORM_ERROR": "The word form did not fit",
+      "COLLOCATION_ERROR": "The word pairing was unfamiliar",
+      "CONTEXT_MISUNDERSTANDING": "The sentence context was misread",
+      "CARELESS_ERROR": "A small detail was missed",
+      "UNKNOWN": "This skill needs another try"
+    }
+  },
+  "coaching": {
+    "loading": "Your answer is saved first. A short learning note may still be preparing…",
+    "delayed": "The learning note is taking longer than expected. Continue from your saved progress or leave and resume later.",
+    "continue": "Continue from Saved Progress",
+    "notReady": "Your saved progress is not ready yet. Try again in a moment."
+  }
+}

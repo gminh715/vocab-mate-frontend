@@ -11,15 +11,17 @@ import enArticles from './locales/en/articles.json'
 import viArticles from './locales/vi/articles.json'
 import enVocabulary from './locales/en/vocabulary.json'
 import viVocabulary from './locales/vi/vocabulary.json'
+import enReview from './locales/en/review.json'
+import viReview from './locales/vi/review.json'
 
 void i18n.use(initReactI18next).init({
   lng: 'en',
   fallbackLng: 'en',
-  ns: ['home', 'analytics', 'profile', 'articles', 'vocabulary'],
+  ns: ['home', 'analytics', 'profile', 'articles', 'vocabulary', 'review'],
   defaultNS: 'home',
   resources: {
-    en: { home: enHome, analytics: enAnalytics, profile: enProfile, articles: enArticles, vocabulary: enVocabulary },
-    vi: { home: viHome, analytics: viAnalytics, profile: viProfile, articles: viArticles, vocabulary: viVocabulary },
+    en: { home: enHome, analytics: enAnalytics, profile: enProfile, articles: enArticles, vocabulary: enVocabulary, review: enReview },
+    vi: { home: viHome, analytics: viAnalytics, profile: viProfile, articles: viArticles, vocabulary: viVocabulary, review: viReview },
   },
   interpolation: {
     escapeValue: false, // React already escapes values

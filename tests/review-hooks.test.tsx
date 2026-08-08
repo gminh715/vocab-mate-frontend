@@ -58,6 +58,7 @@ const initialState: ReviewSessionState = {
     quizId: null,
     articleId: null,
     collectionId: null,
+    planSummary: null,
     status: 'IN_PROGRESS',
     startedAt: '2026-08-03T01:00:00.000Z',
     completedAt: null,
@@ -199,6 +200,101 @@ describe('review mutations', () => {
     expect(
       queryClient.getQueryData(reviewQueryKeys.summary('session-1')),
     ).toBeUndefined()
+  })
+
+  it('keeps newer cached progress when a stale transition resolves later', async () => {
+    answer.mockResolvedValue({
+      answerId: 'stale-answer',
+      isCorrect: true,
+      correctAnswer: 'meaning',
+      explanation: 'Explanation',
+      earnedPoints: 1,
+      inferredReviewScore: 4,
+      willReturnLater: false,
+      sessionCompleted: false,
+      progress: advancedProgress,
+      nextQuestion: nextItem,
+    })
+    const { queryClient, wrapper } = createHarness()
+    const newestState: ReviewSessionState = {
+      ...initialState,
+      progress: {
+        answeredCount: 2,
+        totalQuestions: 3,
+        remainingCount: 1,
+        progressPercent: 66.67,
+      },
+      nextItem: { ...nextItem, id: 'item-3' },
+    }
+    queryClient.setQueryData(reviewQueryKeys.session('session-1'), newestState)
+    queryClient.setQueryData(reviewQueryKeys.active(), newestState)
+    const { result } = renderHook(
+      () => useSubmitReviewAnswerMutation('session-1'),
+      { wrapper },
+    )
+
+    await act(() =>
+      result.current.mutateAsync({
+        reviewSessionItemId: 'item-1',
+        quizQuestionId: 'question-1',
+        selectedOptionId: 'option-1',
+      }),
+    )
+
+    expect(
+      queryClient.getQueryData<ReviewSessionState>(
+        reviewQueryKeys.session('session-1'),
+      ),
+    ).toMatchObject(newestState)
+    expect(
+      queryClient.getQueryData<ReviewSessionState>(reviewQueryKeys.active()),
+    ).toMatchObject(newestState)
+  })
+
+  it('persists answer coaching in both review caches', async () => {
+    const agentFeedback = {
+      source: 'RULE' as const,
+      action: 'REQUEUE_WITH_NEW_TYPE' as const,
+      skillDimension: 'RECALL' as const,
+      errorType: 'LOW_RECALL' as const,
+      retestAfterItems: 2,
+    }
+    answer.mockResolvedValue({
+      answerId: 'answer-1',
+      isCorrect: false,
+      correctAnswer: 'meaning',
+      explanation: 'Explanation',
+      earnedPoints: 0,
+      inferredReviewScore: 0,
+      willReturnLater: true,
+      sessionCompleted: false,
+      progress: advancedProgress,
+      nextQuestion: nextItem,
+      agentFeedback,
+    })
+    const { queryClient, wrapper } = createHarness()
+    const { result } = renderHook(
+      () => useSubmitReviewAnswerMutation('session-1'),
+      { wrapper },
+    )
+
+    await act(() =>
+      result.current.mutateAsync({
+        reviewSessionItemId: 'item-1',
+        quizQuestionId: 'question-1',
+        selectedOptionId: 'option-1',
+      }),
+    )
+
+    expect(
+      queryClient.getQueryData<ReviewSessionState>(
+        reviewQueryKeys.session('session-1'),
+      )?.agentFeedback,
+    ).toEqual(agentFeedback)
+    expect(
+      queryClient.getQueryData<ReviewSessionState>(reviewQueryKeys.active())
+        ?.agentFeedback,
+    ).toEqual(agentFeedback)
   })
 
   it('abandons the durable session and clears the active-session cache', async () => {

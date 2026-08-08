@@ -1,10 +1,12 @@
 import "@testing-library/jest-dom/vitest";
 import { ThemeProvider } from "@mui/material/styles";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   CompletedReviewResult,
+  ReviewAgentFeedback,
   ReviewSessionItem,
   ReviewSessionState,
   SubmittedReviewAnswer,
@@ -12,6 +14,7 @@ import type {
 
 const {
   queryState,
+  mutationState,
   submitAnswer,
   skipItem,
   abandonSession,
@@ -32,6 +35,7 @@ const {
       refetch: vi.fn(),
     },
   },
+  mutationState: { answerPending: false },
   submitAnswer: vi.fn(),
   skipItem: vi.fn(),
   abandonSession: vi.fn(),
@@ -43,7 +47,7 @@ vi.mock("@/hooks/Review/useReviews", () => ({
   useReviewSessionQuery: () => queryState,
   useSubmitReviewAnswerMutation: () => ({
     mutateAsync: submitAnswer,
-    isPending: false,
+    isPending: mutationState.answerPending,
   }),
   useSkipReviewItemMutation: () => ({
     mutateAsync: skipItem,
@@ -114,6 +118,7 @@ const sessionState = (
     quizId: null,
     articleId: null,
     collectionId: null,
+    planSummary: 'Review recall first, then reinforce meaning in context.',
     status: "IN_PROGRESS",
     startedAt: "2026-08-03T01:00:00.000Z",
     completedAt: null,
@@ -126,6 +131,20 @@ const sessionState = (
   },
   nextItem,
 });
+
+const coachingFeedback: ReviewAgentFeedback = {
+  source: "AI",
+  action: "TEACH_AND_REQUEUE",
+  skillDimension: "CONTEXT",
+  errorType: "CONFUSABLE_WORD",
+  microLesson: {
+    title: "Impact means a strong effect",
+    explanation:
+      "Use impact when one event produces a noticeable change in another.",
+    example: "The new policy had a lasting impact on local schools.",
+  },
+  retestAfterItems: 3,
+};
 
 const incorrectResponse: SubmittedReviewAnswer = {
   answerId: "answer-1",
@@ -143,6 +162,7 @@ const incorrectResponse: SubmittedReviewAnswer = {
     progressPercent: 50,
   },
   nextQuestion: retryItem,
+  agentFeedback: coachingFeedback,
 };
 
 const renderReview = () =>
@@ -175,6 +195,7 @@ describe("ReviewPage", () => {
     queryState.isPending = false;
     queryState.isError = false;
     queryState.error = null;
+    mutationState.answerPending = false;
     submitAnswer.mockReset();
     skipItem.mockReset();
     abandonSession.mockReset();
@@ -186,6 +207,33 @@ describe("ReviewPage", () => {
     queryState.summary.isError = false;
     queryState.summary.error = null;
     queryState.summary.refetch.mockReset();
+  });
+
+  it("renders the current session plan before the question", () => {
+    renderReview();
+
+    expect(
+      screen.getByRole("heading", { name: "A Focused Practice Set" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Review recall first, then reinforce meaning in context.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("uses a localized fallback plan for a legacy session", () => {
+    queryState.data = {
+      ...sessionState(),
+      session: { ...sessionState().session, planSummary: null },
+    };
+    renderReview();
+
+    expect(
+      screen.getByText(
+        "Daily review · 2 questions selected from your saved vocabulary.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("restores the server-provided active item and reveals progressive hints", () => {
@@ -212,10 +260,17 @@ describe("ReviewPage", () => {
     expect(
       await screen.findByText("Correct answer: tác động"),
     ).toBeInTheDocument();
-    expect(screen.getByText(/again near the end/i)).toBeInTheDocument();
+    expect(screen.getByText("Impact means a strong effect")).toBeInTheDocument();
+    expect(screen.getByText(/return after 3 more questions/i)).toBeInTheDocument();
+    expect(screen.getByText("Focus: Meaning in context")).toBeInTheDocument();
+    expect(
+      screen.getByText("Pattern: A similar word caused confusion"),
+    ).toBeInTheDocument();
     expect(
       screen.queryByText(/inferred|again, hard|easy/i),
     ).not.toBeInTheDocument();
+    expect(screen.queryByText("AI", { exact: true })).not.toBeInTheDocument();
+    expect(screen.queryByText("RULE", { exact: true })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
 
@@ -252,6 +307,7 @@ describe("ReviewPage", () => {
       earnedPoints: 1,
       inferredReviewScore: 4,
       willReturnLater: false,
+      agentFeedback: undefined,
     });
     renderReview();
 
@@ -269,6 +325,103 @@ describe("ReviewPage", () => {
         { timeout: 1_500 },
       ),
     ).toBeInTheDocument();
+  });
+
+  it("restores persisted coaching with an accessible announcement", () => {
+    queryState.data = {
+      ...sessionState(),
+      agentFeedback: coachingFeedback,
+    };
+    renderReview();
+
+    const announcement = screen.getByRole("status", {
+      name: "What to Notice",
+    });
+    expect(announcement).toHaveTextContent("Impact means a strong effect");
+    expect(announcement).toHaveAttribute("aria-live", "polite");
+    expect(screen.queryByText("AI", { exact: true })).not.toBeInTheDocument();
+  });
+
+  it("moves focus to each new question heading", async () => {
+    submitAnswer.mockResolvedValue(incorrectResponse);
+    renderReview();
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("heading", {
+          name: /Choose the saved meaning/i,
+        }),
+      ).toHaveFocus(),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /trang/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Check Answer" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Continue" }));
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("heading", { name: "Complete the original sentence." }),
+      ).toHaveFocus(),
+    );
+  });
+
+  it("supports keyboard selection for answer choices", async () => {
+    const user = userEvent.setup();
+    renderReview();
+    const option = screen.getByRole("button", { name: /trang/i });
+
+    option.focus();
+    await user.keyboard("{Enter}");
+
+    expect(option).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("wraps long coaching text on a mobile-width viewport", () => {
+    const originalWidth = window.innerWidth;
+    Object.defineProperty(window, "innerWidth", {
+      configurable: true,
+      value: 360,
+    });
+    queryState.data = {
+      ...sessionState(),
+      agentFeedback: {
+        ...coachingFeedback,
+        microLesson: {
+          ...coachingFeedback.microLesson,
+          explanation:
+            "AnExceptionallyLongGeneratedExplanationWithoutNaturalBreaksStillNeedsToRemainInsideTheMobileLearningCard",
+        },
+      },
+    };
+    renderReview();
+
+    const explanation = screen.getByText(/AnExceptionallyLongGenerated/);
+    expect(window.getComputedStyle(explanation).overflowWrap).toBe("anywhere");
+    Object.defineProperty(window, "innerWidth", {
+      configurable: true,
+      value: originalWidth,
+    });
+  });
+
+  it("offers recovery when optional coaching exceeds its wait limit", async () => {
+    vi.useFakeTimers();
+    try {
+      mutationState.answerPending = true;
+      renderReview();
+      expect(screen.getByText(/answer is saved first/i)).toBeInTheDocument();
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(5_000);
+      });
+
+      expect(
+        screen.getByRole("button", { name: "Continue from Saved Progress" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "Save and exit" }),
+      ).toHaveAttribute("href", "/");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("submits fill-in text and hint count without a client attempt number", async () => {

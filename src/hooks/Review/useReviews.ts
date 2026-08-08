@@ -85,19 +85,33 @@ export const useStartReviewSessionMutation = () => {
 const stateFromTransition = (
   current: ReviewSessionState,
   transition: ReviewTransition,
-): ReviewSessionState => ({
-  session: transition.sessionCompleted
-    ? {
-        ...current.session,
-        status: 'COMPLETED',
-        completedAt:
-          transition.completionSummary?.completedAt ??
-          current.session.completedAt,
-      }
-    : current.session,
-  progress: transition.progress,
-  ...(transition.nextQuestion ? { nextItem: transition.nextQuestion } : {}),
-})
+): ReviewSessionState => {
+  if (transition.progress.answeredCount < current.progress.answeredCount) {
+    return current
+  }
+
+  const transitionFeedback =
+    'agentFeedback' in transition ? transition.agentFeedback : undefined
+
+  return {
+    session: transition.sessionCompleted
+      ? {
+          ...current.session,
+          status: 'COMPLETED',
+          completedAt:
+            transition.completionSummary?.completedAt ??
+            current.session.completedAt,
+        }
+      : current.session,
+    progress: transition.progress,
+    ...(transition.nextQuestion ? { nextItem: transition.nextQuestion } : {}),
+    ...(transitionFeedback
+      ? { agentFeedback: transitionFeedback }
+      : current.agentFeedback
+        ? { agentFeedback: current.agentFeedback }
+        : {}),
+  }
+}
 
 const applyTransitionToCache = (
   queryClient: QueryClient,
@@ -117,6 +131,13 @@ const applyTransitionToCache = (
     queryClient.setQueryData(sessionKey, nextState)
     if (!transition.sessionCompleted && cachedActive?.session.id === sessionId) {
       queryClient.setQueryData(activeKey, nextState)
+    }
+    if (
+      !transition.sessionCompleted &&
+      current.agentFeedback &&
+      !('agentFeedback' in transition && transition.agentFeedback)
+    ) {
+      void queryClient.invalidateQueries({ queryKey: sessionKey, exact: true })
     }
   }
 

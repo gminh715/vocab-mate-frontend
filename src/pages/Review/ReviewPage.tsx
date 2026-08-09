@@ -41,6 +41,10 @@ import type {
   SubmittedReviewAnswer,
 } from '@/types/Review/review'
 import {
+  REVIEW_GOALS,
+  REVIEW_TARGET_DURATIONS,
+} from '@/types/Review/review'
+import {
   reviewSessionPath,
   reviewSummaryPath,
   routePaths,
@@ -89,12 +93,24 @@ const startRequestFromSearch = (
   const quizId = searchParams.get('quizId')
   const articleId = searchParams.get('articleId')
   const collectionId = searchParams.get('collectionId')
+  const durationParam = searchParams.get('targetDurationMinutes')
+  const goalParam = searchParams.get('reviewGoal')
 
   if (sessionType === 'DAILY_REVIEW') {
+    const targetDurationMinutes =
+      REVIEW_TARGET_DURATIONS.find(
+        (duration) => String(duration) === durationParam,
+      ) ?? (durationParam === null ? 10 : null)
+    const reviewGoal =
+      REVIEW_GOALS.find((goal) => goal === goalParam) ??
+      (goalParam === null ? 'BALANCED' : null)
     return quizId || articleId || collectionId
       ? null
-      : { sessionType, limit: 20 }
+      : targetDurationMinutes && reviewGoal
+        ? { sessionType, targetDurationMinutes, reviewGoal }
+        : null
   }
+  if (durationParam || goalParam) return null
   if (sessionType === 'ARTICLE_REVIEW' && articleId && !quizId && !collectionId) {
     return { sessionType, articleId, limit: 20 }
   }
@@ -695,6 +711,23 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
                 count: progress.totalQuestions,
               })}
           </Typography>
+          {sessionQuery.data.session.targetDurationMinutes &&
+          sessionQuery.data.session.reviewGoal ? (
+            <Typography
+              variant="body2"
+              sx={{ mt: 1, color: 'primary.dark', fontWeight: 750 }}
+            >
+              {t('plan.details', {
+                minutes: sessionQuery.data.session.targetDurationMinutes,
+                count:
+                  sessionQuery.data.session.plannedItemCount ??
+                  progress.totalQuestions,
+                goal: t(
+                  `plan.goals.${sessionQuery.data.session.reviewGoal}`,
+                ),
+              })}
+            </Typography>
+          ) : null}
         </Paper>
 
         <Box>

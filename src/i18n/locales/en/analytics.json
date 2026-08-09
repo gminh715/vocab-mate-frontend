@@ -19,9 +19,11 @@
     "filteredToArticle": "Quiz analytics filtered to article:"
   },
   "tabs": {
+    "ariaLabel": "Learning analytics sections",
     "vocabularyGrowth": "Vocabulary Growth",
     "readingProgress": "Reading Progress",
-    "quizPerformance": "Quiz Performance"
+    "quizPerformance": "Quiz Performance",
+    "reviewImpact": "Review Impact"
   },
   "sections": {
     "vocabulary": {
@@ -41,6 +43,12 @@
       "title": "Quiz Performance",
       "refreshingLabel": "Refreshing quiz performance",
       "loadingLabel": "Loading quiz performance"
+    },
+    "review": {
+      "eyebrow": "Adaptive review",
+      "title": "Review Impact",
+      "refreshingLabel": "Refreshing review impact",
+      "loadingLabel": "Loading review impact"
     }
   },
   "errors": {
@@ -96,5 +104,45 @@
     "trendAverageScore": "Average score",
     "noDistributionActivity": "No activity was recorded for this distribution.",
     "noTrendActivity": "No activity was recorded for this trend."
+  },
+  "review": {
+    "completedSessions": "Completed sessions",
+    "completedSessionsDetail": "{{count}} sessions started",
+    "answerAccuracy": "Answer accuracy",
+    "answerAccuracyDetail": "All stored review attempts",
+    "retestSuccess": "Retest success",
+    "retestSuccessDetail": "Correct same-session retests",
+    "bySkill": "Performance by skill",
+    "practiceSignals": "Practice signals",
+    "averageResponse": "Average response",
+    "hintsUsed": "Hints used",
+    "sessionsEnded": "Sessions ended early",
+    "seconds": "{{count}} sec",
+    "byDuration": "Completion by plan length",
+    "durationLabel": "{{count}} minutes",
+    "interventionOutcomes": "Coaching retest outcomes",
+    "practiceTrend": "Practice signals over time",
+    "practiceTrendSummary": "{{answers}} answers across {{buckets}} time buckets.",
+    "trendPeriod": "Period",
+    "trendAnswers": "Answers",
+    "trendAccuracy": "Accuracy",
+    "trendResponseTime": "Avg. response",
+    "trendHints": "Hints",
+    "sources": {
+      "AI": "Adaptive coaching",
+      "RULE": "Built-in coaching"
+    },
+    "retentionTitle": "Recall after coaching",
+    "retentionWindow": "Follow-up window",
+    "followUps": "Follow-ups",
+    "correctFollowUps": "Correct",
+    "retentionAccuracy": "Accuracy",
+    "nextDay": "Next day",
+    "sevenDay": "Seven days",
+    "noSkillEvidence": "Complete more review questions to compare learning skills.",
+    "noDurationEvidence": "No timed review plans were started in this period.",
+    "noInterventionEvidence": "No coaching interventions were recorded in this period.",
+    "noTrendEvidence": "No review answers were recorded for this trend.",
+    "noRetentionEvidence": "No mature next-day or seven-day follow-up evidence is available yet."
   }
 }

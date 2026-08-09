@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { ThemeProvider } from '@mui/material/styles'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LearningAnalyticsSections } from '@/components/Dashboard/LearningAnalyticsSections'
@@ -11,6 +11,7 @@ const { analyticsMocks, sectionState } = vi.hoisted(() => ({
     vocabulary: vi.fn(),
     reading: vi.fn(),
     quizzes: vi.fn(),
+    reviews: vi.fn(),
   },
   sectionState: {
     vocabularyError: false,
@@ -88,6 +89,52 @@ const quizData = {
   ],
 }
 
+const reviewData = {
+  sessionsStarted: 4,
+  sessionsCompleted: 3,
+  sessionsAbandoned: 1,
+  completionRate: 0.75,
+  answers: 6,
+  correctAnswers: 4,
+  accuracy: 0.6667,
+  averageResponseTimeMs: 3200,
+  hintsUsed: 2,
+  sameSessionRetest: { attempts: 2, correct: 1, successRate: 0.5 },
+  bySkill: [
+    {
+      skillDimension: 'RECALL',
+      attempts: 5,
+      correct: 3,
+      accuracy: 0.6,
+      averageResponseTimeMs: 3200,
+      hintsUsed: 2,
+    },
+  ],
+  byDuration: [
+    { targetDurationMinutes: 5, started: 0, completed: 0, completionRate: 0 },
+    { targetDurationMinutes: 10, started: 4, completed: 3, completionRate: 0.75 },
+    { targetDurationMinutes: 15, started: 0, completed: 0, completionRate: 0 },
+  ],
+  byDecisionSource: [
+    { source: 'AI', interventions: 2, retestAttempts: 2, successfulRetests: 1, retestSuccessRate: 0.5 },
+    { source: 'RULE', interventions: 0, retestAttempts: 0, successfulRetests: 0, retestSuccessRate: 0 },
+  ],
+  retention: {
+    nextDay: { followUps: 2, correct: 1, accuracy: 0.5 },
+    sevenDay: { followUps: 0, correct: 0, accuracy: 0 },
+  },
+  trend: [
+    {
+      bucket: '2026-07-10',
+      answers: 3,
+      correctAnswers: 2,
+      accuracy: 0.6667,
+      averageResponseTimeMs: 3500,
+      hintsUsed: 1,
+    },
+  ],
+}
+
 vi.mock('@/hooks/Analytics/useAnalytics', () => ({
   useVocabularyAnalyticsQuery: (
     params: unknown,
@@ -125,6 +172,17 @@ vi.mock('@/hooks/Analytics/useAnalytics', () => ({
       refetch: vi.fn(),
     }
   },
+  useReviewAnalyticsQuery: (params: unknown, enabled: boolean) => {
+    analyticsMocks.reviews(params, enabled)
+    return {
+      data: reviewData,
+      isPending: false,
+      isFetching: false,
+      isError: false,
+      error: null,
+      refetch: vi.fn(),
+    }
+  },
 }))
 
 const renderAnalytics = (entry = '/') =>
@@ -148,6 +206,7 @@ describe('detailed learning analytics', () => {
     analyticsMocks.vocabulary.mockClear()
     analyticsMocks.reading.mockClear()
     analyticsMocks.quizzes.mockClear()
+    analyticsMocks.reviews.mockClear()
   })
 
   it('restores URL filters and scopes optional parameters to their endpoints', () => {
@@ -158,12 +217,13 @@ describe('detailed learning analytics', () => {
     expect(screen.getByLabelText('From')).toHaveValue('2026-07-01')
     expect(screen.getByLabelText('To (exclusive)')).toHaveValue('2026-07-26')
     expect(
-      screen.getByLabelText('Vocabulary trend interval'),
+      screen.getByLabelText('Interval'),
     ).toHaveTextContent('Weekly')
 
     const vocabularyParams = analyticsMocks.vocabulary.mock.calls.at(-1)?.[0]
     const readingParams = analyticsMocks.reading.mock.calls.at(-1)?.[0]
     const quizParams = analyticsMocks.quizzes.mock.calls.at(-1)?.[0]
+    const reviewParams = analyticsMocks.reviews.mock.calls.at(-1)?.[0]
 
     expect(vocabularyParams).toMatchObject({ groupBy: 'WEEK' })
     expect(vocabularyParams).not.toHaveProperty('articleId')
@@ -173,6 +233,7 @@ describe('detailed learning analytics', () => {
       articleId: '550e8400-e29b-41d4-a716-446655440000',
     })
     expect(quizParams).not.toHaveProperty('groupBy')
+    expect(reviewParams).toEqual(readingParams)
   })
 
   it('pauses every analytics request for an invalid date range', () => {
@@ -184,6 +245,7 @@ describe('detailed learning analytics', () => {
     expect(analyticsMocks.vocabulary.mock.calls.at(-1)?.[1]).toBe(false)
     expect(analyticsMocks.reading.mock.calls.at(-1)?.[1]).toBe(false)
     expect(analyticsMocks.quizzes.mock.calls.at(-1)?.[1]).toBe(false)
+    expect(analyticsMocks.reviews.mock.calls.at(-1)?.[1]).toBe(false)
   })
 
   it('keeps reading and quiz analytics visible when vocabulary fails', () => {
@@ -194,15 +256,19 @@ describe('detailed learning analytics', () => {
     expect(
       screen.getByText('This analytics section could not be loaded. Try again.'),
     ).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: 'Reading Progress' }))
     expect(screen.getByLabelText('Articles opened: 0')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: 'Quiz Performance' }))
     expect(screen.getByLabelText('Accuracy: 75%')).toBeInTheDocument()
   })
 
   it('shows safe zero-denominator reading copy and completed-session semantics', () => {
     renderAnalytics()
 
+    fireEvent.click(screen.getByRole('tab', { name: 'Reading Progress' }))
     expect(screen.getByLabelText('Completion rate: 0%')).toBeInTheDocument()
     expect(screen.getByText('No opened articles')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: 'Quiz Performance' }))
     expect(
       screen.getByText('In-progress and abandoned excluded'),
     ).toBeInTheDocument()
@@ -215,9 +281,6 @@ describe('detailed learning analytics', () => {
     expect(screen.getByText(/Status totals: New 2/i)).toBeInTheDocument()
     expect(screen.getByText(/Saved vocabulary by level: CEFR A1 1/i)).toBeInTheDocument()
     expect(
-      screen.getByText(/Only answers from completed sessions are included/i),
-    ).toBeInTheDocument()
-    expect(
       screen.getByRole('img', {
         name: /Saved vocabulary trend 3 vocabulary saves/i,
       }),
@@ -228,6 +291,10 @@ describe('detailed learning analytics', () => {
     expect(
       screen.getByLabelText('Saved vocabulary trend legend'),
     ).toHaveTextContent('Vocabulary saved')
+    fireEvent.click(screen.getByRole('tab', { name: 'Quiz Performance' }))
+    expect(
+      screen.getByText(/Only answers from completed sessions are included/i),
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('table', { name: 'Quiz performance trend' }),
     ).toBeInTheDocument()
@@ -245,6 +312,7 @@ describe('detailed learning analytics', () => {
 
     renderAnalytics()
 
+    fireEvent.click(screen.getByRole('tab', { name: 'Reading Progress' }))
     expect(
       screen.getByRole('img', {
         name: /Reading activity trend 5 opened and 2 completed articles/i,
@@ -256,5 +324,19 @@ describe('detailed learning analytics', () => {
     expect(
       screen.getByLabelText('Reading activity legend'),
     ).toHaveTextContent('OpenedCompleted')
+  })
+
+  it('shows stored skill, retest, duration, and retention evaluation', () => {
+    renderAnalytics()
+    fireEvent.click(screen.getByRole('tab', { name: 'Review Impact' }))
+
+    expect(screen.getByLabelText('Answer accuracy: 66.7%')).toBeInTheDocument()
+    expect(screen.getByText('Performance by skill')).toBeInTheDocument()
+    expect(screen.getByLabelText('Recall accuracy: 60%')).toBeInTheDocument()
+    expect(screen.getByText('Completion by plan length')).toBeInTheDocument()
+    expect(screen.getByText('Coaching retest outcomes')).toBeInTheDocument()
+    expect(screen.getByRole('table', { name: 'Practice signals over time' })).toBeInTheDocument()
+    expect(screen.getByText('3.5 sec')).toBeInTheDocument()
+    expect(screen.getByRole('table', { name: 'Recall after coaching' })).toBeInTheDocument()
   })
 })

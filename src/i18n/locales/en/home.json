@@ -4,6 +4,7 @@
     "home": "Home",
     "articles": "Articles",
     "readingHistory": "Reading history",
+    "reviewHistory": "Review history",
     "vocabulary": "Vocabulary",
     "admin": "Admin",
     "profileSettings": "Profile settings",
@@ -98,10 +99,45 @@
     "keepWordsTitle": "Keep familiar words close",
     "wordReady_one": "word ready",
     "wordReady_other": "words ready",
+    "wordRemaining_one": "word remaining",
+    "wordRemaining_other": "words remaining",
     "estTime": "est. review time",
     "resumeReview": "Resume Review",
     "startReview": "Start Review",
-    "noReviewsDue": "No Reviews Due"
+    "noReviewsDue": "No Reviews Due",
+    "planDialog": {
+      "eyebrow": "Set your pace",
+      "title": "Shape today's practice",
+      "description_one": "You have {{count}} word ready. Choose a time window and the skill you want to strengthen.",
+      "description_other": "You have {{count}} words ready. Choose a time window and the skill you want to strengthen.",
+      "durationLabel": "How long do you have?",
+      "minutes": "minutes",
+      "itemEstimate_one": "about {{count}} word",
+      "itemEstimate_other": "about {{count}} words",
+      "goalLabel": "What should lead the session?",
+      "goals": {
+        "BALANCED": {
+          "label": "Balanced",
+          "description": "Mix recognition, recall, spelling, and context."
+        },
+        "RECALL": {
+          "label": "Recall",
+          "description": "Practice finding the word from its meaning."
+        },
+        "SPELLING": {
+          "label": "Spelling",
+          "description": "Type words accurately from sentence clues."
+        },
+        "CONTEXT": {
+          "label": "Context",
+          "description": "Choose meanings that fit real sentences."
+        }
+      },
+      "selectedPlan": "Your practice window",
+      "planSummary": "{{minutes}} minutes · about {{count}} words · {{goal}}",
+      "cancel": "Not now",
+      "start": "Start this plan"
+    }
   },
   "accessibility": {
     "loadingOverview": "Loading learning overview",

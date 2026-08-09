@@ -134,6 +134,9 @@ const sessionState = (
     quizId: null,
     articleId: null,
     collectionId: null,
+    targetDurationMinutes: 10,
+    reviewGoal: 'RECALL',
+    plannedItemCount: 2,
     planSummary: 'Review recall first, then reinforce meaning in context.',
     status: "IN_PROGRESS",
     startedAt: "2026-08-03T01:00:00.000Z",
@@ -249,6 +252,23 @@ describe("ReviewPage", () => {
       await screen.findByRole("heading", { name: "A Focused Practice Set" }),
     ).toBeInTheDocument();
   });
+
+  it('maps the selected daily duration and goal into the start request', async () => {
+    renderReviewStarter(
+      '/review?sessionType=DAILY_REVIEW&targetDurationMinutes=15&reviewGoal=CONTEXT',
+    )
+
+    await waitFor(() => {
+      expect(startSession).toHaveBeenCalledWith(
+        {
+          sessionType: 'DAILY_REVIEW',
+          targetDurationMinutes: 15,
+          reviewGoal: 'CONTEXT',
+        },
+        expect.objectContaining({ onSuccess: expect.any(Function) }),
+      )
+    })
+  })
 
   it("renders the current session plan before the question", () => {
     renderReview();
@@ -679,6 +699,26 @@ const persistedSummary: CompletedReviewResult = {
       answeredAt: "2026-08-03T01:30:00.000Z",
     },
   ],
+  skillBreakdown: [
+    { skillDimension: 'RECALL', attempts: 2, correct: 1, accuracy: 0.5 },
+  ],
+  coachSummary: {
+    strengths: [],
+    focusNext: ['RECALL'],
+    message: 'Focus next on recall in a short follow-up review.',
+    source: 'RULE',
+  },
+  wordsToRevisit: [
+    {
+      userVocabularyId: 'vocabulary-1',
+      wordOrPhrase: 'impact',
+      meaningVi: 'tác động',
+      skillDimension: 'RECALL',
+      errorType: 'LOW_RECALL',
+      explanation: 'The saved contextual meaning.',
+      recoveredInSession: true,
+    },
+  ],
 };
 
 const renderSummary = (state?: unknown) =>
@@ -697,10 +737,10 @@ const renderSummary = (state?: unknown) =>
     </ThemeProvider>,
   );
 
-const renderReviewStarter = () => {
+const renderReviewStarter = (initialEntry = "/review") => {
   const element = () => (
     <ThemeProvider theme={appTheme}>
-      <MemoryRouter initialEntries={["/review"]}>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <Routes>
           <Route path="/review" element={<ReviewPage />} />
           <Route path="/review/:sessionId" element={<ReviewPage />} />
@@ -737,6 +777,9 @@ describe("ReviewSummaryPage", () => {
     expect(summaryQueryHook).toHaveBeenCalledWith("session-1");
     expect(screen.getByText("50%")).toBeInTheDocument();
     expect(screen.getByText("Words to revisit")).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Your skill trail' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Recall accuracy: 50%')).toBeInTheDocument()
+    expect(screen.getByText('Recovered this session')).toBeInTheDocument()
   });
 
   it("uses navigation state only as a loading placeholder", () => {

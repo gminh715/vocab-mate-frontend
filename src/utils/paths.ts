@@ -1,6 +1,10 @@
 import type { Location } from 'react-router-dom'
 import type { UserRole } from '@/types/Auth/auth'
-import type { ReviewSessionType } from '@/types/Review/review'
+import type {
+  ReviewGoal,
+  ReviewSessionType,
+  ReviewTargetDuration,
+} from '@/types/Review/review'
 
 export const routePaths = {
   home: '/',
@@ -10,6 +14,7 @@ export const routePaths = {
   articleDetail: '/articles/:slug',
   reader: '/read/:slug',
   readingHistory: '/reading-history',
+  reviewHistory: '/review-history',
   profileSettings: '/settings/profile',
   securitySettings: '/settings/security',
   vocabularies: '/vocabularies',
@@ -86,16 +91,24 @@ export const reviewStartPath = ({
   quizId,
   articleId,
   collectionId,
+  targetDurationMinutes,
+  reviewGoal,
 }: {
   sessionType: ReviewSessionType
   quizId?: string
   articleId?: string
   collectionId?: string
+  targetDurationMinutes?: ReviewTargetDuration
+  reviewGoal?: ReviewGoal
 }): string => {
   const params = new URLSearchParams({ sessionType })
   if (quizId) params.set('quizId', quizId)
   if (articleId) params.set('articleId', articleId)
   if (collectionId) params.set('collectionId', collectionId)
+  if (targetDurationMinutes !== undefined) {
+    params.set('targetDurationMinutes', String(targetDurationMinutes))
+  }
+  if (reviewGoal) params.set('reviewGoal', reviewGoal)
   return `${routePaths.review}?${params.toString()}`
 }
 

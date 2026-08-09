@@ -1,4 +1,5 @@
 import {
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -8,6 +9,7 @@ import { reviewsApi } from '@/api/Review/ReviewsApi'
 import { analyticsQueryKeys } from '@/hooks/Analytics/useAnalytics'
 import { vocabularyQueryKeys } from '@/hooks/Vocabulary/useVocabularies'
 import type {
+  ReviewHistoryParams,
   ReviewSessionState,
   SkipReviewItemRequest,
   SkippedReviewItem,
@@ -28,6 +30,9 @@ export const reviewQueryKeys = {
   summaries: () => [...reviewQueryKeys.all, 'summary'] as const,
   summary: (sessionId: string) =>
     [...reviewQueryKeys.summaries(), sessionId] as const,
+  histories: () => [...reviewQueryKeys.all, 'history'] as const,
+  history: (params: ReviewHistoryParams) =>
+    [...reviewQueryKeys.histories(), params] as const,
 }
 
 export const useTodayReviewsQuery = () =>
@@ -66,6 +71,15 @@ export const useReviewSummaryQuery = (
     queryFn: () => reviewsApi.summary(sessionId),
     enabled: Boolean(sessionId) && enabled,
     retry: false,
+  })
+
+export const useReviewHistoryQuery = (params: ReviewHistoryParams) =>
+  useQuery({
+    queryKey: reviewQueryKeys.history(params),
+    queryFn: () => reviewsApi.history(params),
+    retry: false,
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
   })
 
 export const useStartReviewSessionMutation = () => {
@@ -149,6 +163,9 @@ const applyTransitionToCache = (
     queryClient.removeQueries({
       queryKey: reviewQueryKeys.summary(sessionId),
       exact: true,
+    })
+    void queryClient.invalidateQueries({
+      queryKey: reviewQueryKeys.histories(),
     })
   }
 }
@@ -237,6 +254,9 @@ export const useAbandonReviewSessionMutation = (sessionId: string) => {
       })
       void queryClient.invalidateQueries({ queryKey: reviewQueryKeys.active() })
       void queryClient.invalidateQueries({ queryKey: reviewQueryKeys.today() })
+      void queryClient.invalidateQueries({
+        queryKey: reviewQueryKeys.histories(),
+      })
     },
     retry: false,
   })

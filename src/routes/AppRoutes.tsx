@@ -159,6 +159,12 @@ const ReadingHistoryPage = lazy(() =>
   ),
 )
 
+const ReviewHistoryPage = lazy(() =>
+  import('@/pages/Review/ReviewHistoryPage').then(
+    ({ ReviewHistoryPage: Component }) => ({ default: Component }),
+  ),
+)
+
 const AdminNewsPage = lazy(() =>
   import('@/pages/Admin/AdminNewsPage').then(
     ({ AdminNewsPage: Component }) => ({
@@ -252,6 +258,10 @@ export function AppRoutes() {
           <Route
             path={routePaths.readingHistory}
             element={<ReadingHistoryPage />}
+          />
+          <Route
+            path={routePaths.reviewHistory}
+            element={<ReviewHistoryPage />}
           />
           <Route
             path={routePaths.profileSettings}

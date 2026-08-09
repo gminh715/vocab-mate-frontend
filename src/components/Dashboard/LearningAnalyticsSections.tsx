@@ -22,16 +22,20 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { normalizeApiError } from '@/config/apiClient'
+import { SkillBreakdown } from '@/components/Review/SkillBreakdown'
 import {
   useQuizAnalyticsQuery,
   useReadingAnalyticsQuery,
+  useReviewAnalyticsQuery,
   useVocabularyAnalyticsQuery,
 } from '@/hooks/Analytics/useAnalytics'
+import { ANALYTICS_SECTIONS } from '@/types/Analytics/analytics'
 import type {
   AnalyticsFilters,
   QuizAnalytics,
   ReadingAnalytics,
   ReadingTrendBucket,
+  ReviewAnalytics,
   VocabularyAnalytics,
   VocabularyTrendBucket,
 } from '@/types/Analytics/analytics'
@@ -54,6 +58,7 @@ import {
   BookOpenIcon,
   BookmarkIcon,
   FilterIcon,
+  SparklesIcon,
   TargetIcon,
 } from './DashboardIcons'
 
@@ -292,6 +297,8 @@ function SectionShell({
   isFetching,
   error,
   rangeError,
+  tabPanelId,
+  tabLabelledBy,
   onRetry,
   children,
 }: {
@@ -305,6 +312,8 @@ function SectionShell({
   isFetching: boolean
   error: unknown | null
   rangeError: string | null
+  tabPanelId?: string
+  tabLabelledBy?: string
   onRetry: () => void
   children: ReactNode
 }) {
@@ -312,8 +321,10 @@ function SectionShell({
 
   return (
     <Paper
+      id={tabPanelId}
+      role={tabPanelId ? 'tabpanel' : undefined}
       component="section"
-      aria-labelledby={`${id}-title`}
+      aria-labelledby={tabLabelledBy ?? `${id}-title`}
       variant="outlined"
       sx={{ overflow: 'hidden' }}
     >
@@ -437,6 +448,9 @@ function MetricStrip({
           >
             {item.value}
           </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.75 }}>
+            {item.detail}
+          </Typography>
         </Box>
       ))}
     </Box>
@@ -453,6 +467,7 @@ interface DistributionItem {
 
 function DistributionPanel({
   title,
+  summary,
   items,
   scaleMaximum,
   empty,
@@ -477,6 +492,11 @@ function DistributionPanel({
       <Typography component="h3" sx={{ fontWeight: 850 }}>
         {title}
       </Typography>
+      {summary ? (
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          {summary}
+        </Typography>
+      ) : null}
       {empty ?? dataMaximum === 0 ? (
         <Typography color="text.secondary" sx={{ mt: 2 }}>
           {emptyMessage ?? t('vocabulary.noDistributionActivity')}
@@ -530,6 +550,7 @@ function DistributionPanel({
 
 function TrendPanel({
   title,
+  summary,
   headers,
   rows,
   empty,
@@ -550,6 +571,11 @@ function TrendPanel({
         <Typography component="h3" sx={{ fontWeight: 850 }}>
           {title}
         </Typography>
+        {summary ? (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            {summary}
+          </Typography>
+        ) : null}
       </Box>
       {empty ? (
         <Typography color="text.secondary" sx={{ px: 2, pb: 2 }}>
@@ -613,6 +639,7 @@ const niceCountMaximum = (value: number): number => {
 
 function VocabularyTrendChart({
   items,
+  summary,
 }: {
   items: VocabularyTrendBucket[]
   summary?: string
@@ -686,6 +713,11 @@ function VocabularyTrendChart({
         >
           {t('vocabulary.savedTrend')}
         </Typography>
+        {summary ? (
+          <Typography id="vocabulary-trend-summary" variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            {summary}
+          </Typography>
+        ) : null}
       </Box>
       {hasActivity ? (
         <>
@@ -813,6 +845,7 @@ function VocabularyTrendChart({
 
 function ReadingTrendChart({
   items,
+  summary,
 }: {
   items: ReadingTrendBucket[]
   summary?: string
@@ -881,6 +914,11 @@ function ReadingTrendChart({
         <Typography id="reading-trend-title" component="h3" sx={{ fontWeight: 850 }}>
           {t('reading.readingActivityTrend')}
         </Typography>
+        {summary ? (
+          <Typography id="reading-trend-summary" variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            {summary}
+          </Typography>
+        ) : null}
       </Box>
       {hasActivity ? (
         <>
@@ -1233,15 +1271,178 @@ function QuizAnalyticsContent({ data }: { data: QuizAnalytics }) {
   )
 }
 
+function ReviewAnalyticsContent({ data }: { data: ReviewAnalytics }) {
+  const { t } = useTranslation('analytics')
+  const formatResponseTime = (milliseconds: number | null) =>
+    milliseconds === null
+      ? '—'
+      : t('review.seconds', {
+          count: Math.round((milliseconds / 1000) * 10) / 10,
+        })
+  const trendAnswers = data.trend.reduce(
+    (total, item) => total + item.answers,
+    0,
+  )
+
+  return (
+    <Stack spacing={2}>
+      <MetricStrip
+        items={[
+          {
+            label: t('review.completedSessions'),
+            value: integerFormatter.format(data.sessionsCompleted),
+            detail: t('review.completedSessionsDetail', {
+              count: data.sessionsStarted,
+            }),
+          },
+          {
+            label: t('review.answerAccuracy'),
+            value: formatAnalyticsRatio(data.accuracy),
+            detail: t('review.answerAccuracyDetail'),
+          },
+          {
+            label: t('review.retestSuccess'),
+            value: formatAnalyticsRatio(data.sameSessionRetest.successRate),
+            detail: t('review.retestSuccessDetail'),
+          },
+        ]}
+      />
+
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 1.2fr) minmax(280px, 0.8fr)' },
+          gap: 2,
+        }}
+      >
+        <Paper variant="outlined" sx={{ p: 2 }}>
+          <Typography id="review-skill-analytics-title" component="h3" sx={{ fontWeight: 850 }}>
+            {t('review.bySkill')}
+          </Typography>
+          {data.bySkill.length > 0 ? (
+            <Box sx={{ mt: 2 }}>
+              <SkillBreakdown items={data.bySkill} labelledBy="review-skill-analytics-title" />
+            </Box>
+          ) : (
+            <Typography color="text.secondary" sx={{ mt: 2 }}>
+              {t('review.noSkillEvidence')}
+            </Typography>
+          )}
+        </Paper>
+
+        <Paper variant="outlined" sx={{ p: 2 }}>
+          <Typography component="h3" sx={{ fontWeight: 850 }}>
+            {t('review.practiceSignals')}
+          </Typography>
+          <Stack spacing={1.75} sx={{ mt: 2 }}>
+            {[
+              [t('review.averageResponse'), formatResponseTime(data.averageResponseTimeMs)],
+              [t('review.hintsUsed'), integerFormatter.format(data.hintsUsed)],
+              [t('review.sessionsEnded'), integerFormatter.format(data.sessionsAbandoned)],
+            ].map(([label, value]) => (
+              <Stack key={label} direction="row" spacing={2} sx={{ justifyContent: 'space-between' }}>
+                <Typography color="text.secondary" variant="body2">{label}</Typography>
+                <Typography sx={{ fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{value}</Typography>
+              </Stack>
+            ))}
+          </Stack>
+        </Paper>
+      </Box>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: 'repeat(2, minmax(0, 1fr))' }, gap: 2 }}>
+        <DistributionPanel
+          title={t('review.byDuration')}
+          scaleMaximum={1}
+          empty={data.byDuration.every((item) => item.started === 0)}
+          emptyMessage={t('review.noDurationEvidence')}
+          items={data.byDuration.map((item) => ({
+            key: String(item.targetDurationMinutes),
+            label: t('review.durationLabel', { count: item.targetDurationMinutes }),
+            value: item.completionRate,
+            valueLabel: `${integerFormatter.format(item.completed)} / ${integerFormatter.format(item.started)}`,
+            supportingLabel: formatAnalyticsRatio(item.completionRate),
+          }))}
+        />
+        <DistributionPanel
+          title={t('review.interventionOutcomes')}
+          scaleMaximum={1}
+          empty={data.byDecisionSource.every((item) => item.interventions === 0)}
+          emptyMessage={t('review.noInterventionEvidence')}
+          items={data.byDecisionSource.map((item) => ({
+            key: item.source,
+            label: t(`review.sources.${item.source}`),
+            value: item.retestSuccessRate,
+            valueLabel: `${integerFormatter.format(item.successfulRetests)} / ${integerFormatter.format(item.retestAttempts)}`,
+            supportingLabel: formatAnalyticsRatio(item.retestSuccessRate),
+          }))}
+        />
+      </Box>
+
+      <TrendPanel
+        title={t('review.practiceTrend')}
+        summary={t('review.practiceTrendSummary', {
+          answers: trendAnswers,
+          buckets: data.trend.length,
+        })}
+        headers={[
+          t('review.trendPeriod'),
+          t('review.trendAnswers'),
+          t('review.trendAccuracy'),
+          t('review.trendResponseTime'),
+          t('review.trendHints'),
+        ]}
+        rows={data.trend.map((item) => ({
+          key: item.bucket,
+          cells: [
+            formatBucket(item.bucket),
+            integerFormatter.format(item.answers),
+            formatAnalyticsRatio(item.accuracy),
+            formatResponseTime(item.averageResponseTimeMs),
+            integerFormatter.format(item.hintsUsed),
+          ],
+        }))}
+        empty={trendAnswers === 0}
+        emptyMessage={t('review.noTrendEvidence')}
+      />
+
+      <TrendPanel
+        title={t('review.retentionTitle')}
+        headers={[
+          t('review.retentionWindow'),
+          t('review.followUps'),
+          t('review.correctFollowUps'),
+          t('review.retentionAccuracy'),
+        ]}
+        rows={[
+          { key: 'next-day', label: t('review.nextDay'), value: data.retention.nextDay },
+          { key: 'seven-day', label: t('review.sevenDay'), value: data.retention.sevenDay },
+        ].map((item) => ({
+          key: item.key,
+          cells: [
+            item.label,
+            integerFormatter.format(item.value.followUps),
+            integerFormatter.format(item.value.correct),
+            formatAnalyticsRatio(item.value.accuracy),
+          ],
+        }))}
+        empty={data.retention.nextDay.followUps + data.retention.sevenDay.followUps === 0}
+        emptyMessage={t('review.noRetentionEvidence')}
+      />
+    </Stack>
+  )
+}
+
 export function LearningAnalyticsSections() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [activeTab, setActiveTab] = useState<number>(0)
   const searchString = searchParams.toString()
   const filters = useMemo(
     () => analyticsFiltersFromSearchParams(new URLSearchParams(searchString)),
     [searchString],
   )
   const rangeError = analyticsDateRangeError(filters)
+  const activeTab = ANALYTICS_SECTIONS.indexOf(
+    filters.section ?? 'vocabulary',
+  )
   const enabled = rangeError === null
   const dateParams = useMemo(
     () => analyticsRequestParams(filters),
@@ -1261,6 +1462,7 @@ export function LearningAnalyticsSections() {
   )
   const readingQuery = useReadingAnalyticsQuery(dateParams, enabled)
   const quizQuery = useQuizAnalyticsQuery(quizParams, enabled)
+  const reviewQuery = useReviewAnalyticsQuery(dateParams, enabled)
 
   useEffect(() => {
     const normalized = normalizeAnalyticsSearchParams(
@@ -1305,9 +1507,14 @@ export function LearningAnalyticsSections() {
 
       <Paper variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden', p: 0.5 }}>
         <Tabs
+          aria-label={t('tabs.ariaLabel')}
           value={activeTab}
-          onChange={(_, newValue: number) => setActiveTab(newValue)}
-          variant="fullWidth"
+          onChange={(_, newValue: number) =>
+            updateFilters({ section: ANALYTICS_SECTIONS[newValue] })
+          }
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
           sx={{
             minHeight: 48,
             '& .MuiTab-root': {
@@ -1340,12 +1547,21 @@ export function LearningAnalyticsSections() {
             id="analytics-tab-2"
             aria-controls="analytics-tabpanel-2"
           />
+          <Tab
+            icon={<SparklesIcon size={18} />}
+            iconPosition="start"
+            label={t('tabs.reviewImpact')}
+            id="analytics-tab-3"
+            aria-controls="analytics-tabpanel-3"
+          />
         </Tabs>
       </Paper>
 
       {activeTab === 0 ? (
         <SectionShell
           id="vocabulary-analytics"
+          tabPanelId="analytics-tabpanel-0"
+          tabLabelledBy="analytics-tab-0"
           eyebrow={t('sections.vocabulary.eyebrow')}
           title={t('sections.vocabulary.title')}
           refreshingLabel={t('sections.vocabulary.refreshingLabel')}
@@ -1365,6 +1581,8 @@ export function LearningAnalyticsSections() {
       {activeTab === 1 ? (
         <SectionShell
           id="reading-analytics"
+          tabPanelId="analytics-tabpanel-1"
+          tabLabelledBy="analytics-tab-1"
           eyebrow={t('sections.reading.eyebrow')}
           title={t('sections.reading.title')}
           refreshingLabel={t('sections.reading.refreshingLabel')}
@@ -1384,6 +1602,8 @@ export function LearningAnalyticsSections() {
       {activeTab === 2 ? (
         <SectionShell
           id="quiz-analytics"
+          tabPanelId="analytics-tabpanel-2"
+          tabLabelledBy="analytics-tab-2"
           eyebrow={t('sections.quiz.eyebrow')}
           title={t('sections.quiz.title')}
           refreshingLabel={t('sections.quiz.refreshingLabel')}
@@ -1395,6 +1615,25 @@ export function LearningAnalyticsSections() {
           onRetry={() => void quizQuery.refetch()}
         >
           {quizQuery.data ? <QuizAnalyticsContent data={quizQuery.data} /> : null}
+        </SectionShell>
+      ) : null}
+
+      {activeTab === 3 ? (
+        <SectionShell
+          id="review-analytics"
+          tabPanelId="analytics-tabpanel-3"
+          tabLabelledBy="analytics-tab-3"
+          eyebrow={t('sections.review.eyebrow')}
+          title={t('sections.review.title')}
+          refreshingLabel={t('sections.review.refreshingLabel')}
+          loadingLabel={t('sections.review.loadingLabel')}
+          isPending={reviewQuery.isPending}
+          isFetching={reviewQuery.isFetching}
+          error={reviewQuery.isError ? reviewQuery.error : null}
+          rangeError={rangeError}
+          onRetry={() => void reviewQuery.refetch()}
+        >
+          {reviewQuery.data ? <ReviewAnalyticsContent data={reviewQuery.data} /> : null}
         </SectionShell>
       ) : null}
     </Stack>

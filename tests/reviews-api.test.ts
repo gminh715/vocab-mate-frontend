@@ -22,6 +22,7 @@ describe('reviewsApi', () => {
   it('maps due, active, durable session, and summary reads', async () => {
     await reviewsApi.today()
     await reviewsApi.active()
+    await reviewsApi.history({ page: 2, status: 'COMPLETED' })
     await reviewsApi.session('session/id')
     await reviewsApi.summary('session/id')
 
@@ -31,10 +32,15 @@ describe('reviewsApi', () => {
     expect(apiGet).toHaveBeenNthCalledWith(2, '/review-sessions/active')
     expect(apiGet).toHaveBeenNthCalledWith(
       3,
-      '/review-sessions/session%2Fid',
+      '/reviews/history',
+      { params: { page: 2, status: 'COMPLETED' } },
     )
     expect(apiGet).toHaveBeenNthCalledWith(
       4,
+      '/review-sessions/session%2Fid',
+    )
+    expect(apiGet).toHaveBeenNthCalledWith(
+      5,
       '/review-sessions/session%2Fid/summary',
     )
   })

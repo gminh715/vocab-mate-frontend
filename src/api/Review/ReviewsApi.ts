@@ -3,6 +3,8 @@ import type {
   AbandonedReviewSession,
   CompletedReviewResult,
   DueReviews,
+  ReviewHistory,
+  ReviewHistoryParams,
   ReviewSessionState,
   SkipReviewItemRequest,
   SkippedReviewItem,
@@ -19,6 +21,9 @@ export const reviewsApi = {
 
   active: (): Promise<ReviewSessionState> =>
     apiClient.get<ReviewSessionState>(`${reviewSessionsPath}/active`),
+
+  history: (params: ReviewHistoryParams = {}): Promise<ReviewHistory> =>
+    apiClient.get<ReviewHistory>('/reviews/history', { params }),
 
   session: (sessionId: string): Promise<ReviewSessionState> =>
     apiClient.get<ReviewSessionState>(

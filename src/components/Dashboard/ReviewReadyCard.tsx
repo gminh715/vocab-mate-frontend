@@ -6,8 +6,10 @@ import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { ReviewPlanDialog } from '@/components/Review/ReviewPlanDialog'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useActiveReviewSessionQuery,
@@ -20,15 +22,10 @@ import {
 import { ArrowRightIcon, ClockIcon, FlameIcon, SparklesIcon } from './DashboardIcons'
 
 const numberFormatter = new Intl.NumberFormat()
-const SECONDS_PER_WORD_ESTIMATE = 20
-
-const estimatedMinutes = (count: number): number =>
-  count === 0
-    ? 0
-    : Math.max(1, Math.ceil((count * SECONDS_PER_WORD_ESTIMATE) / 60))
-
 export function ReviewReadyCard() {
   const { t } = useTranslation('home')
+  const navigate = useNavigate()
+  const [planDialogOpen, setPlanDialogOpen] = useState(false)
   const todayQuery = useTodayReviewsQuery()
   const activeQuery = useActiveReviewSessionQuery()
   const activeSession = activeQuery.data
@@ -39,10 +36,9 @@ export function ReviewReadyCard() {
     todayQuery.isError ||
     (activeQuery.isError && !hasExpectedMissingActiveSession)
   const activeRemaining = activeSession?.progress.remainingCount
-  const durationCount = activeRemaining ?? dueCount
-  const destination = activeSession
-    ? reviewSessionPath(activeSession.session.id)
-    : reviewStartPath({ sessionType: 'DAILY_REVIEW' })
+  const displayedItemCount = activeRemaining ?? dueCount
+  const displayedDuration =
+    activeSession?.session.targetDurationMinutes ?? 10
   const canStart = Boolean(activeSession) || dueCount > 0
 
   return (
@@ -159,10 +155,12 @@ export function ReviewReadyCard() {
                   color: 'primary.main',
                 }}
               >
-                {numberFormatter.format(dueCount)}
+                {numberFormatter.format(displayedItemCount)}
               </Typography>
               <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-                {t('review.wordReady', { count: dueCount })}
+                {activeSession
+                  ? t('review.wordRemaining', { count: displayedItemCount })
+                  : t('review.wordReady', { count: dueCount })}
               </Typography>
             </Box>
 
@@ -178,7 +176,7 @@ export function ReviewReadyCard() {
                     lineHeight: 1,
                   }}
                 >
-                  ~{estimatedMinutes(durationCount)} min
+                  {displayedDuration} min
                 </Typography>
               </Stack>
               <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
@@ -188,31 +186,50 @@ export function ReviewReadyCard() {
           </Stack>
         )}
 
-        <Button
-          component={RouterLink}
-          to={destination}
-          variant="contained"
-          size="large"
-          endIcon={<ArrowRightIcon size={18} />}
-          disabled={
-            !activeSession &&
-            (todayQuery.isPending ||
+        {activeSession ? (
+          <Button
+            component={RouterLink}
+            to={reviewSessionPath(activeSession.session.id)}
+            variant="contained"
+            size="large"
+            endIcon={<ArrowRightIcon size={18} />}
+            sx={{ py: 1.5, px: 3, borderRadius: 2, boxShadow: 2, whiteSpace: 'nowrap' }}
+          >
+            {t('review.resumeReview')}
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            size="large"
+            endIcon={<ArrowRightIcon size={18} />}
+            disabled={
+              todayQuery.isPending ||
               todayQuery.isError ||
-              (!canStart &&
-                todayQuery.data !== undefined &&
-                dueCount === 0))
-          }
-          sx={{
-            py: 1.5,
-            px: 3,
-            borderRadius: 2,
-            boxShadow: 2,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {activeSession ? t('review.resumeReview') : dueCount > 0 ? t('review.startReview') : t('review.noReviewsDue')}
-        </Button>
+              (!canStart && todayQuery.data !== undefined && dueCount === 0)
+            }
+            onClick={() => setPlanDialogOpen(true)}
+            sx={{ py: 1.5, px: 3, borderRadius: 2, boxShadow: 2, whiteSpace: 'nowrap' }}
+          >
+            {dueCount > 0 ? t('review.startReview') : t('review.noReviewsDue')}
+          </Button>
+        )}
       </Box>
+      <ReviewPlanDialog
+        open={planDialogOpen}
+        dueCount={dueCount}
+        estimates={todayQuery.data?.dailyReviewEstimates ?? []}
+        onClose={() => setPlanDialogOpen(false)}
+        onStart={({ targetDurationMinutes, reviewGoal }) => {
+          setPlanDialogOpen(false)
+          navigate(
+            reviewStartPath({
+              sessionType: 'DAILY_REVIEW',
+              targetDurationMinutes,
+              reviewGoal,
+            }),
+          )
+        }}
+      />
     </Paper>
   )
 }

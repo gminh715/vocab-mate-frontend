@@ -3,6 +3,13 @@
     "eyebrow": "Your Review Plan",
     "title": "A Focused Practice Set",
     "summary": "{{sessionType}} · {{count}} questions selected from your saved vocabulary.",
+    "details": "{{minutes}} minutes · {{count}} words · {{goal}} focus",
+    "goals": {
+      "BALANCED": "Balanced",
+      "RECALL": "Recall",
+      "SPELLING": "Spelling",
+      "CONTEXT": "Context"
+    },
     "sessionTypes": {
       "DAILY_REVIEW": "Daily review",
       "ARTICLE_REVIEW": "Article review",
@@ -46,5 +53,74 @@
     "skipToReview": "Skip to Review",
     "ended": "This review session has ended and cannot be resumed.",
     "backHome": "Back Home"
+  },
+  "summary": {
+    "loading": "Loading your review summary…",
+    "tryAgain": "Try Again",
+    "retry": "Retry",
+    "temporary": "Showing temporary results while the saved review summary loads…",
+    "eyebrow": "Review complete",
+    "title": "You kept the trail moving",
+    "finished": "Finished {{date}}. Your next review will be ready when it helps most.",
+    "remembered": "Remembered",
+    "accuracy": "Accuracy",
+    "backHome": "Back Home",
+    "startAnother": "Start Another Review",
+    "viewHistory": "View Review History",
+    "skillsTitle": "Your skill trail",
+    "wordsTitle": "Words to revisit",
+    "recovered": "Recovered this session",
+    "skillScore": "{{correct}}/{{attempts}} · {{accuracy}}",
+    "skillProgressLabel": "{{skill}} accuracy: {{accuracy}}",
+    "errors": {
+      "inProgress": "This review is still in progress. Return to it before opening the summary.",
+      "load": "This review summary could not be loaded.",
+      "temporary": "The saved summary could not be loaded. These temporary results may be incomplete."
+    }
+  },
+  "history": {
+    "eyebrow": "Practice journal",
+    "title": "Review history",
+    "subtitle": "Revisit completed sessions, resume active practice, and watch your learning trail grow.",
+    "sessionCount_one": "{{formattedCount}} session",
+    "sessionCount_other": "{{formattedCount}} sessions",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "status": {
+      "IN_PROGRESS": "In progress",
+      "COMPLETED": "Completed",
+      "ABANDONED": "Ended"
+    },
+    "metrics": {
+      "accuracy": "Accuracy",
+      "correct": "Correct",
+      "duration": "Plan",
+      "focus": "Focus"
+    },
+    "filters": {
+      "ariaLabel": "Review history filters",
+      "status": "Session status",
+      "all": "All sessions",
+      "clear": "Clear filter"
+    },
+    "actions": {
+      "viewSummary": "View Summary",
+      "resume": "Resume Review",
+      "start": "Start a Review"
+    },
+    "loading": "Loading your review history…",
+    "resultsLabel": "Review sessions",
+    "pagination": "Review history pages",
+    "empty": {
+      "title": "Your practice journal starts here",
+      "subtitle": "Complete a review and its skill evidence will appear in this timeline.",
+      "filtered": "No sessions match this filter",
+      "filteredSubtitle": "Choose another status to see more of your review history."
+    },
+    "errors": {
+      "invalidFilters": "These review history filters are invalid.",
+      "load": "Your review history could not be loaded.",
+      "tryAgain": "Try again"
+    }
   }
 }

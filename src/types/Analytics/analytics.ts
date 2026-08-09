@@ -1,11 +1,22 @@
 import type { QuestionType } from '@/types/Admin/adminQuizzes'
 import type { CefrLevel } from '@/types/Auth/auth'
 import type { LearningStatus } from '@/types/Vocabulary/vocabulary'
+import type {
+  ReviewDecisionSource,
+  ReviewSkillDimension,
+} from '@/types/Review/review'
 
 export const ANALYTICS_GROUP_BY_VALUES = ['DAY', 'WEEK', 'MONTH'] as const
+export const ANALYTICS_SECTIONS = [
+  'vocabulary',
+  'reading',
+  'quizzes',
+  'reviews',
+] as const
 
 export type AnalyticsGroupBy =
   (typeof ANALYTICS_GROUP_BY_VALUES)[number]
+export type AnalyticsSection = (typeof ANALYTICS_SECTIONS)[number]
 
 export interface AnalyticsDateFilters {
   from?: string
@@ -15,6 +26,7 @@ export interface AnalyticsDateFilters {
 export interface AnalyticsFilters extends AnalyticsDateFilters {
   groupBy?: AnalyticsGroupBy
   articleId?: string
+  section?: AnalyticsSection
 }
 
 export interface AnalyticsOverviewParams {
@@ -110,4 +122,70 @@ export interface QuizAnalytics {
   averageScore: number
   byQuestionType: QuestionTypeAnalytics[]
   trend: QuizTrendBucket[]
+}
+
+export interface ReviewRetestAnalytics {
+  attempts: number
+  correct: number
+  successRate: number
+}
+
+export interface ReviewSkillAnalytics {
+  skillDimension: ReviewSkillDimension
+  attempts: number
+  correct: number
+  accuracy: number
+  averageResponseTimeMs: number | null
+  hintsUsed: number
+}
+
+export interface ReviewDurationAnalytics {
+  targetDurationMinutes: 5 | 10 | 15
+  started: number
+  completed: number
+  completionRate: number
+}
+
+export interface ReviewDecisionSourceAnalytics {
+  source: ReviewDecisionSource
+  interventions: number
+  retestAttempts: number
+  successfulRetests: number
+  retestSuccessRate: number
+}
+
+export interface ReviewRetentionWindow {
+  followUps: number
+  correct: number
+  accuracy: number
+}
+
+export interface ReviewTrendBucket {
+  bucket: string
+  answers: number
+  correctAnswers: number
+  accuracy: number
+  averageResponseTimeMs: number | null
+  hintsUsed: number
+}
+
+export interface ReviewAnalytics {
+  sessionsStarted: number
+  sessionsCompleted: number
+  sessionsAbandoned: number
+  completionRate: number
+  answers: number
+  correctAnswers: number
+  accuracy: number
+  averageResponseTimeMs: number | null
+  hintsUsed: number
+  sameSessionRetest: ReviewRetestAnalytics
+  bySkill: ReviewSkillAnalytics[]
+  byDuration: ReviewDurationAnalytics[]
+  byDecisionSource: ReviewDecisionSourceAnalytics[]
+  retention: {
+    nextDay: ReviewRetentionWindow
+    sevenDay: ReviewRetentionWindow
+  }
+  trend: ReviewTrendBucket[]
 }

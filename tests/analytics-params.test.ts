@@ -18,7 +18,7 @@ describe('learner analytics parameter mapping', () => {
   it('restores valid URL filters and removes unsupported values', () => {
     const filters = analyticsFiltersFromSearchParams(
       new URLSearchParams(
-        'from=2026-07-01&to=2026-07-26&groupBy=WEEK&articleId=550e8400-e29b-41d4-a716-446655440000&ignored=value',
+        'from=2026-07-01&to=2026-07-26&groupBy=WEEK&articleId=550e8400-e29b-41d4-a716-446655440000&section=reviews&ignored=value',
       ),
     )
 
@@ -27,6 +27,7 @@ describe('learner analytics parameter mapping', () => {
       to: '2026-07-26',
       groupBy: 'WEEK',
       articleId: '550e8400-e29b-41d4-a716-446655440000',
+      section: 'reviews',
     })
     expect(
       normalizeAnalyticsSearchParams(

@@ -3,6 +3,13 @@
     "eyebrow": "Kế Hoạch Ôn Tập",
     "title": "Một Lượt Luyện Tập Có Trọng Tâm",
     "summary": "{{sessionType}} · {{count}} câu hỏi được chọn từ các từ bạn đã lưu.",
+    "details": "{{minutes}} phút · {{count}} từ · trọng tâm {{goal}}",
+    "goals": {
+      "BALANCED": "Cân bằng",
+      "RECALL": "Gợi nhớ",
+      "SPELLING": "Chính tả",
+      "CONTEXT": "Ngữ cảnh"
+    },
     "sessionTypes": {
       "DAILY_REVIEW": "Ôn tập hằng ngày",
       "ARTICLE_REVIEW": "Ôn theo bài đọc",
@@ -46,5 +53,72 @@
     "skipToReview": "Chuyển Đến Phần Ôn Tập",
     "ended": "Phiên ôn tập này đã kết thúc và không thể tiếp tục.",
     "backHome": "Về Trang Chủ"
+  },
+  "summary": {
+    "loading": "Đang tải tổng kết ôn tập…",
+    "tryAgain": "Thử Lại",
+    "retry": "Tải lại",
+    "temporary": "Đang hiển thị kết quả tạm thời trong khi tải bản tổng kết đã lưu…",
+    "eyebrow": "Đã hoàn thành",
+    "title": "Bạn đã tiến thêm một bước",
+    "finished": "Hoàn thành lúc {{date}}. Lượt ôn tiếp theo sẽ sẵn sàng vào thời điểm phù hợp.",
+    "remembered": "Đã nhớ",
+    "accuracy": "Độ chính xác",
+    "backHome": "Về Trang Chủ",
+    "startAnother": "Ôn Thêm Một Lượt",
+    "viewHistory": "Xem Lịch Sử Ôn Tập",
+    "skillsTitle": "Hành trình kỹ năng",
+    "wordsTitle": "Từ cần xem lại",
+    "recovered": "Đã sửa đúng trong lượt này",
+    "skillScore": "{{correct}}/{{attempts}} · {{accuracy}}",
+    "skillProgressLabel": "Độ chính xác {{skill}}: {{accuracy}}",
+    "errors": {
+      "inProgress": "Phiên ôn tập này vẫn đang diễn ra. Hãy quay lại hoàn thành trước khi xem tổng kết.",
+      "load": "Không thể tải tổng kết ôn tập.",
+      "temporary": "Không thể tải bản tổng kết đã lưu. Kết quả tạm thời này có thể chưa đầy đủ."
+    }
+  },
+  "history": {
+    "eyebrow": "Nhật ký luyện tập",
+    "title": "Lịch sử ôn tập",
+    "subtitle": "Xem lại các phiên đã hoàn thành, tiếp tục phiên đang dở và theo dõi hành trình học tập.",
+    "sessionCount": "{{formattedCount}} phiên",
+    "minutes": "{{count}} phút",
+    "status": {
+      "IN_PROGRESS": "Đang thực hiện",
+      "COMPLETED": "Đã hoàn thành",
+      "ABANDONED": "Đã kết thúc"
+    },
+    "metrics": {
+      "accuracy": "Độ chính xác",
+      "correct": "Câu đúng",
+      "duration": "Kế hoạch",
+      "focus": "Trọng tâm"
+    },
+    "filters": {
+      "ariaLabel": "Bộ lọc lịch sử ôn tập",
+      "status": "Trạng thái phiên",
+      "all": "Tất cả phiên",
+      "clear": "Xóa bộ lọc"
+    },
+    "actions": {
+      "viewSummary": "Xem Tổng Kết",
+      "resume": "Tiếp Tục Ôn",
+      "start": "Bắt Đầu Ôn"
+    },
+    "loading": "Đang tải lịch sử ôn tập…",
+    "resultsLabel": "Các phiên ôn tập",
+    "pagination": "Các trang lịch sử ôn tập",
+    "empty": {
+      "title": "Nhật ký luyện tập bắt đầu từ đây",
+      "subtitle": "Hoàn thành một lượt ôn để xem bằng chứng kỹ năng trên dòng thời gian này.",
+      "filtered": "Không có phiên phù hợp với bộ lọc",
+      "filteredSubtitle": "Hãy chọn trạng thái khác để xem thêm lịch sử ôn tập."
+    },
+    "errors": {
+      "invalidFilters": "Bộ lọc lịch sử ôn tập không hợp lệ.",
+      "load": "Không thể tải lịch sử ôn tập.",
+      "tryAgain": "Thử lại"
+    }
   }
 }

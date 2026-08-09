@@ -137,9 +137,9 @@ export function LandingPage() {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#090d16',
-        color: '#f8fafc',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        bgcolor: '#F3F7F4',
+        color: '#17372B',
+        fontFamily: '"Be Vietnam Pro", "Inter", system-ui, sans-serif',
         overflowX: 'hidden',
       }}
     >
@@ -148,9 +148,9 @@ export function LandingPage() {
         position="sticky"
         elevation={0}
         sx={{
-          bgcolor: 'rgba(15, 23, 42, 0.85)',
+          bgcolor: 'rgba(243, 247, 244, 0.92)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          borderBottom: '1px solid #D9E4DE',
         }}
       >
         <Container maxWidth="lg">
@@ -172,11 +172,11 @@ export function LandingPage() {
                   width: 38,
                   height: 38,
                   borderRadius: 2.5,
-                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                  bgcolor: '#176B4B',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)',
+                  boxShadow: '0 4px 12px rgba(23, 107, 75, 0.25)',
                 }}
               >
                 <SparklesIcon size={22} color="#ffffff" />
@@ -184,12 +184,11 @@ export function LandingPage() {
               <Typography
                 variant="h6"
                 sx={{
+                  fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
                   fontWeight: 800,
                   fontSize: 20,
+                  color: '#17372B',
                   letterSpacing: '-0.02em',
-                  background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
                 }}
               >
                 Vocab Mate
@@ -205,28 +204,28 @@ export function LandingPage() {
               <Button
                 component="a"
                 href="#features"
-                sx={{ color: '#94a3b8', fontWeight: 600, '&:hover': { color: '#ffffff' } }}
+                sx={{ color: '#5D7068', fontWeight: 600, '&:hover': { color: '#176B4B' } }}
               >
                 {t('nav.features')}
               </Button>
               <Button
                 component="a"
                 href="#demo"
-                sx={{ color: '#94a3b8', fontWeight: 600, '&:hover': { color: '#ffffff' } }}
+                sx={{ color: '#5D7068', fontWeight: 600, '&:hover': { color: '#176B4B' } }}
               >
                 {t('nav.demo')}
               </Button>
               <Button
                 component="a"
                 href="#how-it-works"
-                sx={{ color: '#94a3b8', fontWeight: 600, '&:hover': { color: '#ffffff' } }}
+                sx={{ color: '#5D7068', fontWeight: 600, '&:hover': { color: '#176B4B' } }}
               >
                 {t('nav.howItWorks')}
               </Button>
               <Button
                 component="a"
                 href="#faq"
-                sx={{ color: '#94a3b8', fontWeight: 600, '&:hover': { color: '#ffffff' } }}
+                sx={{ color: '#5D7068', fontWeight: 600, '&:hover': { color: '#176B4B' } }}
               >
                 {t('nav.faq')}
               </Button>
@@ -239,18 +238,18 @@ export function LandingPage() {
                 onClick={toggleLanguage}
                 size="small"
                 variant="outlined"
-                startIcon={<GlobeIcon size={16} color="#818cf8" />}
+                startIcon={<GlobeIcon size={16} color="#176B4B" />}
                 sx={{
-                  borderColor: 'rgba(255, 255, 255, 0.15)',
-                  color: '#cbd5e1',
+                  borderColor: '#D9E4DE',
+                  color: '#17372B',
                   borderRadius: 2,
                   px: 1.5,
                   fontWeight: 700,
                   fontSize: 13,
+                  bgcolor: '#FFFFFF',
                   '&:hover': {
-                    borderColor: '#818cf8',
-                    bgcolor: 'rgba(99, 102, 241, 0.1)',
-                    color: '#ffffff',
+                    borderColor: '#176B4B',
+                    bgcolor: '#DDF3E8',
                   },
                 }}
               >
@@ -264,9 +263,10 @@ export function LandingPage() {
                   variant="contained"
                   sx={{
                     borderRadius: 2,
-                    fontWeight: 700,
-                    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
+                    fontWeight: 750,
+                    bgcolor: '#176B4B',
+                    color: '#FFFFFF',
+                    '&:hover': { bgcolor: '#0F5138' },
                   }}
                 >
                   {t('nav.dashboard')}
@@ -277,10 +277,10 @@ export function LandingPage() {
                     component={RouterLink}
                     to={routePaths.login}
                     sx={{
-                      color: '#e2e8f0',
+                      color: '#17372B',
                       fontWeight: 600,
                       display: { xs: 'none', sm: 'inline-flex' },
-                      '&:hover': { color: '#ffffff' },
+                      '&:hover': { color: '#176B4B', bgcolor: 'rgba(23, 107, 75, 0.06)' },
                     }}
                   >
                     {t('nav.login')}
@@ -292,13 +292,12 @@ export function LandingPage() {
                     endIcon={<ArrowRightIcon size={16} />}
                     sx={{
                       borderRadius: 2,
-                      fontWeight: 700,
+                      fontWeight: 750,
                       px: 2.25,
-                      background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                      boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
-                      },
+                      bgcolor: '#176B4B',
+                      color: '#FFFFFF',
+                      boxShadow: '0 4px 14px rgba(23, 107, 75, 0.25)',
+                      '&:hover': { bgcolor: '#0F5138' },
                     }}
                   >
                     {t('nav.getStarted')}
@@ -314,38 +313,22 @@ export function LandingPage() {
       <Box
         sx={{
           position: 'relative',
-          pt: { xs: 8, md: 12 },
-          pb: { xs: 10, md: 14 },
+          pt: { xs: 7, md: 11 },
+          pb: { xs: 9, md: 13 },
           background:
-            'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.18) 0%, rgba(15, 23, 42, 0) 70%)',
+            'radial-gradient(circle at 12% 8%, rgba(116, 190, 151, 0.25), transparent 45%), #F3F7F4',
         }}
       >
-        {/* Ambient Blur Circle */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '10%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: { xs: 300, md: 600 },
-            height: { xs: 300, md: 400 },
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, rgba(99, 102, 241, 0) 70%)',
-            filter: 'blur(80px)',
-            pointerEvents: 'none',
-          }}
-        />
-
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
           <Stack spacing={4} sx={{ alignItems: 'center', textAlign: 'center', maxWidth: 840, mx: 'auto' }}>
             {/* Pill Badge */}
             <Chip
-              icon={<SparklesIcon size={14} color="#818cf8" />}
+              icon={<SparklesIcon size={14} color="#0F5138" />}
               label={t('hero.badge')}
               sx={{
-                bgcolor: 'rgba(99, 102, 241, 0.12)',
-                color: '#a5b4fc',
-                border: '1px solid rgba(99, 102, 241, 0.3)',
+                bgcolor: '#DDF3E8',
+                color: '#0F5138',
+                border: '1px solid #BCE3D1',
                 fontWeight: 700,
                 px: 1,
                 py: 2,
@@ -358,13 +341,12 @@ export function LandingPage() {
             <Typography
               component="h1"
               sx={{
-                fontSize: { xs: 36, sm: 48, md: 60 },
-                fontWeight: 900,
+                fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
+                fontSize: { xs: 34, sm: 46, md: 56 },
+                fontWeight: 800,
                 letterSpacing: '-0.03em',
                 lineHeight: 1.15,
-                background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 60%, #818cf8 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                color: '#17372B',
               }}
             >
               {t('hero.title')}
@@ -374,7 +356,7 @@ export function LandingPage() {
             <Typography
               sx={{
                 fontSize: { xs: 16, sm: 19 },
-                color: '#94a3b8',
+                color: '#5D7068',
                 lineHeight: 1.6,
                 maxWidth: 720,
               }}
@@ -397,13 +379,14 @@ export function LandingPage() {
                 sx={{
                   borderRadius: 2.5,
                   px: 4,
-                  py: 1.75,
+                  py: 1.65,
                   fontSize: 16,
-                  fontWeight: 700,
-                  background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                  boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)',
+                  fontWeight: 750,
+                  bgcolor: '#176B4B',
+                  color: '#FFFFFF',
+                  boxShadow: '0 8px 24px rgba(23, 107, 75, 0.28)',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                    bgcolor: '#0F5138',
                     transform: 'translateY(-2px)',
                   },
                   transition: 'all 0.2s ease',
@@ -417,19 +400,19 @@ export function LandingPage() {
                 to={routePaths.articles}
                 variant="outlined"
                 size="large"
-                startIcon={<BookOpenIcon size={20} color="#cbd5e1" />}
+                startIcon={<BookOpenIcon size={20} color="#176B4B" />}
                 sx={{
                   borderRadius: 2.5,
                   px: 3.5,
-                  py: 1.75,
+                  py: 1.65,
                   fontSize: 16,
-                  fontWeight: 600,
-                  color: '#f1f5f9',
-                  borderColor: 'rgba(255, 255, 255, 0.2)',
-                  bgcolor: 'rgba(255, 255, 255, 0.03)',
+                  fontWeight: 700,
+                  color: '#17372B',
+                  borderColor: '#D9E4DE',
+                  bgcolor: '#FFFFFF',
                   '&:hover': {
-                    borderColor: '#818cf8',
-                    bgcolor: 'rgba(99, 102, 241, 0.1)',
+                    borderColor: '#176B4B',
+                    bgcolor: '#DDF3E8',
                   },
                 }}
               >
@@ -442,43 +425,43 @@ export function LandingPage() {
               elevation={0}
               sx={{
                 mt: 4,
-                p: { xs: 2, sm: 3 },
+                p: { xs: 2.5, sm: 3 },
                 width: '100%',
-                borderRadius: 3,
-                bgcolor: 'rgba(15, 23, 42, 0.6)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(8px)',
+                borderRadius: 3.5,
+                bgcolor: '#FFFFFF',
+                border: '1px solid #D9E4DE',
+                boxShadow: '0 12px 32px rgba(21, 55, 43, 0.06)',
               }}
             >
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
-                divider={<Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />}
+                divider={<Divider orientation="vertical" flexItem sx={{ borderColor: '#D9E4DE' }} />}
                 spacing={{ xs: 2, sm: 4 }}
                 sx={{ justifyContent: 'space-around', alignItems: 'center' }}
               >
                 <Stack spacing={0.5} sx={{ alignItems: 'center' }}>
-                  <Typography sx={{ fontWeight: 800, fontSize: 24, color: '#818cf8' }}>
+                  <Typography sx={{ fontWeight: 800, fontSize: 24, color: '#176B4B' }}>
                     10,000+
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: 13, fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: '#5D7068', fontSize: 13, fontWeight: 600 }}>
                     {t('hero.statUsers')}
                   </Typography>
                 </Stack>
 
                 <Stack spacing={0.5} sx={{ alignItems: 'center' }}>
-                  <Typography sx={{ fontWeight: 800, fontSize: 24, color: '#34d399' }}>
+                  <Typography sx={{ fontWeight: 800, fontSize: 24, color: '#B66A2C' }}>
                     The Guardian
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: 13, fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: '#5D7068', fontSize: 13, fontWeight: 600 }}>
                     {t('hero.statArticles')}
                   </Typography>
                 </Stack>
 
                 <Stack spacing={0.5} sx={{ alignItems: 'center' }}>
-                  <Typography sx={{ fontWeight: 800, fontSize: 24, color: '#f43f5e' }}>
+                  <Typography sx={{ fontWeight: 800, fontSize: 24, color: '#0F5138' }}>
                     Spaced Repetition
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: 13, fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: '#5D7068', fontSize: 13, fontWeight: 600 }}>
                     {t('hero.statAccuracy')}
                   </Typography>
                 </Stack>
@@ -489,23 +472,23 @@ export function LandingPage() {
       </Box>
 
       {/* Interactive Demo Section */}
-      <Box id="demo" sx={{ py: { xs: 8, md: 12 }, bgcolor: '#0f172a' }}>
+      <Box id="demo" sx={{ py: { xs: 8, md: 12 }, bgcolor: '#FFFFFF', borderTop: '1px solid #D9E4DE', borderBottom: '1px solid #D9E4DE' }}>
         <Container maxWidth="lg">
-          <Stack spacing={4} sx={{ alignItems: 'center', textAlign: 'center', mb: 6 }}>
+          <Stack spacing={3} sx={{ alignItems: 'center', textAlign: 'center', mb: 6 }}>
             <Chip
-              icon={<BookOpenIcon size={14} color="#38bdf8" />}
+              icon={<BookOpenIcon size={14} color="#176B4B" />}
               label={t('demo.badge')}
               sx={{
-                bgcolor: 'rgba(56, 189, 248, 0.12)',
-                color: '#38bdf8',
-                border: '1px solid rgba(56, 189, 248, 0.3)',
+                bgcolor: '#DDF3E8',
+                color: '#0F5138',
+                border: '1px solid #BCE3D1',
                 fontWeight: 700,
               }}
             />
-            <Typography variant="h3" sx={{ fontSize: { xs: 28, md: 38 }, fontWeight: 800 }}>
+            <Typography variant="h2" sx={{ fontSize: { xs: 28, md: 36 }, color: '#17372B' }}>
               {t('demo.title')}
             </Typography>
-            <Typography sx={{ color: '#94a3b8', maxWidth: 640 }}>
+            <Typography sx={{ color: '#5D7068', maxWidth: 640 }}>
               {t('demo.subtitle')}
             </Typography>
           </Stack>
@@ -525,40 +508,40 @@ export function LandingPage() {
               sx={{
                 p: { xs: 3, sm: 4 },
                 borderRadius: 3.5,
-                bgcolor: '#1e293b',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
+                boxShadow: '0 16px 40px rgba(21, 55, 43, 0.08)',
               }}
             >
               <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', mb: 2 }}>
                 <Chip size="small" label="Technology" color="primary" sx={{ fontWeight: 700, fontSize: 11 }} />
-                <Chip size="small" label="CEFR Target: B2-C1" variant="outlined" sx={{ color: '#94a3b8', fontSize: 11 }} />
+                <Chip size="small" label="CEFR Target: B2-C1" variant="outlined" sx={{ color: '#5D7068', borderColor: '#D9E4DE', fontSize: 11 }} />
               </Stack>
 
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#f8fafc', mb: 2, lineHeight: 1.3 }}>
+              <Typography variant="h5" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 2, lineHeight: 1.3 }}>
                 {t('demo.articleTitle')}
               </Typography>
 
-              <Alert severity="info" sx={{ mb: 3, bgcolor: 'rgba(56, 189, 248, 0.1)', color: '#7dd3fc', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
+              <Alert severity="info" sx={{ mb: 3, bgcolor: '#DDF3E8', color: '#0F5138', border: '1px solid #BCE3D1' }}>
                 {t('demo.hint')}
               </Alert>
 
-              <Typography component="p" sx={{ fontSize: 18, lineHeight: 1.8, color: '#cbd5e1' }}>
+              <Typography component="p" sx={{ fontSize: 18, lineHeight: 1.8, color: '#17372B' }}>
                 Recent advancements in artificial intelligence are completely{' '}
                 <Box
                   component="span"
                   onClick={() => setSelectedTermKey('transforms')}
                   sx={{
-                    bgcolor: selectedTermKey === 'transforms' ? 'rgba(99, 102, 241, 0.35)' : 'rgba(99, 102, 241, 0.18)',
-                    color: '#818cf8',
-                    borderBottom: '2px solid #818cf8',
+                    bgcolor: selectedTermKey === 'transforms' ? '#DDF3E8' : 'rgba(23, 107, 75, 0.12)',
+                    color: '#0F5138',
+                    borderBottom: '2px solid #176B4B',
                     px: 0.75,
                     py: 0.25,
                     borderRadius: 1,
-                    fontWeight: 700,
+                    fontWeight: 750,
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    '&:hover': { bgcolor: 'rgba(99, 102, 241, 0.4)' },
+                    '&:hover': { bgcolor: '#DDF3E8' },
                   }}
                 >
                   transforms
@@ -568,16 +551,16 @@ export function LandingPage() {
                   component="span"
                   onClick={() => setSelectedTermKey('acquisition')}
                   sx={{
-                    bgcolor: selectedTermKey === 'acquisition' ? 'rgba(244, 63, 94, 0.35)' : 'rgba(244, 63, 94, 0.18)',
-                    color: '#fb7185',
-                    borderBottom: '2px solid #f43f5e',
+                    bgcolor: selectedTermKey === 'acquisition' ? '#F8E4D1' : 'rgba(182, 106, 44, 0.15)',
+                    color: '#864719',
+                    borderBottom: '2px solid #B66A2C',
                     px: 0.75,
                     py: 0.25,
                     borderRadius: 1,
-                    fontWeight: 700,
+                    fontWeight: 750,
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    '&:hover': { bgcolor: 'rgba(244, 63, 94, 0.4)' },
+                    '&:hover': { bgcolor: '#F8E4D1' },
                   }}
                 >
                   acquisition
@@ -587,16 +570,16 @@ export function LandingPage() {
                   component="span"
                   onClick={() => setSelectedTermKey('contextual')}
                   sx={{
-                    bgcolor: selectedTermKey === 'contextual' ? 'rgba(52, 211, 153, 0.35)' : 'rgba(52, 211, 153, 0.18)',
-                    color: '#34d399',
-                    borderBottom: '2px solid #10b981',
+                    bgcolor: selectedTermKey === 'contextual' ? '#E2E8F0' : 'rgba(71, 85, 105, 0.12)',
+                    color: '#1E293B',
+                    borderBottom: '2px solid #475569',
                     px: 0.75,
                     py: 0.25,
                     borderRadius: 1,
-                    fontWeight: 700,
+                    fontWeight: 750,
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    '&:hover': { bgcolor: 'rgba(52, 211, 153, 0.4)' },
+                    '&:hover': { bgcolor: '#E2E8F0' },
                   }}
                 >
                   contextual
@@ -605,61 +588,61 @@ export function LandingPage() {
               </Typography>
             </Paper>
 
-            {/* AI Insights Inspector Panel */}
+            {/* AI Insights Inspector Panel - Styled like Auth dark panel */}
             <Paper
               elevation={0}
               sx={{
-                p: 3,
+                p: 3.5,
                 borderRadius: 3.5,
-                bgcolor: 'rgba(30, 41, 59, 0.9)',
-                border: '1px solid rgba(129, 140, 248, 0.3)',
-                boxShadow: '0 12px 32px rgba(99, 102, 241, 0.15)',
-                position: 'relative',
+                bgcolor: '#0F5138',
+                color: '#FFFFFF',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                boxShadow: '0 16px 40px rgba(15, 81, 56, 0.25)',
               }}
             >
               <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                  <SparklesIcon size={18} color="#818cf8" />
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#a5b4fc' }}>
+                  <SparklesIcon size={18} color="#DDF3E8" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#DDF3E8' }}>
                     {t('demo.popoverHeader')}
                   </Typography>
                 </Stack>
-                <Chip label={selectedTerm.cefr} size="small" sx={{ bgcolor: '#4c1d95', color: '#ddd6fe', fontWeight: 800 }} />
+                <Chip label={selectedTerm.cefr} size="small" sx={{ bgcolor: '#DDF3E8', color: '#0F5138', fontWeight: 800 }} />
               </Stack>
 
-              <Typography variant="h4" sx={{ fontWeight: 800, color: '#ffffff', mb: 0.5 }}>
+              <Typography variant="h4" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#FFFFFF', mb: 0.5 }}>
                 {selectedTerm.word}
               </Typography>
-              <Typography variant="caption" sx={{ color: '#94a3b8', fontStyle: 'italic', display: 'block', mb: 2 }}>
+              <Typography variant="caption" sx={{ color: '#DDF3E8', fontStyle: 'italic', display: 'block', mb: 2 }}>
                 ({selectedTerm.pos})
               </Typography>
 
-              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)', mb: 2 }} />
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.2)', mb: 2 }} />
 
               <Stack spacing={2}>
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#818cf8', fontWeight: 700, textTransform: 'uppercase' }}>
+                  <Typography variant="caption" sx={{ color: '#DDF3E8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Meaning / Context
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#f1f5f9', fontWeight: 600, mt: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 600, mt: 0.5 }}>
                     {currentLang === 'vi' ? selectedTerm.meaningVi : selectedTerm.meaningEn}
                   </Typography>
                 </Box>
 
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#818cf8', fontWeight: 700, textTransform: 'uppercase' }}>
+                  <Typography variant="caption" sx={{ color: '#DDF3E8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Sentence Translation
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#cbd5e1', mt: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', mt: 0.5 }}>
                     "{currentLang === 'vi' ? selectedTerm.translationVi : selectedTerm.translationEn}"
                   </Typography>
                 </Box>
 
-                <Box sx={{ bgcolor: 'rgba(15, 23, 42, 0.5)', p: 1.75, borderRadius: 2, border: '1px dashed rgba(255, 255, 255, 0.1)' }}>
-                  <Typography variant="caption" sx={{ color: '#94a3b8', display: 'block', mb: 0.5 }}>
+                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.08)', p: 1.75, borderRadius: 2, border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+                  <Typography variant="caption" sx={{ color: '#DDF3E8', display: 'block', mb: 0.5 }}>
                     Example Sentence:
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#e2e8f0', fontStyle: 'italic' }}>
+                  <Typography variant="body2" sx={{ color: '#FFFFFF', fontStyle: 'italic' }}>
                     "{selectedTerm.exampleEn}"
                   </Typography>
                 </Box>
@@ -671,9 +654,11 @@ export function LandingPage() {
                   startIcon={<BookmarkIcon size={18} />}
                   sx={{
                     borderRadius: 2,
-                    fontWeight: 700,
+                    fontWeight: 750,
                     mt: 1,
-                    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                    bgcolor: '#FFFFFF',
+                    color: '#0F5138',
+                    '&:hover': { bgcolor: '#DDF3E8', color: '#0F5138' },
                   }}
                 >
                   {t('demo.addToVocab')}
@@ -687,21 +672,21 @@ export function LandingPage() {
       {/* Features Grid Section */}
       <Box id="features" sx={{ py: { xs: 8, md: 12 } }}>
         <Container maxWidth="lg">
-          <Stack spacing={4} sx={{ alignItems: 'center', textAlign: 'center', mb: 8 }}>
+          <Stack spacing={3} sx={{ alignItems: 'center', textAlign: 'center', mb: 8 }}>
             <Chip
-              icon={<SparklesIcon size={14} color="#a855f7" />}
+              icon={<SparklesIcon size={14} color="#B66A2C" />}
               label={t('features.badge')}
               sx={{
-                bgcolor: 'rgba(168, 85, 247, 0.12)',
-                color: '#c084fc',
-                border: '1px solid rgba(168, 85, 247, 0.3)',
+                bgcolor: '#F8E4D1',
+                color: '#864719',
+                border: '1px solid #E6C8AD',
                 fontWeight: 700,
               }}
             />
-            <Typography variant="h3" sx={{ fontSize: { xs: 28, md: 38 }, fontWeight: 800 }}>
+            <Typography variant="h2" sx={{ fontSize: { xs: 28, md: 36 }, color: '#17372B' }}>
               {t('features.title')}
             </Typography>
-            <Typography sx={{ color: '#94a3b8', maxWidth: 640 }}>
+            <Typography sx={{ color: '#5D7068', maxWidth: 640 }}>
               {t('features.subtitle')}
             </Typography>
           </Stack>
@@ -718,24 +703,24 @@ export function LandingPage() {
               elevation={0}
               sx={{
                 p: 3.5,
-                borderRadius: 3,
-                bgcolor: '#0f172a',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 3.5,
+                bgcolor: '#FFFFFF',
+                border: '1px solid #D9E4DE',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: '#818cf8',
+                  borderColor: '#176B4B',
                   transform: 'translateY(-4px)',
-                  boxShadow: '0 12px 24px rgba(99, 102, 241, 0.15)',
+                  boxShadow: '0 12px 28px rgba(23, 107, 75, 0.12)',
                 },
               }}
             >
-              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <SparklesIcon size={26} color="#818cf8" />
+              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: '#DDF3E8', color: '#176B4B', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <SparklesIcon size={26} color="#176B4B" />
               </Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
                 {t('features.contextTitle')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', lineHeight: 1.6 }}>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
                 {t('features.contextDesc')}
               </Typography>
             </Paper>
@@ -745,24 +730,24 @@ export function LandingPage() {
               elevation={0}
               sx={{
                 p: 3.5,
-                borderRadius: 3,
-                bgcolor: '#0f172a',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 3.5,
+                bgcolor: '#FFFFFF',
+                border: '1px solid #D9E4DE',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: '#34d399',
+                  borderColor: '#B66A2C',
                   transform: 'translateY(-4px)',
-                  boxShadow: '0 12px 24px rgba(52, 211, 153, 0.15)',
+                  boxShadow: '0 12px 28px rgba(182, 106, 44, 0.12)',
                 },
               }}
             >
-              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: 'rgba(52, 211, 153, 0.15)', color: '#34d399', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <TargetIcon size={26} color="#34d399" />
+              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: '#F8E4D1', color: '#B66A2C', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <TargetIcon size={26} color="#B66A2C" />
               </Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
                 {t('features.cefrTitle')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', lineHeight: 1.6 }}>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
                 {t('features.cefrDesc')}
               </Typography>
             </Paper>
@@ -772,24 +757,24 @@ export function LandingPage() {
               elevation={0}
               sx={{
                 p: 3.5,
-                borderRadius: 3,
-                bgcolor: '#0f172a',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 3.5,
+                bgcolor: '#FFFFFF',
+                border: '1px solid #D9E4DE',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: '#f43f5e',
+                  borderColor: '#B23B3B',
                   transform: 'translateY(-4px)',
-                  boxShadow: '0 12px 24px rgba(244, 63, 94, 0.15)',
+                  boxShadow: '0 12px 28px rgba(178, 59, 59, 0.12)',
                 },
               }}
             >
-              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: 'rgba(244, 63, 94, 0.15)', color: '#f43f5e', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <FlameIcon size={26} color="#f43f5e" />
+              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: '#FEE2E2', color: '#B23B3B', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <FlameIcon size={26} color="#B23B3B" />
               </Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
                 {t('features.srTitle')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', lineHeight: 1.6 }}>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
                 {t('features.srDesc')}
               </Typography>
             </Paper>
@@ -799,24 +784,24 @@ export function LandingPage() {
               elevation={0}
               sx={{
                 p: 3.5,
-                borderRadius: 3,
-                bgcolor: '#0f172a',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 3.5,
+                bgcolor: '#FFFFFF',
+                border: '1px solid #D9E4DE',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: '#38bdf8',
+                  borderColor: '#0284C7',
                   transform: 'translateY(-4px)',
-                  boxShadow: '0 12px 24px rgba(56, 189, 248, 0.15)',
+                  boxShadow: '0 12px 28px rgba(2, 132, 199, 0.12)',
                 },
               }}
             >
-              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <LayersIcon size={26} color="#38bdf8" />
+              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: '#E0F2FE', color: '#0284C7', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <LayersIcon size={26} color="#0284C7" />
               </Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
                 {t('features.quizTitle')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', lineHeight: 1.6 }}>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
                 {t('features.quizDesc')}
               </Typography>
             </Paper>
@@ -825,20 +810,20 @@ export function LandingPage() {
       </Box>
 
       {/* How it works Section */}
-      <Box id="how-it-works" sx={{ py: { xs: 8, md: 12 }, bgcolor: '#0f172a' }}>
+      <Box id="how-it-works" sx={{ py: { xs: 8, md: 12 }, bgcolor: '#FFFFFF', borderTop: '1px solid #D9E4DE', borderBottom: '1px solid #D9E4DE' }}>
         <Container maxWidth="lg">
-          <Stack spacing={4} sx={{ alignItems: 'center', textAlign: 'center', mb: 8 }}>
+          <Stack spacing={3} sx={{ alignItems: 'center', textAlign: 'center', mb: 8 }}>
             <Chip
-              icon={<TrendingUpIcon size={14} color="#34d399" />}
+              icon={<TrendingUpIcon size={14} color="#176B4B" />}
               label={t('steps.badge')}
               sx={{
-                bgcolor: 'rgba(52, 211, 153, 0.12)',
-                color: '#34d399',
-                border: '1px solid rgba(52, 211, 153, 0.3)',
+                bgcolor: '#DDF3E8',
+                color: '#0F5138',
+                border: '1px solid #BCE3D1',
                 fontWeight: 700,
               }}
             />
-            <Typography variant="h3" sx={{ fontSize: { xs: 28, md: 38 }, fontWeight: 800 }}>
+            <Typography variant="h2" sx={{ fontSize: { xs: 28, md: 36 }, color: '#17372B' }}>
               {t('steps.title')}
             </Typography>
           </Stack>
@@ -856,18 +841,18 @@ export function LandingPage() {
               sx={{
                 p: 4,
                 borderRadius: 3.5,
-                bgcolor: '#1e293b',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
                 position: 'relative',
               }}
             >
-              <Typography sx={{ fontSize: 42, fontWeight: 900, color: '#6366f1', mb: 1.5, opacity: 0.9 }}>
+              <Typography sx={{ fontFamily: '"Merriweather", serif', fontSize: 40, fontWeight: 700, color: '#176B4B', mb: 1.5 }}>
                 01
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
                 {t('steps.step1Title')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', lineHeight: 1.6 }}>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
                 {t('steps.step1Desc')}
               </Typography>
             </Paper>
@@ -878,18 +863,18 @@ export function LandingPage() {
               sx={{
                 p: 4,
                 borderRadius: 3.5,
-                bgcolor: '#1e293b',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
                 position: 'relative',
               }}
             >
-              <Typography sx={{ fontSize: 42, fontWeight: 900, color: '#a855f7', mb: 1.5, opacity: 0.9 }}>
+              <Typography sx={{ fontFamily: '"Merriweather", serif', fontSize: 40, fontWeight: 700, color: '#B66A2C', mb: 1.5 }}>
                 02
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
                 {t('steps.step2Title')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', lineHeight: 1.6 }}>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
                 {t('steps.step2Desc')}
               </Typography>
             </Paper>
@@ -900,18 +885,18 @@ export function LandingPage() {
               sx={{
                 p: 4,
                 borderRadius: 3.5,
-                bgcolor: '#1e293b',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
                 position: 'relative',
               }}
             >
-              <Typography sx={{ fontSize: 42, fontWeight: 900, color: '#34d399', mb: 1.5, opacity: 0.9 }}>
+              <Typography sx={{ fontFamily: '"Merriweather", serif', fontSize: 40, fontWeight: 700, color: '#0F5138', mb: 1.5 }}>
                 03
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
                 {t('steps.step3Title')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', lineHeight: 1.6 }}>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
                 {t('steps.step3Desc')}
               </Typography>
             </Paper>
@@ -922,18 +907,18 @@ export function LandingPage() {
       {/* FAQ Section */}
       <Box id="faq" sx={{ py: { xs: 8, md: 12 } }}>
         <Container maxWidth="md">
-          <Stack spacing={4} sx={{ alignItems: 'center', textAlign: 'center', mb: 6 }}>
+          <Stack spacing={3} sx={{ alignItems: 'center', textAlign: 'center', mb: 6 }}>
             <Chip
-              icon={<SparklesIcon size={14} color="#f43f5e" />}
+              icon={<SparklesIcon size={14} color="#176B4B" />}
               label={t('faq.badge')}
               sx={{
-                bgcolor: 'rgba(244, 63, 94, 0.12)',
-                color: '#fb7185',
-                border: '1px solid rgba(244, 63, 94, 0.3)',
+                bgcolor: '#DDF3E8',
+                color: '#0F5138',
+                border: '1px solid #BCE3D1',
                 fontWeight: 700,
               }}
             />
-            <Typography variant="h3" sx={{ fontSize: { xs: 28, md: 38 }, fontWeight: 800 }}>
+            <Typography variant="h2" sx={{ fontSize: { xs: 28, md: 36 }, color: '#17372B' }}>
               {t('faq.title')}
             </Typography>
           </Stack>
@@ -949,20 +934,20 @@ export function LandingPage() {
                 key={index}
                 elevation={0}
                 sx={{
-                  bgcolor: '#0f172a',
-                  color: '#f8fafc',
+                  bgcolor: '#FFFFFF',
+                  color: '#17372B',
                   borderRadius: '16px !important',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  border: '1px solid #D9E4DE',
                   '&::before': { display: 'none' },
                 }}
               >
-                <AccordionSummary expandIcon={<ChevronDownIcon size={20} color="#94a3b8" />}>
-                  <Typography sx={{ fontWeight: 700, fontSize: 17 }}>
+                <AccordionSummary expandIcon={<ChevronDownIcon size={20} color="#5D7068" />}>
+                  <Typography sx={{ fontWeight: 700, fontSize: 17, color: '#17372B' }}>
                     {item.q}
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Typography sx={{ color: '#94a3b8', lineHeight: 1.6 }}>
+                  <Typography sx={{ color: '#5D7068', lineHeight: 1.6 }}>
                     {item.a}
                   </Typography>
                 </AccordionDetails>
@@ -973,23 +958,24 @@ export function LandingPage() {
       </Box>
 
       {/* Bottom CTA Banner */}
-      <Box sx={{ py: { xs: 8, md: 10 }, bgcolor: '#0f172a' }}>
+      <Box sx={{ py: { xs: 8, md: 10 }, bgcolor: '#FFFFFF', borderTop: '1px solid #D9E4DE' }}>
         <Container maxWidth="lg">
           <Paper
             elevation={0}
             sx={{
               p: { xs: 4, sm: 6, md: 8 },
               borderRadius: 4,
-              background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%)',
+              bgcolor: '#0F5138',
+              color: '#FFFFFF',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               textAlign: 'center',
-              boxShadow: '0 20px 40px rgba(49, 46, 129, 0.4)',
+              boxShadow: '0 20px 48px rgba(15, 81, 56, 0.22)',
             }}
           >
-            <Typography variant="h3" sx={{ fontSize: { xs: 26, sm: 36, md: 44 }, fontWeight: 900, mb: 2 }}>
+            <Typography variant="h2" sx={{ fontFamily: '"Merriweather", serif', fontSize: { xs: 26, sm: 36, md: 44 }, fontWeight: 700, mb: 2, color: '#FFFFFF' }}>
               {t('cta.title')}
             </Typography>
-            <Typography sx={{ color: '#cbd5e1', fontSize: { xs: 15, sm: 18 }, maxWidth: 640, mx: 'auto', mb: 4 }}>
+            <Typography sx={{ color: '#DDF3E8', fontSize: { xs: 15, sm: 18 }, maxWidth: 640, mx: 'auto', mb: 4 }}>
               {t('cta.subtitle')}
             </Typography>
             <Button
@@ -1004,11 +990,11 @@ export function LandingPage() {
                 py: 1.75,
                 fontSize: 16,
                 fontWeight: 800,
-                bgcolor: '#ffffff',
-                color: '#4338ca',
+                bgcolor: '#FFFFFF',
+                color: '#0F5138',
                 '&:hover': {
-                  bgcolor: '#f8fafc',
-                  color: '#3730a3',
+                  bgcolor: '#DDF3E8',
+                  color: '#0F5138',
                 },
               }}
             >
@@ -1019,8 +1005,8 @@ export function LandingPage() {
       </Box>
 
       {/* Footer */}
-      <Box sx={{ py: 4, borderTop: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
-        <Typography variant="body2" sx={{ color: '#64748b' }}>
+      <Box sx={{ py: 4, bgcolor: '#F3F7F4', borderTop: '1px solid #D9E4DE', textAlign: 'center' }}>
+        <Typography variant="body2" sx={{ color: '#5D7068' }}>
           {t('footer.rights')}
         </Typography>
       </Box>

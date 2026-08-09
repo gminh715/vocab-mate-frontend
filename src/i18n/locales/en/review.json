@@ -43,6 +43,7 @@
     "notReady": "Your saved progress is not ready yet. Try again in a moment."
   },
   "session": {
+    "skipToReview": "Skip to Review",
     "ended": "This review session has ended and cannot be resumed.",
     "backHome": "Back Home"
   }

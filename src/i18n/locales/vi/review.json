@@ -43,6 +43,7 @@
     "notReady": "Tiến độ đã lưu chưa sẵn sàng. Hãy thử lại sau giây lát."
   },
   "session": {
+    "skipToReview": "Chuyển Đến Phần Ôn Tập",
     "ended": "Phiên ôn tập này đã kết thúc và không thể tiếp tục.",
     "backHome": "Về Trang Chủ"
   }

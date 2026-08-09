@@ -32,7 +32,6 @@ export function AgentFeedbackCard({ feedback }: AgentFeedbackCardProps) {
       aria-labelledby="review-feedback-heading"
       variant="outlined"
       sx={{
-        mt: 3,
         p: { xs: 2, sm: 2.5 },
         borderLeft: 5,
         borderLeftColor: 'secondary.main',

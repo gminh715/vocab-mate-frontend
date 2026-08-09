@@ -402,6 +402,39 @@ describe("ReviewPage", () => {
     expect(screen.queryByText("AI", { exact: true })).not.toBeInTheDocument();
   });
 
+  it("renders RULE coaching with the same learner-facing presentation", () => {
+    queryState.data = {
+      ...sessionState(),
+      agentFeedback: { ...coachingFeedback, source: "RULE" },
+    };
+    renderReview();
+
+    const announcement = screen.getByRole("status", {
+      name: "What to Notice",
+    });
+    expect(announcement).toHaveTextContent("Focus: Meaning in context");
+    expect(announcement).toHaveTextContent(
+      "Pattern: A similar word caused confusion",
+    );
+    expect(announcement).toHaveTextContent("Impact means a strong effect");
+    expect(screen.queryByText("AI", { exact: true })).not.toBeInTheDocument();
+    expect(screen.queryByText("RULE", { exact: true })).not.toBeInTheDocument();
+  });
+
+  it("provides a keyboard-focusable skip link to the review content", () => {
+    renderReview();
+
+    const skipLink = screen.getByRole("link", { name: "Skip to Review" });
+    skipLink.focus();
+
+    expect(skipLink).toHaveFocus();
+    expect(skipLink).toHaveAttribute("href", "#review-main");
+    expect(document.querySelector("#review-main")).toHaveAttribute(
+      "tabindex",
+      "-1",
+    );
+  });
+
   it("moves focus to each new question heading", async () => {
     submitAnswer.mockResolvedValue(incorrectResponse);
     renderReview();

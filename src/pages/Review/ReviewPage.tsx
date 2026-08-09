@@ -119,6 +119,8 @@ function ReviewShell({
   children: React.ReactNode
   actions?: React.ReactNode
 }) {
+  const { t } = useTranslation('review')
+
   return (
     <Box
       sx={{
@@ -129,38 +131,67 @@ function ReviewShell({
         pb: 'max(24px, env(safe-area-inset-bottom))',
       }}
     >
+      <Button
+        component="a"
+        href="#review-main"
+        size="small"
+        variant="contained"
+        sx={{
+          position: 'fixed',
+          zIndex: (theme) => theme.zIndex.tooltip + 1,
+          top: 'max(12px, env(safe-area-inset-top))',
+          left: 12,
+          transform: 'translateY(calc(-100% - 24px))',
+          '&:focus-visible': { transform: 'translateY(0)' },
+        }}
+      >
+        {t('session.skipToReview')}
+      </Button>
       <Stack
         component="header"
-        direction="row"
+        direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
         sx={{
           maxWidth: 860,
           mx: 'auto',
           minHeight: 52,
-          alignItems: 'center',
+          alignItems: { xs: 'stretch', sm: 'center' },
           justifyContent: 'space-between',
         }}
       >
         <Typography
           component={RouterLink}
           to={routePaths.home}
+          translate="no"
           sx={{
             color: 'primary.dark',
             fontFamily: '"Merriweather", serif',
             fontSize: 22,
             fontWeight: 700,
             textDecoration: 'none',
+            alignSelf: 'flex-start',
+            '&:focus-visible': {
+              outline: '3px solid rgba(23, 107, 75, 0.28)',
+              outlineOffset: 3,
+            },
           }}
         >
           Vocab Mate
         </Typography>
-        {actions ?? (
-          <Button component={RouterLink} to={routePaths.home} color="inherit">
-            Exit
-          </Button>
-        )}
+        <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
+          {actions ?? (
+            <Button component={RouterLink} to={routePaths.home} color="inherit">
+              Exit
+            </Button>
+          )}
+        </Box>
       </Stack>
-      <Box component="main" sx={{ maxWidth: 860, mx: 'auto', mt: { xs: 2, sm: 4 } }}>
+      <Box
+        id="review-main"
+        component="main"
+        tabIndex={-1}
+        sx={{ maxWidth: 860, mx: 'auto', mt: { xs: 2, sm: 4 } }}
+      >
         {children}
       </Box>
     </Box>
@@ -588,7 +619,19 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   return (
     <ReviewShell
       actions={
-        <Stack direction="row" spacing={0.5}>
+        <Stack
+          direction="row"
+          spacing={0.5}
+          useFlexGap
+          sx={{
+            width: '100%',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end',
+            '& .MuiButton-root': {
+              flex: { xs: '1 1 132px', sm: '0 0 auto' },
+            },
+          }}
+        >
           <Button
             component={RouterLink}
             to={routePaths.home}
@@ -671,6 +714,10 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           />
         </Box>
 
+        {visibleAgentFeedback ? (
+          <AgentFeedbackCard feedback={visibleAgentFeedback} />
+        ) : null}
+
         <Paper
           component="section"
           aria-labelledby="review-question"
@@ -710,10 +757,6 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
                 {question.blankSentence}
               </Typography>
             </Box>
-          ) : null}
-
-          {visibleAgentFeedback ? (
-            <AgentFeedbackCard feedback={visibleAgentFeedback} />
           ) : null}
 
           <Box component="form" onSubmit={(event) => { event.preventDefault(); void submitAnswer() }} sx={{ mt: 3 }}>

@@ -1,9 +1,11 @@
 import {
   ANALYTICS_GROUP_BY_VALUES,
+  ANALYTICS_SECTIONS,
   type AnalyticsDateFilters,
   type AnalyticsFilters,
   type AnalyticsGroupBy,
   type AnalyticsOverviewParams,
+  type AnalyticsSection,
   type QuizAnalyticsParams,
   type VocabularyAnalyticsParams,
 } from '@/types/Analytics/analytics'
@@ -44,6 +46,7 @@ export const analyticsFiltersFromSearchParams = (
   const rawTo = searchParams.get('to')
   const rawGroupBy = searchParams.get('groupBy')
   const rawArticleId = searchParams.get('articleId')?.trim() ?? ''
+  const rawSection = searchParams.get('section')
 
   return {
     ...(isCalendarDate(rawFrom) ? { from: rawFrom } : {}),
@@ -52,6 +55,9 @@ export const analyticsFiltersFromSearchParams = (
       ? { groupBy: rawGroupBy as AnalyticsGroupBy }
       : {}),
     ...(UUID_PATTERN.test(rawArticleId) ? { articleId: rawArticleId } : {}),
+    ...(includes(ANALYTICS_SECTIONS, rawSection)
+      ? { section: rawSection as AnalyticsSection }
+      : {}),
   }
 }
 
@@ -64,6 +70,9 @@ export const analyticsSearchParamsFromFilters = (
   if (filters.to) searchParams.set('to', filters.to)
   if (filters.groupBy) searchParams.set('groupBy', filters.groupBy)
   if (filters.articleId) searchParams.set('articleId', filters.articleId)
+  if (filters.section && filters.section !== 'vocabulary') {
+    searchParams.set('section', filters.section)
+  }
 
   return searchParams
 }

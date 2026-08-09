@@ -172,6 +172,7 @@ export function AuthenticatedLayout() {
               {currentUser ? (
                 <>
                   <NavLink to={routePaths.readingHistory}>{t('nav.readingHistory', 'Reading history')}</NavLink>
+                  <NavLink to={routePaths.reviewHistory}>{t('nav.reviewHistory', 'Review history')}</NavLink>
                   <NavLink to={routePaths.vocabularies}>{t('nav.vocabulary', 'Vocabulary')}</NavLink>
                 </>
               ) : null}

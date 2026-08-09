@@ -5,6 +5,7 @@ import type {
   QuizAnalytics,
   QuizAnalyticsParams,
   ReadingAnalytics,
+  ReviewAnalytics,
   VocabularyAnalytics,
   VocabularyAnalyticsParams,
 } from '@/types/Analytics/analytics'
@@ -31,4 +32,7 @@ export const analyticsApi = {
 
   quizzes: (params: QuizAnalyticsParams): Promise<QuizAnalytics> =>
     apiClient.get<QuizAnalytics>(`${analyticsPath}/quizzes`, { params }),
+
+  reviews: (params: AnalyticsOverviewParams): Promise<ReviewAnalytics> =>
+    apiClient.get<ReviewAnalytics>(`${analyticsPath}/reviews`, { params }),
 }

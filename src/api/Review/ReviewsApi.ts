@@ -1,7 +1,10 @@
 import { apiClient } from '@/config/apiClient'
 import type {
+  AbandonedReviewSession,
   CompletedReviewResult,
   DueReviews,
+  ReviewHistory,
+  ReviewHistoryParams,
   ReviewSessionState,
   SkipReviewItemRequest,
   SkippedReviewItem,
@@ -18,6 +21,9 @@ export const reviewsApi = {
 
   active: (): Promise<ReviewSessionState> =>
     apiClient.get<ReviewSessionState>(`${reviewSessionsPath}/active`),
+
+  history: (params: ReviewHistoryParams = {}): Promise<ReviewHistory> =>
+    apiClient.get<ReviewHistory>('/reviews/history', { params }),
 
   session: (sessionId: string): Promise<ReviewSessionState> =>
     apiClient.get<ReviewSessionState>(
@@ -43,6 +49,11 @@ export const reviewsApi = {
     apiClient.post<SkippedReviewItem>(
       `${reviewSessionsPath}/${encodeURIComponent(sessionId)}/skip`,
       request,
+    ),
+
+  abandon: (sessionId: string): Promise<AbandonedReviewSession> =>
+    apiClient.post<AbandonedReviewSession>(
+      `${reviewSessionsPath}/${encodeURIComponent(sessionId)}/abandon`,
     ),
 
   summary: (sessionId: string): Promise<CompletedReviewResult> =>

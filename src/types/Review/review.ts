@@ -8,7 +8,38 @@ export const REVIEW_SESSION_TYPES = [
 ] as const
 
 export type ReviewSessionType = (typeof REVIEW_SESSION_TYPES)[number]
+export const REVIEW_TARGET_DURATIONS = [5, 10, 15] as const
+export const REVIEW_GOALS = [
+  'BALANCED',
+  'RECALL',
+  'SPELLING',
+  'CONTEXT',
+] as const
+export type ReviewTargetDuration = (typeof REVIEW_TARGET_DURATIONS)[number]
+export type ReviewGoal = (typeof REVIEW_GOALS)[number]
 export type ReviewSessionStatus = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED'
+export type ReviewDecisionSource = 'AI' | 'RULE'
+export type ReviewAgentAction =
+  | 'CONTINUE'
+  | 'REQUEUE_WITH_NEW_TYPE'
+  | 'TEACH_AND_REQUEUE'
+  | 'FLAG_FOR_FUTURE_FOCUS'
+export type ReviewSkillDimension =
+  | 'RECOGNITION'
+  | 'RECALL'
+  | 'SPELLING'
+  | 'CONTEXT'
+  | 'PRODUCTION'
+export type ReviewErrorType =
+  | 'LOW_RECALL'
+  | 'MEANING_CONFUSION'
+  | 'CONFUSABLE_WORD'
+  | 'SPELLING_ERROR'
+  | 'WORD_FORM_ERROR'
+  | 'COLLOCATION_ERROR'
+  | 'CONTEXT_MISUNDERSTANDING'
+  | 'CARELESS_ERROR'
+  | 'UNKNOWN'
 
 export interface ReviewSession {
   id: string
@@ -16,6 +47,10 @@ export interface ReviewSession {
   quizId: string | null
   articleId: string | null
   collectionId: string | null
+  targetDurationMinutes: ReviewTargetDuration | null
+  reviewGoal: ReviewGoal | null
+  plannedItemCount: number | null
+  planSummary: string | null
   status: ReviewSessionStatus
   startedAt: string
   completedAt: string | null
@@ -51,10 +86,26 @@ export interface ReviewProgress {
   progressPercent: number
 }
 
+export interface ReviewAgentMicroLesson {
+  title: string
+  explanation: string
+  example: string
+}
+
+export interface ReviewAgentFeedback {
+  source: ReviewDecisionSource
+  action: ReviewAgentAction
+  skillDimension: ReviewSkillDimension
+  errorType: ReviewErrorType
+  microLesson?: ReviewAgentMicroLesson
+  retestAfterItems?: number
+}
+
 export interface ReviewSessionState {
   session: ReviewSession
   progress: ReviewProgress
   nextItem?: ReviewSessionItem
+  agentFeedback?: ReviewAgentFeedback
 }
 
 export interface StartReviewSessionRequest {
@@ -63,6 +114,8 @@ export interface StartReviewSessionRequest {
   articleId?: string | null
   collectionId?: string | null
   limit?: number
+  targetDurationMinutes?: ReviewTargetDuration
+  reviewGoal?: ReviewGoal
 }
 
 export interface SubmitReviewAnswerRequest {
@@ -98,6 +151,7 @@ export interface SubmittedReviewAnswer {
   sessionCompleted: boolean
   progress: ReviewProgress
   nextQuestion?: ReviewSessionItem
+  agentFeedback?: ReviewAgentFeedback
   completionSummary?: ReviewResult
 }
 
@@ -107,6 +161,11 @@ export interface SkippedReviewItem {
   progress: ReviewProgress
   nextQuestion?: ReviewSessionItem
   completionSummary?: ReviewResult
+}
+
+export interface AbandonedReviewSession {
+  id: string
+  status: 'ABANDONED'
 }
 
 export interface CompletedReviewAnswer {
@@ -123,9 +182,79 @@ export interface CompletedReviewAnswer {
   answeredAt: string
 }
 
+export interface ReviewSkillBreakdownItem {
+  skillDimension: ReviewSkillDimension
+  attempts: number
+  correct: number
+  accuracy: number
+}
+
+export interface ReviewCoachSummary {
+  strengths: ReviewSkillDimension[]
+  focusNext: ReviewSkillDimension[]
+  message: string
+  source: ReviewDecisionSource
+}
+
+export interface ReviewWordToRevisit {
+  userVocabularyId: string | null
+  wordOrPhrase: string
+  meaningVi: string | null
+  skillDimension: ReviewSkillDimension | null
+  errorType: ReviewErrorType | null
+  explanation: string | null
+  recoveredInSession: boolean
+}
+
 export interface CompletedReviewResult {
   result: ReviewResult
   answers: CompletedReviewAnswer[]
+  skillBreakdown: ReviewSkillBreakdownItem[]
+  coachSummary: ReviewCoachSummary
+  wordsToRevisit: ReviewWordToRevisit[]
+}
+
+export interface ReviewHistoryParams {
+  page?: number
+  limit?: number
+  status?: ReviewSessionStatus
+  from?: string
+  to?: string
+}
+
+export interface ReviewHistoryAggregate {
+  answeredCount: number
+  correctCount: number
+  score: number
+  totalPoints: number
+  accuracy: number
+}
+
+export interface ReviewHistoryItem {
+  session: ReviewSession
+  quiz: {
+    id: string
+    title: string
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+  } | null
+  article: {
+    id: string
+    title: string
+    slug: string
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+    thumbnailUrl: string | null
+  } | null
+  aggregates: ReviewHistoryAggregate
+}
+
+export interface ReviewHistory {
+  items: ReviewHistoryItem[]
+  meta: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
 }
 
 export interface RecommendedReviewQuiz {
@@ -144,7 +273,17 @@ export interface RecommendedReviewQuiz {
   }
 }
 
+export interface DailyReviewEstimate {
+  targetDurationMinutes: ReviewTargetDuration
+  estimatedItemCount: number
+  goalEstimates?: Array<{
+    reviewGoal: ReviewGoal
+    estimatedItemCount: number
+  }>
+}
+
 export interface DueReviews {
   dueVocabularyCount: number
+  dailyReviewEstimates: DailyReviewEstimate[]
   recommendedQuizzes: RecommendedReviewQuiz[]
 }

@@ -16,6 +16,8 @@ export const analyticsQueryKeys = {
     [...analyticsQueryKeys.all, 'reading', params] as const,
   quizzes: (params: QuizAnalyticsParams) =>
     [...analyticsQueryKeys.all, 'quizzes', params] as const,
+  reviews: (params: AnalyticsOverviewParams) =>
+    [...analyticsQueryKeys.all, 'reviews', params] as const,
 }
 
 export const useAnalyticsOverviewQuery = (
@@ -61,6 +63,18 @@ export const useQuizAnalyticsQuery = (
   useQuery({
     queryKey: analyticsQueryKeys.quizzes(params),
     queryFn: () => analyticsApi.quizzes(params),
+    enabled,
+    retry: false,
+    staleTime: 2 * 60 * 1_000,
+  })
+
+export const useReviewAnalyticsQuery = (
+  params: AnalyticsOverviewParams,
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: analyticsQueryKeys.reviews(params),
+    queryFn: () => analyticsApi.reviews(params),
     enabled,
     retry: false,
     staleTime: 2 * 60 * 1_000,

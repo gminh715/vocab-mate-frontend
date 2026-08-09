@@ -19,9 +19,11 @@
     "filteredToArticle": "Phân tích bài kiểm tra theo bài đọc:"
   },
   "tabs": {
+    "ariaLabel": "Các phần phân tích học tập",
     "vocabularyGrowth": "Tăng Trưởng Từ Vựng",
     "readingProgress": "Tiến Độ Đọc",
-    "quizPerformance": "Kết Quả Kiểm Tra"
+    "quizPerformance": "Kết Quả Kiểm Tra",
+    "reviewImpact": "Hiệu Quả Ôn Tập"
   },
   "sections": {
     "vocabulary": {
@@ -41,6 +43,12 @@
       "title": "Kết Quả Kiểm Tra",
       "refreshingLabel": "Đang làm mới kết quả kiểm tra",
       "loadingLabel": "Đang tải kết quả kiểm tra"
+    },
+    "review": {
+      "eyebrow": "Ôn tập thích ứng",
+      "title": "Hiệu Quả Ôn Tập",
+      "refreshingLabel": "Đang làm mới hiệu quả ôn tập",
+      "loadingLabel": "Đang tải hiệu quả ôn tập"
     }
   },
   "errors": {
@@ -96,5 +104,45 @@
     "trendAverageScore": "Điểm trung bình",
     "noDistributionActivity": "Không có dữ liệu cho phân bổ này.",
     "noTrendActivity": "Không có dữ liệu cho xu hướng này."
+  },
+  "review": {
+    "completedSessions": "Phiên hoàn thành",
+    "completedSessionsDetail": "{{count}} phiên đã bắt đầu",
+    "answerAccuracy": "Độ chính xác",
+    "answerAccuracyDetail": "Tất cả lượt trả lời đã lưu",
+    "retestSuccess": "Kết quả kiểm tra lại",
+    "retestSuccessDetail": "Lượt kiểm tra lại đúng trong cùng phiên",
+    "bySkill": "Hiệu suất theo kỹ năng",
+    "practiceSignals": "Tín hiệu luyện tập",
+    "averageResponse": "Thời gian trả lời trung bình",
+    "hintsUsed": "Gợi ý đã dùng",
+    "sessionsEnded": "Phiên kết thúc sớm",
+    "seconds": "{{count}} giây",
+    "byDuration": "Hoàn thành theo thời lượng",
+    "durationLabel": "{{count}} phút",
+    "interventionOutcomes": "Kết quả kiểm tra lại sau hướng dẫn",
+    "practiceTrend": "Tín hiệu luyện tập theo thời gian",
+    "practiceTrendSummary": "{{answers}} câu trả lời trong {{buckets}} khoảng thời gian.",
+    "trendPeriod": "Thời gian",
+    "trendAnswers": "Câu trả lời",
+    "trendAccuracy": "Độ chính xác",
+    "trendResponseTime": "Phản hồi TB",
+    "trendHints": "Gợi ý",
+    "sources": {
+      "AI": "Hướng dẫn thích ứng",
+      "RULE": "Hướng dẫn tích hợp"
+    },
+    "retentionTitle": "Gợi nhớ sau hướng dẫn",
+    "retentionWindow": "Mốc kiểm tra",
+    "followUps": "Lượt theo dõi",
+    "correctFollowUps": "Câu đúng",
+    "retentionAccuracy": "Độ chính xác",
+    "nextDay": "Ngày hôm sau",
+    "sevenDay": "Sau bảy ngày",
+    "noSkillEvidence": "Hãy hoàn thành thêm câu ôn tập để so sánh các kỹ năng.",
+    "noDurationEvidence": "Không có kế hoạch ôn theo thời lượng nào được bắt đầu trong giai đoạn này.",
+    "noInterventionEvidence": "Không có hướng dẫn học tập nào được ghi nhận trong giai đoạn này.",
+    "noTrendEvidence": "Không có câu trả lời ôn tập nào trong xu hướng này.",
+    "noRetentionEvidence": "Chưa có đủ dữ liệu theo dõi vào ngày hôm sau hoặc sau bảy ngày."
   }
 }

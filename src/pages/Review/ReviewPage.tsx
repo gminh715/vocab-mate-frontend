@@ -20,8 +20,13 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { normalizeApiError } from '@/config/apiClient'
+import { AgentFeedbackCard } from '@/components/Review/AgentFeedbackCard'
+import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 import {
+  useAbandonReviewSessionMutation,
+  useActiveReviewSessionQuery,
   useReviewSessionQuery,
   useSkipReviewItemMutation,
   useStartReviewSessionMutation,
@@ -36,13 +41,19 @@ import type {
   SubmittedReviewAnswer,
 } from '@/types/Review/review'
 import {
+  REVIEW_GOALS,
+  REVIEW_TARGET_DURATIONS,
+} from '@/types/Review/review'
+import {
   reviewSessionPath,
   reviewSummaryPath,
   routePaths,
 } from '@/utils/paths'
 
 const CORRECT_FEEDBACK_DELAY_MS = 900
+const COACHING_WAIT_LIMIT_MS = 5_000
 const MAX_RESPONSE_TIME_MS = 2_147_483_647
+const ACTIVE_SESSION_RECOVERY_INTERVAL_MS = 1_000
 
 interface ReviewSummaryNavigationState {
   result: ReviewResult
@@ -82,12 +93,24 @@ const startRequestFromSearch = (
   const quizId = searchParams.get('quizId')
   const articleId = searchParams.get('articleId')
   const collectionId = searchParams.get('collectionId')
+  const durationParam = searchParams.get('targetDurationMinutes')
+  const goalParam = searchParams.get('reviewGoal')
 
   if (sessionType === 'DAILY_REVIEW') {
+    const targetDurationMinutes =
+      REVIEW_TARGET_DURATIONS.find(
+        (duration) => String(duration) === durationParam,
+      ) ?? (durationParam === null ? 10 : null)
+    const reviewGoal =
+      REVIEW_GOALS.find((goal) => goal === goalParam) ??
+      (goalParam === null ? 'BALANCED' : null)
     return quizId || articleId || collectionId
       ? null
-      : { sessionType, limit: 20 }
+      : targetDurationMinutes && reviewGoal
+        ? { sessionType, targetDurationMinutes, reviewGoal }
+        : null
   }
+  if (durationParam || goalParam) return null
   if (sessionType === 'ARTICLE_REVIEW' && articleId && !quizId && !collectionId) {
     return { sessionType, articleId, limit: 20 }
   }
@@ -105,7 +128,15 @@ const startRequestFromSearch = (
   return null
 }
 
-function ReviewShell({ children }: { children: React.ReactNode }) {
+function ReviewShell({
+  children,
+  actions,
+}: {
+  children: React.ReactNode
+  actions?: React.ReactNode
+}) {
+  const { t } = useTranslation('review')
+
   return (
     <Box
       sx={{
@@ -116,36 +147,67 @@ function ReviewShell({ children }: { children: React.ReactNode }) {
         pb: 'max(24px, env(safe-area-inset-bottom))',
       }}
     >
+      <Button
+        component="a"
+        href="#review-main"
+        size="small"
+        variant="contained"
+        sx={{
+          position: 'fixed',
+          zIndex: (theme) => theme.zIndex.tooltip + 1,
+          top: 'max(12px, env(safe-area-inset-top))',
+          left: 12,
+          transform: 'translateY(calc(-100% - 24px))',
+          '&:focus-visible': { transform: 'translateY(0)' },
+        }}
+      >
+        {t('session.skipToReview')}
+      </Button>
       <Stack
         component="header"
-        direction="row"
+        direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
         sx={{
           maxWidth: 860,
           mx: 'auto',
           minHeight: 52,
-          alignItems: 'center',
+          alignItems: { xs: 'stretch', sm: 'center' },
           justifyContent: 'space-between',
         }}
       >
         <Typography
           component={RouterLink}
           to={routePaths.home}
+          translate="no"
           sx={{
             color: 'primary.dark',
             fontFamily: '"Merriweather", serif',
             fontSize: 22,
             fontWeight: 700,
             textDecoration: 'none',
+            alignSelf: 'flex-start',
+            '&:focus-visible': {
+              outline: '3px solid rgba(23, 107, 75, 0.28)',
+              outlineOffset: 3,
+            },
           }}
         >
           Vocab Mate
         </Typography>
-        <Button component={RouterLink} to={routePaths.home} color="inherit">
-          Exit
-        </Button>
+        <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
+          {actions ?? (
+            <Button component={RouterLink} to={routePaths.home} color="inherit">
+              Exit
+            </Button>
+          )}
+        </Box>
       </Stack>
-      <Box component="main" sx={{ maxWidth: 860, mx: 'auto', mt: { xs: 2, sm: 4 } }}>
+      <Box
+        id="review-main"
+        component="main"
+        tabIndex={-1}
+        sx={{ maxWidth: 860, mx: 'auto', mt: { xs: 2, sm: 4 } }}
+      >
         {children}
       </Box>
     </Box>
@@ -156,6 +218,9 @@ function ReviewStarter() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const mutation = useStartReviewSessionMutation()
+  const activeSessionQuery = useActiveReviewSessionQuery(
+    mutation.isPending ? ACTIVE_SESSION_RECOVERY_INTERVAL_MS : false,
+  )
   const startedRef = useRef(false)
   const searchString = searchParams.toString()
   const request = useMemo(
@@ -176,6 +241,17 @@ function ReviewStarter() {
   useEffect(() => {
     if (!startedRef.current) start()
   }, [start])
+
+  const recoveredSessionId =
+    activeSessionQuery.data?.session.status === 'IN_PROGRESS'
+      ? activeSessionQuery.data.session.id
+      : null
+
+  useEffect(() => {
+    if (recoveredSessionId) {
+      navigate(reviewSessionPath(recoveredSessionId), { replace: true })
+    }
+  }, [navigate, recoveredSessionId])
 
   if (!request) {
     return (
@@ -239,19 +315,28 @@ function ReviewStarter() {
 }
 
 function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
+  const { t } = useTranslation('review')
   const navigate = useNavigate()
   const sessionQuery = useReviewSessionQuery(sessionId)
   const answerMutation = useSubmitReviewAnswerMutation(sessionId)
   const skipMutation = useSkipReviewItemMutation(sessionId)
+  const abandonMutation = useAbandonReviewSessionMutation(sessionId)
   const [transitionItem, setTransitionItem] = useState<ReviewSessionItem | null>(null)
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
   const [answerText, setAnswerText] = useState('')
   const [hintsUsed, setHintsUsed] = useState(0)
   const [feedback, setFeedback] = useState<SubmittedReviewAnswer | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [hasStaleConflict, setHasStaleConflict] = useState(false)
+  const [staleRecoveryReady, setStaleRecoveryReady] = useState(false)
+  const [endDialogOpen, setEndDialogOpen] = useState(false)
+  const [endSessionError, setEndSessionError] = useState<string | null>(null)
   const [isLocked, setIsLocked] = useState(false)
+  const [coachingWaitExpired, setCoachingWaitExpired] = useState(false)
   const questionStartedAtRef = useRef(0)
   const submissionLockRef = useRef(false)
+  const activeSubmissionRef = useRef(0)
+  const questionHeadingRef = useRef<HTMLHeadingElement>(null)
   const displayItem = transitionItem ?? sessionQuery.data?.nextItem ?? null
   const displayItemId = displayItem?.id
   const displayQuestionId = displayItem?.question.id
@@ -263,6 +348,9 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     setHintsUsed(0)
     setFeedback(null)
     setActionError(null)
+    setHasStaleConflict(false)
+    setStaleRecoveryReady(false)
+    setCoachingWaitExpired(false)
     questionStartedAtRef.current = Date.now()
     submissionLockRef.current = false
     setIsLocked(false)
@@ -299,7 +387,17 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   useEffect(() => {
     if (!displayItemId) return
     questionStartedAtRef.current = Date.now()
+    questionHeadingRef.current?.focus()
   }, [displayItemId, displayQuestionId])
+
+  useEffect(() => {
+    if (!answerMutation.isPending) return
+    const timer = window.setTimeout(
+      () => setCoachingWaitExpired(true),
+      COACHING_WAIT_LIMIT_MS,
+    )
+    return () => window.clearTimeout(timer)
+  }, [answerMutation.isPending])
 
   useEffect(() => {
     if (!feedback?.isCorrect) return
@@ -311,6 +409,9 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   }, [feedback, finishOrAdvance])
 
   const progress = feedback?.progress ?? sessionQuery.data?.progress
+  const persistedPlanSummary = sessionQuery.data?.session.planSummary?.trim()
+  const visibleAgentFeedback =
+    feedback?.agentFeedback ?? sessionQuery.data?.agentFeedback
   const question = displayItem?.question
   const hints = question ? questionHints(question) : []
   const isFillBlank = question?.questionType === 'FILL_BLANK'
@@ -321,8 +422,59 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   )
   const isBusy =
     isLocked ||
+    hasStaleConflict ||
     answerMutation.isPending ||
-    skipMutation.isPending
+    skipMutation.isPending ||
+    abandonMutation.isPending
+
+  const refreshAfterStaleConflict = async () => {
+    const refreshed = await sessionQuery.refetch()
+    const canRecover = Boolean(
+      !refreshed.isError &&
+        (refreshed.data?.nextItem ||
+          refreshed.data?.session.status === 'COMPLETED'),
+    )
+    setStaleRecoveryReady(canRecover)
+    setActionError(
+      canRecover
+        ? 'This question changed in another request. The latest review state is ready.'
+        : 'The latest review state could not be loaded. Try refreshing again.',
+    )
+  }
+
+  const recoverFromStaleConflict = () => {
+    const latestState = sessionQuery.data
+    if (latestState?.session.status === 'COMPLETED') {
+      navigate(reviewSummaryPath(sessionId), { replace: true })
+      return
+    }
+    if (!latestState?.nextItem) {
+      void refreshAfterStaleConflict()
+      return
+    }
+    resetQuestion(latestState.nextItem)
+  }
+
+  const continueFromSavedProgress = async () => {
+    setActionError(null)
+    const refreshed = await sessionQuery.refetch()
+    if (refreshed.data?.session.status === 'COMPLETED') {
+      activeSubmissionRef.current += 1
+      navigate(reviewSummaryPath(sessionId), { replace: true })
+      return
+    }
+    const latestItem = refreshed.data?.nextItem
+    if (
+      latestItem &&
+      (latestItem.id !== displayItemId ||
+        latestItem.question.id !== displayQuestionId)
+    ) {
+      activeSubmissionRef.current += 1
+      resetQuestion(latestItem)
+      return
+    }
+    setActionError(t('coaching.notReady'))
+  }
 
   const submitAnswer = async () => {
     if (
@@ -334,8 +486,12 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       skipMutation.isPending
     ) return
     submissionLockRef.current = true
+    const submissionId = activeSubmissionRef.current + 1
+    activeSubmissionRef.current = submissionId
     setIsLocked(true)
+    setCoachingWaitExpired(false)
     setActionError(null)
+    setTransitionItem(displayItem)
 
     try {
       const elapsed = Math.min(
@@ -347,20 +503,31 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
         quizQuestionId: question.id,
         ...(isFillBlank
           ? { userAnswerText: answerText.trim() }
-          : { selectedOptionId: selectedOptionId! }),
+          : selectedOptionId
+            ? { selectedOptionId }
+            : {}),
         responseTimeMs: elapsed,
         hintsUsed,
       })
+      if (submissionId !== activeSubmissionRef.current) return
+      setCoachingWaitExpired(false)
       setFeedback(result)
     } catch (error: unknown) {
+      if (submissionId !== activeSubmissionRef.current) return
       submissionLockRef.current = false
       setIsLocked(false)
+      setCoachingWaitExpired(false)
       const apiError = normalizeApiError(error)
-      setActionError(
-        apiError.status === 409
-          ? 'This question was already updated. Reload the review to continue.'
-          : 'Your answer could not be saved. Check your connection and try again.',
-      )
+      if (apiError.status === 409) {
+        setHasStaleConflict(true)
+        setStaleRecoveryReady(false)
+        setActionError('This question changed. Loading the latest review state…')
+        await refreshAfterStaleConflict()
+      } else {
+        setActionError(
+          'Your answer could not be saved. Check your connection and try again.',
+        )
+      }
     }
   }
 
@@ -387,10 +554,30 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       submissionLockRef.current = false
       setIsLocked(false)
       const apiError = normalizeApiError(error)
-      setActionError(
+      if (apiError.status === 409) {
+        setHasStaleConflict(true)
+        setStaleRecoveryReady(false)
+        setActionError('This question changed. Loading the latest review state…')
+        await refreshAfterStaleConflict()
+      } else {
+        setActionError(
+          'This word could not be skipped. Check your connection and try again.',
+        )
+      }
+    }
+  }
+
+  const endSession = async () => {
+    setEndSessionError(null)
+    try {
+      await abandonMutation.mutateAsync()
+      navigate(routePaths.home, { replace: true })
+    } catch (error: unknown) {
+      const apiError = normalizeApiError(error)
+      setEndSessionError(
         apiError.status === 409
-          ? 'This question was already updated. Reload the review to continue.'
-          : 'This word could not be skipped. Check your connection and try again.',
+          ? 'This session changed before it could be ended. Close this dialog and refresh the review.'
+          : 'The session could not be ended. Check your connection and try again.',
       )
     }
   }
@@ -417,6 +604,23 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     )
   }
 
+  if (sessionQuery.data?.session.status === 'ABANDONED') {
+    return (
+      <ReviewShell>
+        <Alert
+          severity="info"
+          action={
+            <Button component={RouterLink} to={routePaths.home} color="inherit">
+              {t('session.backHome')}
+            </Button>
+          }
+        >
+          {t('session.ended')}
+        </Alert>
+      </ReviewShell>
+    )
+  }
+
   if (sessionQuery.isPending || !progress || !displayItem || !question) {
     return (
       <ReviewShell>
@@ -429,8 +633,103 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   }
 
   return (
-    <ReviewShell>
+    <ReviewShell
+      actions={
+        <Stack
+          direction="row"
+          spacing={0.5}
+          useFlexGap
+          sx={{
+            width: '100%',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end',
+            '& .MuiButton-root': {
+              flex: { xs: '1 1 132px', sm: '0 0 auto' },
+            },
+          }}
+        >
+          <Button
+            component={RouterLink}
+            to={routePaths.home}
+            color="inherit"
+            disabled={
+              isBusy && !(answerMutation.isPending && coachingWaitExpired)
+            }
+          >
+            Save and exit
+          </Button>
+          <Button
+            color="error"
+            disabled={isBusy}
+            onClick={() => {
+              setEndSessionError(null)
+              abandonMutation.reset()
+              setEndDialogOpen(true)
+            }}
+          >
+            End session
+          </Button>
+        </Stack>
+      }
+    >
       <Stack spacing={{ xs: 2.5, sm: 3.5 }}>
+        <Paper
+          component="section"
+          aria-labelledby="review-plan-heading"
+          variant="outlined"
+          sx={{
+            p: { xs: 2, sm: 2.5 },
+            bgcolor: 'primary.light',
+            borderColor: 'primary.main',
+          }}
+        >
+          <Typography
+            sx={{
+              color: 'primary.dark',
+              fontSize: 12,
+              fontWeight: 850,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {t('plan.eyebrow')}
+          </Typography>
+          <Typography
+            id="review-plan-heading"
+            component="h1"
+            variant="h5"
+            sx={{ mt: 0.5, fontWeight: 850, textWrap: 'balance' }}
+          >
+            {t('plan.title')}
+          </Typography>
+          <Typography sx={{ mt: 0.75, overflowWrap: 'anywhere' }}>
+            {persistedPlanSummary ||
+              t('plan.summary', {
+                sessionType: t(
+                  `plan.sessionTypes.${sessionQuery.data.session.sessionType}`,
+                ),
+                count: progress.totalQuestions,
+              })}
+          </Typography>
+          {sessionQuery.data.session.targetDurationMinutes &&
+          sessionQuery.data.session.reviewGoal ? (
+            <Typography
+              variant="body2"
+              sx={{ mt: 1, color: 'primary.dark', fontWeight: 750 }}
+            >
+              {t('plan.details', {
+                minutes: sessionQuery.data.session.targetDurationMinutes,
+                count:
+                  sessionQuery.data.session.plannedItemCount ??
+                  progress.totalQuestions,
+                goal: t(
+                  `plan.goals.${sessionQuery.data.session.reviewGoal}`,
+                ),
+              })}
+            </Typography>
+          ) : null}
+        </Paper>
+
         <Box>
           <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
             <Typography sx={{ fontWeight: 800 }}>
@@ -448,6 +747,10 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           />
         </Box>
 
+        {visibleAgentFeedback ? (
+          <AgentFeedbackCard feedback={visibleAgentFeedback} />
+        ) : null}
+
         <Paper
           component="section"
           aria-labelledby="review-question"
@@ -461,9 +764,20 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           </Typography>
           <Typography
             id="review-question"
-            component="h1"
+            ref={questionHeadingRef}
+            tabIndex={-1}
+            component="h2"
             variant="h1"
-            sx={{ mt: 1.25, fontSize: { xs: 30, sm: 40 }, textWrap: 'balance' }}
+            sx={{
+              mt: 1.25,
+              fontSize: { xs: 30, sm: 40 },
+              textWrap: 'balance',
+              overflowWrap: 'anywhere',
+              '&:focus-visible': {
+                outline: '3px solid rgba(23, 107, 75, 0.28)',
+                outlineOffset: 4,
+              },
+            }}
           >
             {question.prompt}
           </Typography>
@@ -536,7 +850,8 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
                   <Typography variant="body2" sx={{ mt: 0.5 }}>
                     {feedback.explanation}
                   </Typography>
-                  {feedback.willReturnLater ? (
+                  {feedback.willReturnLater &&
+                  !feedback.agentFeedback?.retestAfterItems ? (
                     <Typography variant="body2" sx={{ mt: 1, fontWeight: 750 }}>
                       You’ll see this word again near the end with a different question.
                     </Typography>
@@ -545,8 +860,48 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
               )
             ) : null}
 
+            {answerMutation.isPending ? (
+              <Alert
+                severity="info"
+                role="status"
+                aria-live="polite"
+                sx={{ mt: 2 }}
+                action={
+                  coachingWaitExpired ? (
+                    <Button
+                      color="inherit"
+                      disabled={sessionQuery.isFetching}
+                      onClick={() => void continueFromSavedProgress()}
+                    >
+                      {t('coaching.continue')}
+                    </Button>
+                  ) : undefined
+                }
+              >
+                {t(
+                  coachingWaitExpired
+                    ? 'coaching.delayed'
+                    : 'coaching.loading',
+                )}
+              </Alert>
+            ) : null}
+
             {actionError ? (
-              <Alert severity="error" sx={{ mt: 2 }}>
+              <Alert
+                severity="error"
+                sx={{ mt: 2 }}
+                action={
+                  hasStaleConflict ? (
+                    <Button
+                      color="inherit"
+                      disabled={sessionQuery.isFetching}
+                      onClick={recoverFromStaleConflict}
+                    >
+                      {staleRecoveryReady ? 'Use latest question' : 'Refresh'}
+                    </Button>
+                  ) : undefined
+                }
+              >
                 {actionError}
               </Alert>
             ) : null}
@@ -585,6 +940,22 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           </Box>
         </Paper>
       </Stack>
+      <ConfirmationDialog
+        open={endDialogOpen}
+        title="End this review session?"
+        description="This closes the current session, so it will no longer be available to resume. Choose Save and exit instead if you want to continue later."
+        confirmLabel="End session"
+        pendingLabel="Ending…"
+        isPending={abandonMutation.isPending}
+        errorMessage={endSessionError}
+        onCancel={() => {
+          if (abandonMutation.isPending) return
+          setEndDialogOpen(false)
+          setEndSessionError(null)
+          abandonMutation.reset()
+        }}
+        onConfirm={() => void endSession()}
+      />
     </ReviewShell>
   )
 }

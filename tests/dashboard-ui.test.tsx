@@ -4,6 +4,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/AuthContext'
+import { ApiError } from '@/config/apiClient'
 import { HomePage } from '@/pages/Home/HomePage'
 import { appTheme } from '@/theme'
 import type { AnalyticsOverview } from '@/types/Analytics/analytics'
@@ -26,14 +27,25 @@ interface DashboardQueryState {
   }
   review: {
     today: {
-      data: { dueVocabularyCount: number; recommendedQuizzes: [] }
+      data: {
+        dueVocabularyCount: number
+        dailyReviewEstimates: Array<{
+          targetDurationMinutes: 5 | 10 | 15
+          estimatedItemCount: number
+          goalEstimates?: Array<{
+            reviewGoal: 'BALANCED' | 'RECALL' | 'SPELLING' | 'CONTEXT'
+            estimatedItemCount: number
+          }>
+        }>
+        recommendedQuizzes: []
+      }
       isPending: boolean
       isError: boolean
       error: unknown
     }
     active: {
       data: undefined | {
-        session: { id: string }
+        session: { id: string; targetDurationMinutes: 5 | 10 | 15 | null }
         progress: { remainingCount: number }
       }
       isSuccess: boolean
@@ -76,7 +88,21 @@ const { queryState } = vi.hoisted<{ queryState: DashboardQueryState }>(() => ({
     },
     review: {
       today: {
-        data: { dueVocabularyCount: 3, recommendedQuizzes: [] },
+        data: {
+          dueVocabularyCount: 3,
+          dailyReviewEstimates: [
+            {
+              targetDurationMinutes: 5,
+              estimatedItemCount: 3,
+              goalEstimates: [
+                { reviewGoal: 'SPELLING', estimatedItemCount: 2 },
+              ],
+            },
+            { targetDurationMinutes: 10, estimatedItemCount: 3 },
+            { targetDurationMinutes: 15, estimatedItemCount: 3 },
+          ],
+          recommendedQuizzes: [],
+        },
         isPending: false,
         isError: false,
         error: null,
@@ -110,6 +136,14 @@ vi.mock('@/hooks/Analytics/useAnalytics', () => ({
     refetch: vi.fn(),
   }),
   useQuizAnalyticsQuery: () => ({
+    data: undefined,
+    isPending: false,
+    isFetching: false,
+    isError: false,
+    error: null,
+    refetch: vi.fn(),
+  }),
+  useReviewAnalyticsQuery: () => ({
     data: undefined,
     isPending: false,
     isFetching: false,
@@ -202,7 +236,21 @@ describe('HomePage', () => {
     queryState.reading.isError = false
     queryState.reading.error = null
     queryState.review.today = {
-      data: { dueVocabularyCount: 3, recommendedQuizzes: [] },
+      data: {
+        dueVocabularyCount: 3,
+        dailyReviewEstimates: [
+          {
+            targetDurationMinutes: 5,
+            estimatedItemCount: 3,
+            goalEstimates: [
+              { reviewGoal: 'SPELLING', estimatedItemCount: 2 },
+            ],
+          },
+          { targetDurationMinutes: 10, estimatedItemCount: 3 },
+          { targetDurationMinutes: 15, estimatedItemCount: 3 },
+        ],
+        recommendedQuizzes: [],
+      },
       isPending: false,
       isError: false,
       error: null,
@@ -211,7 +259,11 @@ describe('HomePage', () => {
       data: undefined,
       isSuccess: false,
       isError: true,
-      error: { status: 404 },
+      error: new ApiError({
+        status: 404,
+        code: 'NOT_FOUND',
+        message: 'Active review session not found',
+      }),
     }
   })
 
@@ -254,30 +306,57 @@ describe('HomePage', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows the focused review card with count, duration, and one start action', () => {
+  it('opens a bounded daily plan and navigates with the selected duration and goal', () => {
     renderDashboard()
     const card = screen.getByRole('region', {
       name: 'Keep familiar words close',
     })
 
     expect(within(card).getByText('3')).toBeInTheDocument()
-    expect(within(card).getByText('~1 min')).toBeInTheDocument()
-    expect(within(card).getByRole('link', { name: 'Start Review' })).toHaveAttribute(
-      'href',
-      '/review?sessionType=DAILY_REVIEW',
+    expect(within(card).getByText('10 min')).toBeInTheDocument()
+    fireEvent.click(within(card).getByRole('button', { name: 'Start Review' }))
+
+    const dialog = screen.getByRole('dialog', {
+      name: "Shape today's practice",
+    })
+    expect(
+      within(dialog).getByRole('radio', { name: /^10 minutes/ }),
+    ).toHaveAttribute('aria-checked', 'true')
+    fireEvent.click(
+      within(dialog).getByRole('radio', { name: /^5 minutes/ }),
+    )
+    expect(
+      within(dialog).getByText(/5 minutes.*about 3 words.*Balanced/),
+    ).toBeInTheDocument()
+    fireEvent.click(
+      within(dialog).getByRole('radio', { name: /^Spelling/ }),
+    )
+    expect(
+      within(dialog).getByText(/5 minutes.*about 2 words.*Spelling/),
+    ).toBeInTheDocument()
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Start this plan' }),
+    )
+
+    expect(screen.getByLabelText('Current path')).toHaveTextContent(
+      '/review?sessionType=DAILY_REVIEW&targetDurationMinutes=5&reviewGoal=SPELLING',
     )
   })
 
   it('resumes the active server session from the dashboard card', () => {
     queryState.review.today = {
-      data: { dueVocabularyCount: 0, recommendedQuizzes: [] },
+      data: {
+        dueVocabularyCount: 0,
+        dailyReviewEstimates: [],
+        recommendedQuizzes: [],
+      },
       isPending: false,
       isError: true,
       error: new Error('offline'),
     }
     queryState.review.active = {
       data: {
-        session: { id: 'active-session' },
+        session: { id: 'active-session', targetDurationMinutes: 15 },
         progress: { remainingCount: 4 },
       },
       isSuccess: true,
@@ -290,6 +369,25 @@ describe('HomePage', () => {
       'href',
       '/review/active-session',
     )
+  })
+
+  it('shows a review warning when due-count loading fails and no active session is expected', () => {
+    queryState.review.today = {
+      data: {
+        dueVocabularyCount: 0,
+        dailyReviewEstimates: [],
+        recommendedQuizzes: [],
+      },
+      isPending: false,
+      isError: true,
+      error: new Error('offline'),
+    }
+
+    renderDashboard()
+
+    expect(
+      screen.getByText('Review details could not be loaded.'),
+    ).toBeInTheDocument()
   })
 
   it('navigates to the backend-provided article slug', () => {

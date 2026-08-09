@@ -57,6 +57,7 @@ describe('analyticsApi', () => {
       ...dateParams,
       articleId: '550e8400-e29b-41d4-a716-446655440000',
     })
+    await analyticsApi.reviews(dateParams)
 
     expect(apiGet).toHaveBeenNthCalledWith(
       1,
@@ -71,6 +72,9 @@ describe('analyticsApi', () => {
         ...dateParams,
         articleId: '550e8400-e29b-41d4-a716-446655440000',
       },
+    })
+    expect(apiGet).toHaveBeenNthCalledWith(4, '/analytics/me/reviews', {
+      params: dateParams,
     })
     expect(apiGet.mock.calls.flat().join(' ')).not.toContain('/admin/')
   })

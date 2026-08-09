@@ -131,6 +131,15 @@ const ForbiddenPage = lazy(() =>
   })),
 )
 
+import { useAuth } from '@/contexts/AuthContext'
+import { SessionLoading } from '@/components/Shared/SessionLoading'
+
+const LandingPage = lazy(() =>
+  import('@/pages/Home/LandingPage').then(({ LandingPage: Component }) => ({
+    default: Component,
+  })),
+)
+
 const HomePage = lazy(() =>
   import('@/pages/Home/HomePage').then(({ HomePage: Component }) => ({
     default: Component,
@@ -234,15 +243,30 @@ function ArticleDetailRedirect() {
   return <Navigate to={readerPath(slug)} replace />
 }
 
+function RootIndexRoute() {
+  const { isAuthenticated, isInitializing } = useAuth()
+
+  if (isInitializing) return <SessionLoading />
+
+  if (!isAuthenticated) {
+    return <LandingPage />
+  }
+
+  return <HomePage />
+}
+
 export function AppRoutes() {
   return (
     <Routes>
+      <Route path="/landing" element={<LandingPage />} />
+
       <Route element={<GuestRoute />}>
         <Route path={routePaths.login} element={<LoginPage />} />
         <Route path={routePaths.register} element={<RegisterPage />} />
       </Route>
 
       <Route element={<AuthenticatedLayout />}>
+        <Route path={routePaths.home} element={<RootIndexRoute />} />
         <Route path={routePaths.articles} element={<ArticlesPage />} />
         <Route
           path={routePaths.articleDetail}
@@ -250,7 +274,6 @@ export function AppRoutes() {
         />
 
         <Route element={<ProtectedRoute />}>
-          <Route path={routePaths.home} element={<HomePage />} />
           <Route
             path={routePaths.reader}
             element={<ArticleReaderPage />}

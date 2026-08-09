@@ -64,6 +64,10 @@ export function AuthenticatedLayout() {
 
   const closeAccountMenu = () => setAccountMenuAnchor(null)
 
+  if (!currentUser) {
+    return <Outlet />
+  }
+
   const changePreferredLanguage = async () => {
     if (!currentUser || updateProfileMutation.isPending) return
 

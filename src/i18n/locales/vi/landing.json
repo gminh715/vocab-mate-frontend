@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "brand": "Vocab Mate",
+    "features": "Tính năng",
+    "demo": "Trải nghiệm",
+    "howItWorks": "Cách hoạt động",
+    "faq": "Hỏi đáp",
+    "login": "Đăng nhập",
+    "getStarted": "Bắt đầu ngay",
+    "dashboard": "Vào ứng dụng"
+  },
+  "hero": {
+    "badge": "Nền tảng học từ vựng AI thế hệ mới",
+    "title": "Học Từ Vựng Tiếng Anh Qua Báo Chí Thực Tế Cùng AI Agent",
+    "subtitle": "Vocab Mate giúp bạn làm chủ từ vựng theo ngữ cảnh bài viết thực tế, tô sáng từ thông minh theo chuẩn CEFR và ghi nhớ bền vững bằng thuật toán Spaced Repetition.",
+    "ctaPrimary": "Bắt đầu học miễn phí",
+    "ctaSecondary": "Khám phá bài đọc",
+    "statUsers": "10,000+ từ vựng đã lưu",
+    "statArticles": "Bài báo Guardian cập nhật",
+    "statAccuracy": "Spaced Repetition tối ưu"
+  },
+  "demo": {
+    "badge": "Demo tương tác trực tiếp",
+    "title": "Thử trải nghiệm đọc bài báo cùng AI ngay bên dưới",
+    "subtitle": "Nhấn vào các từ được tô sáng trong đoạn văn để xem AI phân tích nghĩa ngữ cảnh, dịch câu và hướng dẫn phát âm.",
+    "articleTitle": "Artificial Intelligence Transforms Modern Language Acquisition",
+    "hint": "Thử click vào từ màu xanh dương để xem cửa sổ AI hiển thị!",
+    "popoverHeader": "Phân tích từ vựng AI",
+    "close": "Đóng",
+    "addToVocab": "Lưu từ vào bộ sưu tập",
+    "savedSuccess": "Đã lưu từ vựng!"
+  },
+  "features": {
+    "badge": "Tính năng nổi bật",
+    "title": "Phương pháp học từ vựng thông minh vượt trội",
+    "subtitle": "Không còn học vẹt danh sách từ khô khan. Vocab Mate mang đến trải nghiệm học tiếng Anh tự nhiên qua báo chí thực tế.",
+    "contextTitle": "Nghĩa theo ngữ cảnh AI",
+    "contextDesc": "AI phân tích chính xác nghĩa của từ trong câu cụ thể, không dùng dịch tự động thô ráp hay nghĩa từ điển chung chung.",
+    "cefrTitle": "Tô sáng theo CEFR (A1 - C2)",
+    "cefrDesc": "Tự động quét bài báo và tô sáng các từ vựng phù hợp hoặc vượt trình độ mục tiêu của bạn để học đúng trọng tâm.",
+    "srTitle": "Ôn tập Spaced Repetition",
+    "srDesc": "Hệ thống lặp lại ngắt quãng tính toán chính xác 'thời điểm vàng' bạn sắp quên để nhắc nhở ôn tập tối ưu trí nhớ.",
+    "quizTitle": "Quiz AI tự động khởi tạo",
+    "quizDesc": "Tự động sinh bài kiểm tra trắc nghiệm, điền từ, câu hỏi ngữ cảnh dựa trên danh sách từ vựng cá nhân của bạn."
+  },
+  "steps": {
+    "badge": "Quy trình đơn giản",
+    "title": "3 bước để làm chủ vốn từ vựng",
+    "step1Title": "1. Chọn bài báo yêu thích",
+    "step1Desc": "Khám phá hàng ngàn bài báo từ The Guardian thuộc nhiều chủ đề: Công nghệ, Văn hoá, Khoa học, Kinh tế.",
+    "step2Title": "2. Click tra từ & lưu từ vựng",
+    "step2Desc": "Chạm nhẹ vào từ mới để xem giải thích AI chi tiết và lưu trực tiếp vào bộ sưu tập cá nhân.",
+    "step3Title": "3. Ôn tập 5 phút mỗi ngày",
+    "step3Desc": "Tham gia các phiên ôn tập AI linh hoạt và hoàn thành quiz để đạt mốc Mastered."
+  },
+  "faq": {
+    "badge": "Hỏi & Đáp",
+    "title": "Câu hỏi thường gặp",
+    "q1": "Vocab Mate có miễn phí không?",
+    "a1": "Có! Bạn có thể tạo tài khoản miễn phí và trải nghiệm ngay tính năng đọc báo, tra từ vựng AI và ôn tập cơ bản.",
+    "q2": "AI Agent trợ giúp học như thế nào?",
+    "a2": "AI Agent phân tích ngữ cảnh câu, đưa ra giải thích từ vựng chính xác, gợi ý câu ví dụ phù hợp và tự tạo quiz theo điểm yếu của bạn.",
+    "q3": "Tôi có thể đổi trình độ CEFR mục tiêu không?",
+    "a3": "Hoàn toàn được! Bạn có thể điều chỉnh trình độ mục tiêu từ A1 đến C2 trong trang Cài đặt cá nhân bất kỳ lúc nào.",
+    "q4": "Nguồn bài báo lấy từ đâu?",
+    "a4": "Bài viết được cập nhật từ các nguồn báo chí uy tín thế giới như The Guardian, đảm bảo văn phong chuẩn mực và từ vựng phong phú."
+  },
+  "cta": {
+    "title": "Sẵn sàng nâng tầm vốn từ vựng Tiếng Anh của bạn?",
+    "subtitle": "Tham gia Vocab Mate ngay hôm nay và trải nghiệm phương pháp học từ vựng hiệu quả nhất.",
+    "button": "Đăng ký tài khoản miễn phí"
+  },
+  "footer": {
+    "rights": "© 2026 Vocab Mate. Trợ lý học từ vựng Tiếng Anh thông minh cùng AI."
+  }
+}

@@ -17,8 +17,8 @@ import enLanding from './locales/en/landing.json'
 import viLanding from './locales/vi/landing.json'
 
 void i18n.use(initReactI18next).init({
-  lng: 'en',
-  fallbackLng: 'en',
+  lng: 'vi',
+  fallbackLng: 'vi',
   ns: ['home', 'analytics', 'profile', 'articles', 'vocabulary', 'review', 'landing'],
   defaultNS: 'home',
   resources: {

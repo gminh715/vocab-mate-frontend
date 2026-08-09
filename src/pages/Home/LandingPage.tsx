@@ -156,44 +156,20 @@ export function LandingPage() {
         <Container maxWidth="lg">
           <Toolbar disableGutters sx={{ justifyContent: 'space-between', py: 1 }}>
             {/* Brand Logo */}
-            <Stack
+            <Typography
               component={RouterLink}
               to={routePaths.home}
-              direction="row"
-              spacing={1.25}
               sx={{
-                alignItems: 'center',
+                color: 'primary.dark',
+                fontFamily: '"Merriweather", serif',
+                fontSize: 24,
+                fontWeight: 700,
                 textDecoration: 'none',
-                color: 'inherit',
+                whiteSpace: 'nowrap',
               }}
             >
-              <Box
-                sx={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: 2.5,
-                  bgcolor: '#176B4B',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(23, 107, 75, 0.25)',
-                }}
-              >
-                <SparklesIcon size={22} color="#ffffff" />
-              </Box>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontFamily: '"Merriweather", "Be Vietnam Pro", serif',
-                  fontWeight: 800,
-                  fontSize: 20,
-                  color: '#17372B',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                Vocab Mate
-              </Typography>
-            </Stack>
+              Vocab Mate
+            </Typography>
 
             {/* Desktop Navigation Links */}
             <Stack

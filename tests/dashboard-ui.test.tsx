@@ -9,6 +9,7 @@ import { HomePage } from '@/pages/Home/HomePage'
 import { appTheme } from '@/theme'
 import type { AnalyticsOverview } from '@/types/Analytics/analytics'
 import type { ReadingHistoryData } from '@/types/Reading/reading'
+import i18n from '@/i18n/i18n'
 
 interface DashboardQueryState {
   overview: {
@@ -172,6 +173,7 @@ const currentUser = {
     avatarUrl: null,
     currentCefrLevel: 'B1',
     learningGoal: null,
+    dailyStudyMinutes: 10,
     preferredLanguage: 'en',
   },
 } as const
@@ -211,7 +213,8 @@ const renderDashboard = () =>
   )
 
 describe('HomePage', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('en')
     queryState.overview.data = {
       savedVocabulary: 12,
       dueToday: 3,
@@ -306,7 +309,7 @@ describe('HomePage', () => {
     ).toBeInTheDocument()
   })
 
-  it('opens a bounded daily plan and navigates with the selected duration and goal', () => {
+  it('starts the stored daily plan without asking for a duration', () => {
     renderDashboard()
     const card = screen.getByRole('region', {
       name: 'Keep familiar words close',
@@ -316,31 +319,10 @@ describe('HomePage', () => {
     expect(within(card).getByText('10 min')).toBeInTheDocument()
     fireEvent.click(within(card).getByRole('button', { name: 'Start Review' }))
 
-    const dialog = screen.getByRole('dialog', {
-      name: "Shape today's practice",
-    })
-    expect(
-      within(dialog).getByRole('radio', { name: /^10 minutes/ }),
-    ).toHaveAttribute('aria-checked', 'true')
-    fireEvent.click(
-      within(dialog).getByRole('radio', { name: /^5 minutes/ }),
-    )
-    expect(
-      within(dialog).getByText(/5 minutes.*about 3 words.*Balanced/),
-    ).toBeInTheDocument()
-    fireEvent.click(
-      within(dialog).getByRole('radio', { name: /^Spelling/ }),
-    )
-    expect(
-      within(dialog).getByText(/5 minutes.*about 2 words.*Spelling/),
-    ).toBeInTheDocument()
-    fireEvent.click(
-      within(dialog).getByRole('button', { name: 'Start this plan' }),
-    )
-
     expect(screen.getByLabelText('Current path')).toHaveTextContent(
-      '/review?sessionType=DAILY_REVIEW&targetDurationMinutes=5&reviewGoal=SPELLING',
+      '/review?sessionType=DAILY_REVIEW&targetDurationMinutes=10&reviewGoal=BALANCED',
     )
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('resumes the active server session from the dashboard card', () => {

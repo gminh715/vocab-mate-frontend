@@ -1,4 +1,99 @@
 {
+  "preparation": {
+    "eyebrow": "Review workshop",
+    "title": "Building your review",
+    "percentLabel": "Review preparation: {{percent}} percent",
+    "progressLabel": "Review preparation progress",
+    "itemProgress": "{{completed}} of {{total}} words prepared",
+    "note": "You can leave this screen and return later. Your generated questions are saved as they become ready.",
+    "stages": {
+      "SELECTING_VOCABULARY": "Choosing the words that will help you most today…",
+      "CHECKING_CACHE": "Checking which questions are already ready…",
+      "GENERATING_QUESTIONS": "Creating fresh questions from your saved contexts…",
+      "CREATING_SESSION": "Putting the questions into your review…",
+      "PLANNING_SESSION": "Balancing the order and learning focus…",
+      "READY": "Your review is ready.",
+      "FAILED": "Preparation stopped before the review was ready."
+    }
+  },
+  "fillBlank": {
+    "slotLabel": "{{wordCount}}-word blank with {{characterCount}} letters; {{revealed}} letters revealed",
+    "hintFirst": "Reveal a letter",
+    "hintNext": "Reveal another letter",
+    "hintLoading": "Revealing…",
+    "hintComplete": "All letters revealed",
+    "hintError": "The next hint could not be loaded. Try again.",
+    "hintStale": "This question changed. Refresh the review before requesting another hint."
+  },
+  "starter": {
+    "invalidLink": "This review link is not valid. Return home and choose a review again.",
+    "emptyTitle": "Nothing is ready here yet",
+    "errorTitle": "Review could not start",
+    "emptyDescription": "There are no saved words ready for this review. Keep reading or choose another collection.",
+    "errorDescription": "Your saved words are safe. Check your connection and try again.",
+    "tryAgain": "Try Again"
+  },
+  "progress": {
+    "question": "Question {{current}} of {{total}}",
+    "remaining": "{{count}} remaining",
+    "ariaLabel": "Review progress"
+  },
+  "question": {
+    "types": {
+      "fillBlank": "Complete the sentence",
+      "chooseAnswer": "Choose one answer"
+    },
+    "answerLabel": "Your answer",
+    "answerChoices": "Answer choices",
+    "hints": {
+      "fillBlank": {
+        "context": "Read the whole sentence and notice what kind of word the blank needs.",
+        "grammar": "Check the words beside the blank for clues about tense, form, or number."
+      },
+      "selectMeaning": {
+        "context": "Recall how the word was used in its original sentence.",
+        "specific": "Choose the most specific meaning that fits that context."
+      },
+      "selectWord": {
+        "rephrase": "Say the meaning in your own words before looking at the choices again.",
+        "form": "Look for the word whose form and tone best match the meaning."
+      },
+      "selectContext": {
+        "meaning": "Look for the sentence where the word carries the meaning you learned.",
+        "eliminate": "Read each choice with the target word and remove contexts that feel unrelated."
+      }
+    }
+  },
+  "actions": {
+    "saveExit": "Save and exit",
+    "endSession": "End session",
+    "useLatestQuestion": "Use latest question",
+    "refresh": "Refresh",
+    "hint": "Hint",
+    "anotherHint": "Another Hint",
+    "skipping": "Skipping…",
+    "skip": "Skip",
+    "continue": "Continue",
+    "checking": "Checking…",
+    "checkAnswer": "Check Answer"
+  },
+  "errors": {
+    "nextQuestionUnavailable": "The next question is not available. Reload this review to continue.",
+    "staleReady": "This question changed in another request. The latest review state is ready.",
+    "staleLoadFailed": "The latest review state could not be loaded. Try refreshing again.",
+    "staleLoading": "This question changed. Loading the latest review state…",
+    "answerSave": "Your answer could not be saved. Check your connection and try again.",
+    "skip": "This word could not be skipped. Check your connection and try again.",
+    "endConflict": "This session changed before it could be ended. Close this dialog and refresh the review.",
+    "end": "The session could not be ended. Check your connection and try again.",
+    "sessionUnavailable": "This review session is not available.",
+    "restore": "Your review could not be restored. Try again."
+  },
+  "endDialog": {
+    "title": "End this review session?",
+    "description": "This closes the current session, so it will no longer be available to resume. Choose Save and exit instead if you want to continue later.",
+    "pending": "Ending…"
+  },
   "plan": {
     "eyebrow": "Your Review Plan",
     "title": "A Focused Practice Set",
@@ -24,6 +119,10 @@
     "pattern": "Pattern: {{error}}",
     "example": "Example",
     "retest": "This word will return after {{count}} more questions in a different activity.",
+    "correctTitle": "Nice work.",
+    "movingNext": "Moving to the next word…",
+    "correctAnswer": "Correct answer: {{answer}}",
+    "returnLater": "You’ll see this word again near the end with a different question.",
     "skills": {
       "RECOGNITION": "Recognition",
       "RECALL": "Recall",
@@ -52,7 +151,9 @@
   "session": {
     "skipToReview": "Skip to Review",
     "ended": "This review session has ended and cannot be resumed.",
-    "backHome": "Back Home"
+    "backHome": "Back Home",
+    "exit": "Exit",
+    "restoring": "Restoring your review…"
   },
   "summary": {
     "loading": "Loading your review summary…",

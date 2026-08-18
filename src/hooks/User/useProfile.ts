@@ -20,7 +20,10 @@ export const useUpdateMyProfileMutation = () => {
         currentUser,
       )
 
-      if (request.currentCefrLevel !== undefined) {
+      if (
+        request.currentCefrLevel !== undefined ||
+        request.learningGoal !== undefined
+      ) {
         void queryClient.invalidateQueries({
           queryKey: readingQueryKeys.articles(),
         })

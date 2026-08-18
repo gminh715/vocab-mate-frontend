@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import {
-  postAuthPath,
+  defaultAuthenticatedPath,
+  postLoginPath,
   requestedPath,
   routePaths,
 } from '@/utils/paths'
@@ -14,10 +15,10 @@ export function GuestRoute() {
 
   if (isInitializing) return <SessionLoading />
 
-  if (currentUser) {
+  if (currentUser && location.state?.loggingOut !== true) {
     return (
       <Navigate
-        to={postAuthPath(currentUser.role, location.state)}
+        to={postLoginPath(currentUser, location.state)}
         replace
       />
     )
@@ -27,7 +28,7 @@ export function GuestRoute() {
 }
 
 export function ProtectedRoute() {
-  const { isAuthenticated, isInitializing } = useAuth()
+  const { currentUser, isAuthenticated, isInitializing } = useAuth()
   const location = useLocation()
 
   if (isInitializing) return <SessionLoading />
@@ -42,6 +43,30 @@ export function ProtectedRoute() {
     )
   }
 
+  if (
+    currentUser?.role === 'USER' &&
+    currentUser.profile.dailyStudyMinutes === null &&
+    location.pathname !== routePaths.onboarding
+  ) {
+    return <Navigate to={routePaths.onboarding} replace />
+  }
+
+  return <Outlet />
+}
+
+export function OnboardingRoute() {
+  const { currentUser, isInitializing } = useAuth()
+
+  if (isInitializing) return <SessionLoading />
+  if (!currentUser) return <Navigate to={routePaths.login} replace />
+  if (
+    currentUser.role !== 'USER' ||
+    currentUser.profile.dailyStudyMinutes !== null
+  ) {
+    return (
+      <Navigate to={defaultAuthenticatedPath(currentUser.role)} replace />
+    )
+  }
   return <Outlet />
 }
 

@@ -5,6 +5,9 @@ import type {
   DueReviews,
   ReviewHistory,
   ReviewHistoryParams,
+  ReviewPreparationProgress,
+  RevealedReviewHint,
+  RevealReviewHintRequest,
   ReviewSessionState,
   SkipReviewItemRequest,
   SkippedReviewItem,
@@ -33,6 +36,13 @@ export const reviewsApi = {
   start: (request: StartReviewSessionRequest): Promise<ReviewSessionState> =>
     apiClient.post<ReviewSessionState>(reviewSessionsPath, request),
 
+  preparation: (
+    preparationId: string,
+  ): Promise<ReviewPreparationProgress> =>
+    apiClient.get<ReviewPreparationProgress>(
+      `${reviewSessionsPath}/preparations/${encodeURIComponent(preparationId)}`,
+    ),
+
   answer: (
     sessionId: string,
     request: SubmitReviewAnswerRequest,
@@ -40,6 +50,15 @@ export const reviewsApi = {
     apiClient.post<SubmittedReviewAnswer>(
       `${reviewSessionsPath}/${encodeURIComponent(sessionId)}/answers`,
       request,
+    ),
+
+  revealHint: (
+    sessionId: string,
+    request: RevealReviewHintRequest,
+  ): Promise<RevealedReviewHint> =>
+    apiClient.post<RevealedReviewHint>(
+      `${reviewSessionsPath}/${encodeURIComponent(sessionId)}/items/${encodeURIComponent(request.reviewSessionItemId)}/hints`,
+      { hintIndex: request.hintIndex },
     ),
 
   skip: (

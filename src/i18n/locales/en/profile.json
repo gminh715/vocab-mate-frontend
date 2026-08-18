@@ -7,7 +7,7 @@
   "profile": {
     "eyebrow": "Your learning identity",
     "title": "Profile settings",
-    "subtitle": "Keep your learning level and profile details up to date. Reader highlights follow your current CEFR level.",
+    "subtitle": "Keep your learning level and profile details up to date. Reader highlights use the range between your current and target CEFR levels.",
     "avatarAlt": "Avatar preview",
     "successMessage": "Profile changes saved.",
     "cannotRemoveAvatar": "The current API cannot remove an avatar URL. Enter a replacement URL.",
@@ -21,7 +21,7 @@
     },
     "cefrCard": {
       "title": "Current learning level",
-      "hint": "Saving a new level refreshes personalized article highlights."
+      "hint": "Saving either CEFR level refreshes personalized article highlights."
     },
     "form": {
       "title": "Learning profile",
@@ -30,10 +30,13 @@
       "avatarUrl": "Avatar URL",
       "avatarUrlHint": "Paste a public image URL. File upload is not supported.",
       "cefrLevel": "Current CEFR level",
-      "cefrLevelHint": "Reader highlights use this level.",
+      "cefrLevelHint": "Terms at this level through your target can be highlighted.",
       "learningGoal": "Learning goal",
-      "learningGoalHint": "Choose a CEFR level above your current level.",
+      "learningGoalHint": "Choose your current level or a higher CEFR target.",
       "learningGoalNotSet": "Not set",
+      "dailyStudyMinutes": "Daily study time",
+      "dailyStudyMinutesHint": "Used automatically when starting a daily review.",
+      "minutes": "{{count}} minutes",
       "unsavedChanges": "Unsaved changes",
       "saving": "Saving…",
       "saveChanges": "Save changes"

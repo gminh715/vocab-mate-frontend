@@ -801,7 +801,7 @@ export function AdminArticleContentPage() {
         })
         setFeedback({
           severity: 'success',
-          message: `Vocabulary analysis created ${data.candidateCount} terms for content version ${data.contentVersion}.`,
+          message: `Vocabulary analysis created ${data.candidateCount} terms and set article CEFR to ${data.cefrLevel} for content version ${data.contentVersion}.`,
         })
       },
       onError: (error) => {
@@ -1668,7 +1668,7 @@ export function AdminArticleContentPage() {
             ? 'Retry draft analysis'
             : 'Analyze this draft'
         }
-        description="This tokenizes every current sentence locally with WinkNLP, creates approved lookup terms with deferred metadata, and inserts one marker for each unique valid surface. It does not call an AI provider or publish the article."
+        description="This tokenizes every current sentence locally with WinkNLP, uses cefr-analyzer to set the article CEFR and classify known terms, leaves unknown term CEFR pending for lookup enrichment, and inserts one marker for each unique valid surface. It does not call an AI provider or publish the article."
         confirmLabel="Run analysis"
         isPending={analyzeMutation.isPending}
         errorMessage={

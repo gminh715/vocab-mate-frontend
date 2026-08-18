@@ -18,6 +18,15 @@ export const REVIEW_GOALS = [
 export type ReviewTargetDuration = (typeof REVIEW_TARGET_DURATIONS)[number]
 export type ReviewGoal = (typeof REVIEW_GOALS)[number]
 export type ReviewSessionStatus = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED'
+export type ReviewPreparationStatus = 'PREPARING' | 'READY' | 'FAILED'
+export type ReviewPreparationStage =
+  | 'SELECTING_VOCABULARY'
+  | 'CHECKING_CACHE'
+  | 'GENERATING_QUESTIONS'
+  | 'CREATING_SESSION'
+  | 'PLANNING_SESSION'
+  | 'READY'
+  | 'FAILED'
 export type ReviewDecisionSource = 'AI' | 'RULE'
 export type ReviewAgentAction =
   | 'CONTINUE'
@@ -67,6 +76,7 @@ export interface ReviewQuestion {
   questionType: QuestionType
   prompt: string
   blankSentence: string | null
+  answerWordLengths: number[] | null
   points: number
   displayOrder: number
   options: ReviewQuestionOption[]
@@ -109,6 +119,7 @@ export interface ReviewSessionState {
 }
 
 export interface StartReviewSessionRequest {
+  preparationId?: string
   sessionType: ReviewSessionType
   quizId?: string | null
   articleId?: string | null
@@ -116,6 +127,27 @@ export interface StartReviewSessionRequest {
   limit?: number
   targetDurationMinutes?: ReviewTargetDuration
   reviewGoal?: ReviewGoal
+}
+
+export interface RevealReviewHintRequest {
+  reviewSessionItemId: string
+  hintIndex: number
+}
+
+export interface RevealedReviewHint {
+  revealedCharacter: string
+  wordIndex: number
+  characterIndex: number
+  totalCharacters: number
+}
+
+export interface ReviewPreparationProgress {
+  preparationId: string
+  status: ReviewPreparationStatus
+  stage: ReviewPreparationStage
+  progressPercent: number
+  completedItems: number
+  totalItems: number
 }
 
 export interface SubmitReviewAnswerRequest {

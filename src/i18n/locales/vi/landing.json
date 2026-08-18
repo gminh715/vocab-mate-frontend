@@ -37,7 +37,7 @@
     "contextTitle": "Nghĩa theo ngữ cảnh AI",
     "contextDesc": "AI phân tích chính xác nghĩa của từ trong câu cụ thể, không dùng dịch tự động thô ráp hay nghĩa từ điển chung chung.",
     "cefrTitle": "Tô sáng theo CEFR (A1 - C2)",
-    "cefrDesc": "Tự động quét bài báo và tô sáng các từ vựng phù hợp hoặc vượt trình độ mục tiêu của bạn để học đúng trọng tâm.",
+    "cefrDesc": "Tự động quét bài báo và tô sáng từ vựng từ trình độ CEFR hiện tại đến trình độ mục tiêu của bạn.",
     "srTitle": "Ôn tập Spaced Repetition",
     "srDesc": "Hệ thống lặp lại ngắt quãng tính toán chính xác 'thời điểm vàng' bạn sắp quên để nhắc nhở ôn tập tối ưu trí nhớ.",
     "quizTitle": "Quiz AI tự động khởi tạo",

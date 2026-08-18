@@ -15,6 +15,8 @@ import type {
   ChangePasswordRequest,
   CurrentUser,
   MessageData,
+  PublicUser,
+  RegistrationData,
 } from '@/types/Auth/auth'
 
 const getCurrentUser = (): Promise<CurrentUser> =>
@@ -42,14 +44,13 @@ export const authApi = {
     return establishSession(auth)
   },
 
-  async register(values: RegisterFormValues): Promise<CurrentUser> {
+  async register(values: RegisterFormValues): Promise<PublicUser> {
     const request = registerSchema.parse(values)
-    const auth = await apiClient.post<AuthData>('/auth/register', request, {
+    const registration = await apiClient.post<RegistrationData>('/auth/register', request, {
       skipAuth: true,
       skipAuthRefresh: true,
     })
-
-    return establishSession(auth)
+    return registration.user
   },
 
   async refreshSession(): Promise<CurrentUser> {

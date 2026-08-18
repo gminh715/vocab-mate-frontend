@@ -68,8 +68,8 @@
     },
     "vocabulary": {
       "panelTitle": "Vocabulary",
-      "noHighlights": "No terms are highlighted for your current level. You can still look up vocabulary prepared for this article.",
-      "hasHighlights": "Highlighted words match your learning level. Turn on lookup to explore any vocabulary prepared for this article, including easier terms.",
+      "noHighlights": "No terms fall between your current and target CEFR levels. You can still look up vocabulary prepared for this article.",
+      "hasHighlights": "Highlighted words range from your current CEFR through your target CEFR. Turn on lookup to explore all vocabulary prepared for this article.",
       "turnOn": "Turn on vocabulary lookup",
       "turnOff": "Turn off vocabulary lookup",
       "statusOff": "Vocabulary lookup is off.",
@@ -78,6 +78,73 @@
       "statusOpen": "Vocabulary details are open."
     },
     "termInstructions": "Vocabulary term. Press Enter or Space to select it. Use arrow keys to move between marked terms."
+  },
+  "lookup": {
+    "eyebrow": "Contextual vocabulary",
+    "title": "Vocabulary lookup",
+    "description": "Details for this sentence occurrence.",
+    "close": "Close",
+    "loading": "Loading vocabulary details…",
+    "tryAgain": "Try again",
+    "errors": {
+      "disabled": "Lookup is disabled for this contextual term.",
+      "notFound": "This contextual term is no longer available in the article.",
+      "preparing": "This term is being prepared. Please try again shortly.",
+      "load": "Vocabulary details could not be loaded. Try again."
+    },
+    "details": {
+      "meaningInSentence": "Meaning in this sentence",
+      "meaningUnavailable": "Vietnamese meaning unavailable",
+      "lemma": "Lemma",
+      "partOfSpeech": "Part of speech",
+      "cefrLevel": "CEFR level",
+      "termType": "Term type",
+      "topic": "Topic",
+      "skill": "Skill",
+      "unitTypes": {
+        "WORD": "Word",
+        "PHRASE": "Phrase"
+      }
+    },
+    "sections": {
+      "englishDefinition": "English definition",
+      "contextualExplanation": "Contextual explanation",
+      "sourceSentence": "Source sentence",
+      "sentenceExplanation": "Sentence explanation",
+      "referenceNote": "Reference note",
+      "examples": "Examples",
+      "synonyms": "Synonyms",
+      "antonyms": "Antonyms",
+      "collocations": "Collocations",
+      "relatedTerms": "Related terms",
+      "saveTerm": "Save this term"
+    },
+    "save": {
+      "alreadySaved": "This term is already saved. Refreshing its saved state…",
+      "noCollections": "You don't have any collections yet. Create a collection before saving vocabulary.",
+      "collectionsLabel": "Collections (Required)",
+      "collectionsHelp": "Select one or more collections to add this word to.",
+      "noteLabel": "Personal note (optional)",
+      "noteHelp": "Add a note for this contextual occurrence.",
+      "saving": "Saving…",
+      "submit": "Save Vocabulary",
+      "additional": {
+        "title": "Add to another collection",
+        "selectLabel": "Select Collection",
+        "adding": "Adding…",
+        "add": "Add",
+        "alreadyAdded": "Word is already in this collection.",
+        "added": "Added to collection successfully!",
+        "error": "Failed to add to collection."
+      },
+      "errors": {
+        "signIn": "Sign in to save vocabulary.",
+        "collectionsUnavailable": "One or more selected collections are no longer available. Review your collections and try again.",
+        "generic": "Vocabulary could not be saved. Try again.",
+        "collectionRequired": "Please select at least one valid collection.",
+        "noteTooLong": "Personal note must be 2,000 characters or fewer."
+      }
+    }
   },
   "history": {
     "title": "Reading history",

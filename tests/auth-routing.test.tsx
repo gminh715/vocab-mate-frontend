@@ -23,6 +23,7 @@ import type {
   AdminUserListData,
 } from '@/types/Admin/adminUsers'
 import type { CurrentUser } from '@/types/Auth/auth'
+import i18n from '@/i18n/i18n'
 
 const userAccount: CurrentUser = {
   id: 'user-1',
@@ -34,6 +35,7 @@ const userAccount: CurrentUser = {
     avatarUrl: null,
     currentCefrLevel: 'B1',
     learningGoal: null,
+    dailyStudyMinutes: 10,
     preferredLanguage: 'en',
   },
 }
@@ -122,7 +124,8 @@ const completeLogin = async (
 }
 
 describe('Auth routing and forms', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('en')
     vi.spyOn(authApi, 'restoreSession').mockResolvedValue(null)
     vi.spyOn(adminUsersApi, 'list').mockResolvedValue(adminUserList)
     vi.spyOn(adminUsersApi, 'detail').mockResolvedValue(adminUserDetail)
@@ -172,10 +175,15 @@ describe('Auth routing and forms', () => {
     ).toBeInTheDocument()
   })
 
-  it('registers without sending password confirmation and enters the app', async () => {
+  it('registers without learning-profile fields and asks the user to sign in', async () => {
     const registerSpy = vi
       .spyOn(authApi, 'register')
-      .mockResolvedValue(userAccount)
+      .mockResolvedValue({
+        id: userAccount.id,
+        email: userAccount.email,
+        role: userAccount.role,
+        status: userAccount.status,
+      })
     const { router } = renderRoute(['/register'])
     const user = userEvent.setup()
 
@@ -188,11 +196,14 @@ describe('Auth routing and forms', () => {
     )
     await user.click(screen.getByRole('button', { name: 'Create Account' }))
 
-    await screen.findByRole('heading', { name: 'Welcome back, Learner.' })
-    expect(router.state.location.pathname).toBe('/')
+    await screen.findByRole('heading', { name: 'Welcome Back' })
+    expect(screen.getByText('Account created. Sign in to set up your learning plan.')).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/login')
     expect(registerSpy.mock.calls[0]?.[0]).not.toHaveProperty(
       'confirmPassword',
     )
+    expect(registerSpy.mock.calls[0]?.[0]).not.toHaveProperty('currentCefrLevel')
+    expect(registerSpy.mock.calls[0]?.[0]).not.toHaveProperty('learningGoal')
   })
 
   it('places a duplicate-email error beside the email field', async () => {

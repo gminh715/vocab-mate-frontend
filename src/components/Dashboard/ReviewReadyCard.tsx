@@ -6,11 +6,10 @@ import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { ReviewPlanDialog } from '@/components/Review/ReviewPlanDialog'
 import { normalizeApiError } from '@/config/apiClient'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   useActiveReviewSessionQuery,
   useTodayReviewsQuery,
@@ -25,7 +24,7 @@ const numberFormatter = new Intl.NumberFormat()
 export function ReviewReadyCard() {
   const { t } = useTranslation('home')
   const navigate = useNavigate()
-  const [planDialogOpen, setPlanDialogOpen] = useState(false)
+  const { currentUser } = useAuth()
   const todayQuery = useTodayReviewsQuery()
   const activeQuery = useActiveReviewSessionQuery()
   const activeSession = activeQuery.data
@@ -38,7 +37,9 @@ export function ReviewReadyCard() {
   const activeRemaining = activeSession?.progress.remainingCount
   const displayedItemCount = activeRemaining ?? dueCount
   const displayedDuration =
-    activeSession?.session.targetDurationMinutes ?? 10
+    activeSession?.session.targetDurationMinutes ??
+    currentUser?.profile.dailyStudyMinutes ??
+    10
   const canStart = Boolean(activeSession) || dueCount > 0
 
   return (
@@ -207,29 +208,21 @@ export function ReviewReadyCard() {
               todayQuery.isError ||
               (!canStart && todayQuery.data !== undefined && dueCount === 0)
             }
-            onClick={() => setPlanDialogOpen(true)}
+            onClick={() =>
+              navigate(
+                reviewStartPath({
+                  sessionType: 'DAILY_REVIEW',
+                  targetDurationMinutes: displayedDuration,
+                  reviewGoal: 'BALANCED',
+                }),
+              )
+            }
             sx={{ py: 1.5, px: 3, borderRadius: 2, boxShadow: 2, whiteSpace: 'nowrap' }}
           >
             {dueCount > 0 ? t('review.startReview') : t('review.noReviewsDue')}
           </Button>
         )}
       </Box>
-      <ReviewPlanDialog
-        open={planDialogOpen}
-        dueCount={dueCount}
-        estimates={todayQuery.data?.dailyReviewEstimates ?? []}
-        onClose={() => setPlanDialogOpen(false)}
-        onStart={({ targetDurationMinutes, reviewGoal }) => {
-          setPlanDialogOpen(false)
-          navigate(
-            reviewStartPath({
-              sessionType: 'DAILY_REVIEW',
-              targetDurationMinutes,
-              reviewGoal,
-            }),
-          )
-        }}
-      />
     </Paper>
   )
 }

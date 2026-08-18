@@ -1,4 +1,99 @@
 {
+  "preparation": {
+    "eyebrow": "Xưởng ôn tập",
+    "title": "Đang chuẩn bị lượt ôn",
+    "percentLabel": "Tiến độ chuẩn bị lượt ôn: {{percent}} phần trăm",
+    "progressLabel": "Tiến độ chuẩn bị lượt ôn",
+    "itemProgress": "Đã chuẩn bị {{completed}}/{{total}} từ",
+    "note": "Bạn có thể rời màn hình và quay lại sau. Các câu hỏi đã tạo sẽ được lưu ngay khi sẵn sàng.",
+    "stages": {
+      "SELECTING_VOCABULARY": "Đang chọn những từ hữu ích nhất cho hôm nay…",
+      "CHECKING_CACHE": "Đang kiểm tra các câu hỏi đã có sẵn…",
+      "GENERATING_QUESTIONS": "Đang tạo câu hỏi mới từ ngữ cảnh bạn đã lưu…",
+      "CREATING_SESSION": "Đang đưa câu hỏi vào lượt ôn…",
+      "PLANNING_SESSION": "Đang cân bằng thứ tự và trọng tâm học…",
+      "READY": "Lượt ôn đã sẵn sàng.",
+      "FAILED": "Quá trình chuẩn bị đã dừng trước khi lượt ôn sẵn sàng."
+    }
+  },
+  "fillBlank": {
+    "slotLabel": "Chỗ trống gồm {{wordCount}} từ và {{characterCount}} chữ cái; đã gợi ý {{revealed}} chữ",
+    "hintFirst": "Gợi ý một chữ",
+    "hintNext": "Gợi ý thêm một chữ",
+    "hintLoading": "Đang mở gợi ý…",
+    "hintComplete": "Đã hiện toàn bộ chữ",
+    "hintError": "Không tải được từ gợi ý tiếp theo. Hãy thử lại.",
+    "hintStale": "Câu hỏi đã thay đổi. Hãy tải lại lượt ôn trước khi xem gợi ý tiếp theo."
+  },
+  "starter": {
+    "invalidLink": "Liên kết ôn tập không hợp lệ. Hãy về trang chủ và chọn lại lượt ôn.",
+    "emptyTitle": "Chưa có từ nào sẵn sàng để ôn",
+    "errorTitle": "Không thể bắt đầu lượt ôn",
+    "emptyDescription": "Chưa có từ đã lưu nào đến lúc ôn. Hãy tiếp tục đọc bài hoặc chọn bộ sưu tập khác.",
+    "errorDescription": "Các từ đã lưu của bạn vẫn an toàn. Hãy kiểm tra kết nối và thử lại.",
+    "tryAgain": "Thử lại"
+  },
+  "progress": {
+    "question": "Câu {{current}}/{{total}}",
+    "remaining": "Còn {{count}} câu",
+    "ariaLabel": "Tiến độ ôn tập"
+  },
+  "question": {
+    "types": {
+      "fillBlank": "Hoàn thành câu",
+      "chooseAnswer": "Chọn một đáp án"
+    },
+    "answerLabel": "Câu trả lời của bạn",
+    "answerChoices": "Các lựa chọn trả lời",
+    "hints": {
+      "fillBlank": {
+        "context": "Đọc toàn bộ câu và xác định loại từ phù hợp với chỗ trống.",
+        "grammar": "Quan sát các từ bên cạnh để tìm dấu hiệu về thì, dạng từ hoặc số ít/số nhiều."
+      },
+      "selectMeaning": {
+        "context": "Nhớ lại cách từ này được dùng trong câu gốc.",
+        "specific": "Chọn nghĩa cụ thể nhất phù hợp với ngữ cảnh đó."
+      },
+      "selectWord": {
+        "rephrase": "Tự diễn đạt nghĩa trước khi xem lại các lựa chọn.",
+        "form": "Tìm từ có dạng và sắc thái phù hợp nhất với nghĩa đã cho."
+      },
+      "selectContext": {
+        "meaning": "Tìm câu mà từ này mang đúng nghĩa bạn đã học.",
+        "eliminate": "Đọc từng lựa chọn cùng từ mục tiêu và loại các ngữ cảnh không liên quan."
+      }
+    }
+  },
+  "actions": {
+    "saveExit": "Lưu và thoát",
+    "endSession": "Kết thúc lượt ôn",
+    "useLatestQuestion": "Dùng câu hỏi mới nhất",
+    "refresh": "Tải lại",
+    "hint": "Gợi ý",
+    "anotherHint": "Gợi ý thêm",
+    "skipping": "Đang bỏ qua…",
+    "skip": "Bỏ qua",
+    "continue": "Tiếp tục",
+    "checking": "Đang kiểm tra…",
+    "checkAnswer": "Kiểm tra đáp án"
+  },
+  "errors": {
+    "nextQuestionUnavailable": "Câu hỏi tiếp theo chưa sẵn sàng. Hãy tải lại lượt ôn để tiếp tục.",
+    "staleReady": "Câu hỏi đã thay đổi ở một yêu cầu khác. Trạng thái mới nhất đã sẵn sàng.",
+    "staleLoadFailed": "Không thể tải trạng thái mới nhất. Hãy thử tải lại lần nữa.",
+    "staleLoading": "Câu hỏi đã thay đổi. Đang tải trạng thái mới nhất…",
+    "answerSave": "Không thể lưu câu trả lời. Hãy kiểm tra kết nối và thử lại.",
+    "skip": "Không thể bỏ qua từ này. Hãy kiểm tra kết nối và thử lại.",
+    "endConflict": "Lượt ôn đã thay đổi trước khi có thể kết thúc. Hãy đóng hộp thoại và tải lại lượt ôn.",
+    "end": "Không thể kết thúc lượt ôn. Hãy kiểm tra kết nối và thử lại.",
+    "sessionUnavailable": "Lượt ôn này không còn khả dụng.",
+    "restore": "Không thể khôi phục lượt ôn. Vui lòng thử lại."
+  },
+  "endDialog": {
+    "title": "Kết thúc lượt ôn này?",
+    "description": "Lượt ôn sẽ đóng và không thể tiếp tục sau này. Nếu muốn quay lại học tiếp, hãy chọn Lưu và thoát.",
+    "pending": "Đang kết thúc…"
+  },
   "plan": {
     "eyebrow": "Kế Hoạch Ôn Tập",
     "title": "Một Lượt Luyện Tập Có Trọng Tâm",
@@ -24,6 +119,10 @@
     "pattern": "Dạng lỗi: {{error}}",
     "example": "Ví dụ",
     "retest": "Từ này sẽ xuất hiện lại sau {{count}} câu nữa trong một dạng bài khác.",
+    "correctTitle": "Chính xác!",
+    "movingNext": "Đang chuyển sang từ tiếp theo…",
+    "correctAnswer": "Đáp án đúng: {{answer}}",
+    "returnLater": "Từ này sẽ xuất hiện lại gần cuối lượt ôn với một câu hỏi khác.",
     "skills": {
       "RECOGNITION": "Nhận diện",
       "RECALL": "Gợi nhớ",
@@ -52,7 +151,9 @@
   "session": {
     "skipToReview": "Chuyển Đến Phần Ôn Tập",
     "ended": "Phiên ôn tập này đã kết thúc và không thể tiếp tục.",
-    "backHome": "Về Trang Chủ"
+    "backHome": "Về Trang Chủ",
+    "exit": "Thoát",
+    "restoring": "Đang khôi phục lượt ôn…"
   },
   "summary": {
     "loading": "Đang tải tổng kết ôn tập…",

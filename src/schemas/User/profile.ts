@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import {
   CEFR_LEVELS,
+  DAILY_STUDY_MINUTES,
   type CefrLevel,
   type UpdateMyProfileRequest,
   type UserProfile,
@@ -42,6 +43,11 @@ export const profileFormSchema = z
         })
         .optional(),
     ),
+    dailyStudyMinutes: z.union([
+      z.literal(5),
+      z.literal(10),
+      z.literal(15),
+    ]),
     preferredLanguage: z.enum(PREFERRED_LANGUAGES, {
       error: 'Choose a supported language.',
     }),
@@ -49,13 +55,13 @@ export const profileFormSchema = z
   .superRefine(({ currentCefrLevel, learningGoal }, context) => {
     if (
       learningGoal &&
-      cefrRank(learningGoal) <= cefrRank(currentCefrLevel)
+      cefrRank(learningGoal) < cefrRank(currentCefrLevel)
     ) {
       context.addIssue({
         code: 'custom',
         path: ['learningGoal'],
         message:
-          'Learning goal must be higher than your current CEFR level.',
+          'Learning goal cannot be lower than your current CEFR level.',
       })
     }
   })
@@ -70,6 +76,7 @@ export const profileToFormValues = (
   avatarUrl: profile.avatarUrl ?? '',
   currentCefrLevel: profile.currentCefrLevel,
   learningGoal: profile.learningGoal ?? '',
+  dailyStudyMinutes: profile.dailyStudyMinutes ?? DAILY_STUDY_MINUTES[1],
   preferredLanguage:
     profile.preferredLanguage === 'en' ? 'en' : 'vi',
 })
@@ -91,6 +98,9 @@ export const toUpdateMyProfileRequest = (
   }
   if (values.learningGoal && values.learningGoal !== current.learningGoal) {
     request.learningGoal = values.learningGoal
+  }
+  if (values.dailyStudyMinutes !== current.dailyStudyMinutes) {
+    request.dailyStudyMinutes = values.dailyStudyMinutes
   }
   if (values.preferredLanguage !== current.preferredLanguage) {
     request.preferredLanguage = values.preferredLanguage

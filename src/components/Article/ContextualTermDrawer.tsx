@@ -20,6 +20,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Controller, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { normalizeApiError } from '@/config/apiClient'
 import { useAddCollectionItemsMutation, useCollectionsQuery } from '@/hooks/Vocabulary/useCollections'
 import { useContextualTermQuery } from '@/hooks/Reading/useReading'
@@ -120,15 +121,15 @@ function TermList({
   )
 }
 
-const saveErrorMessage = (error: unknown): string => {
+const saveErrorKey = (error: unknown) => {
   const normalized = normalizeApiError(error)
   if (normalized.status === 401) {
-    return 'Sign in to save vocabulary.'
+    return 'lookup.save.errors.signIn' as const
   }
   if (normalized.status === 422) {
-    return 'One or more selected collections are no longer available. Review your collections and try again.'
+    return 'lookup.save.errors.collectionsUnavailable' as const
   }
-  return 'Vocabulary could not be saved. Try again.'
+  return 'lookup.save.errors.generic' as const
 }
 
 function SaveVocabularyForm({
@@ -138,6 +139,7 @@ function SaveVocabularyForm({
   articleId: string
   data: ContextualTermLookupData
 }) {
+  const { t } = useTranslation('articles')
   const saveMutation = useSaveVocabularyMutation(articleId, data.term.id)
   const addCollectionMutation = useAddCollectionItemsMutation()
   const { data: collectionsData, isLoading: isLoadingCollections } =
@@ -185,14 +187,14 @@ function SaveVocabularyForm({
       {
         onSuccess: (res: AddCollectionItemsResponse) => {
           if (res.skippedCount > 0) {
-            setAddFeedback('Word is already in this collection.')
+            setAddFeedback(t('lookup.save.additional.alreadyAdded'))
           } else {
-            setAddFeedback('Added to collection successfully!')
+            setAddFeedback(t('lookup.save.additional.added'))
           }
           setAddCollectionId('')
         },
         onError: () => {
-          setAddFeedback('Failed to add to collection.')
+          setAddFeedback(t('lookup.save.additional.error'))
         },
       },
     )
@@ -204,7 +206,7 @@ function SaveVocabularyForm({
         {data.saveState.userVocabularyId && collections.length > 0 ? (
           <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
             <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
-              Add to another Collection
+              {t('lookup.save.additional.title')}
             </Typography>
 
             {addFeedback ? (
@@ -215,11 +217,13 @@ function SaveVocabularyForm({
 
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
               <FormControl size="small" fullWidth>
-                <InputLabel id="add-to-collection-select-label">Select Collection</InputLabel>
+                <InputLabel id="add-to-collection-select-label">
+                  {t('lookup.save.additional.selectLabel')}
+                </InputLabel>
                 <Select
                   labelId="add-to-collection-select-label"
                   value={addCollectionId}
-                  label="Select Collection"
+                  label={t('lookup.save.additional.selectLabel')}
                   onChange={(e) => setAddCollectionId(e.target.value)}
                   disabled={addCollectionMutation.isPending}
                 >
@@ -237,7 +241,9 @@ function SaveVocabularyForm({
                 disabled={!addCollectionId || addCollectionMutation.isPending}
                 sx={{ whiteSpace: 'nowrap' }}
               >
-                {addCollectionMutation.isPending ? 'Adding…' : 'Add'}
+                {addCollectionMutation.isPending
+                  ? t('lookup.save.additional.adding')
+                  : t('lookup.save.additional.add')}
               </Button>
             </Stack>
           </Paper>
@@ -260,17 +266,19 @@ function SaveVocabularyForm({
       <Stack spacing={2}>
         {saveError?.status === 409 ? (
           <Alert severity="info" aria-live="polite">
-            This term is already saved. Refreshing its saved state…
+            {t('lookup.save.alreadySaved')}
           </Alert>
         ) : saveMutation.error ? (
-          <Alert severity="error">{saveErrorMessage(saveMutation.error)}</Alert>
+          <Alert severity="error">
+            {t(saveErrorKey(saveMutation.error))}
+          </Alert>
         ) : null}
 
         {isLoadingCollections ? (
           <CircularProgress size={24} />
         ) : collections.length === 0 ? (
           <Alert severity="warning">
-            You don&apos;t have any collections yet. Please create a collection first before saving vocabulary.
+            {t('lookup.save.noCollections')}
           </Alert>
         ) : (
           <Controller
@@ -284,14 +292,16 @@ function SaveVocabularyForm({
                 size="small"
               >
                 <InputLabel id="select-collections-label">
-                  Collections (Required)
+                  {t('lookup.save.collectionsLabel')}
                 </InputLabel>
                 <Select
                   labelId="select-collections-label"
                   multiple
                   value={field.value}
                   onChange={field.onChange}
-                  input={<OutlinedInput label="Collections (Required)" />}
+                  input={
+                    <OutlinedInput label={t('lookup.save.collectionsLabel')} />
+                  }
                   renderValue={(selected) =>
                     collections
                       .filter((c: CollectionListItem) => selected.includes(c.id))
@@ -307,10 +317,12 @@ function SaveVocabularyForm({
                   ))}
                 </Select>
                 {errors.collectionIds ? (
-                  <FormHelperText>{errors.collectionIds.message}</FormHelperText>
+                  <FormHelperText>
+                    {t('lookup.save.errors.collectionRequired')}
+                  </FormHelperText>
                 ) : (
                   <FormHelperText>
-                    Select one or more collections to add this word to.
+                    {t('lookup.save.collectionsHelp')}
                   </FormHelperText>
                 )}
               </FormControl>
@@ -319,13 +331,14 @@ function SaveVocabularyForm({
         )}
 
         <TextField
-          label="Personal note (optional)"
+          label={t('lookup.save.noteLabel')}
           multiline
           minRows={2}
           error={Boolean(errors.personalNote)}
           helperText={
-            errors.personalNote?.message ??
-            'Add a note for this contextual occurrence.'
+            errors.personalNote
+              ? t('lookup.save.errors.noteTooLong')
+              : t('lookup.save.noteHelp')
           }
           slotProps={{ htmlInput: { maxLength: 2_000 } }}
           {...register('personalNote')}
@@ -337,7 +350,9 @@ function SaveVocabularyForm({
           disabled={saveMutation.isPending || isLoadingCollections || collections.length === 0}
           fullWidth
         >
-          {saveMutation.isPending ? 'Saving…' : 'Save Vocabulary'}
+          {saveMutation.isPending
+            ? t('lookup.save.saving')
+            : t('lookup.save.submit')}
         </Button>
       </Stack>
     </Box>
@@ -351,6 +366,7 @@ function LookupDetails({
   articleId: string
   data: ContextualTermLookupData
 }) {
+  const { t } = useTranslation('articles')
   const { term, parentSentence } = data
   const examples = displayExamples(term.examples)
   const hasOptionalIdentity =
@@ -378,7 +394,7 @@ function LookupDetails({
             textTransform: 'uppercase',
           }}
         >
-          Meaning in this sentence
+          {t('lookup.details.meaningInSentence')}
         </Typography>
         <Typography
           sx={{
@@ -390,7 +406,7 @@ function LookupDetails({
             overflowWrap: 'anywhere',
           }}
         >
-          {(term.contextualMeaningVi ?? 'Vietnamese meaning unavailable').normalize('NFC')}
+          {(term.contextualMeaningVi ?? t('lookup.details.meaningUnavailable')).normalize('NFC')}
         </Typography>
       </Paper>
 
@@ -412,21 +428,21 @@ function LookupDetails({
         }}
       >
         <Box>
-          <Typography component="dt">Lemma</Typography>
+          <Typography component="dt">{t('lookup.details.lemma')}</Typography>
           <Typography component="dd">{term.lemma}</Typography>
         </Box>
         <Box>
-          <Typography component="dt">Part of speech</Typography>
+          <Typography component="dt">{t('lookup.details.partOfSpeech')}</Typography>
           <Typography component="dd">{term.partOfSpeech}</Typography>
         </Box>
         <Box>
-          <Typography component="dt">CEFR level</Typography>
+          <Typography component="dt">{t('lookup.details.cefrLevel')}</Typography>
           <Typography component="dd">{term.cefrLevel}</Typography>
         </Box>
         <Box>
-          <Typography component="dt">Term type</Typography>
+          <Typography component="dt">{t('lookup.details.termType')}</Typography>
           <Typography component="dd">
-            {term.unitType === 'PHRASE' ? 'Phrase' : 'Word'}
+            {t(`lookup.details.unitTypes.${term.unitType}`)}
           </Typography>
         </Box>
         {hasOptionalIdentity && hasText(term.ipa) ? (
@@ -437,20 +453,20 @@ function LookupDetails({
         ) : null}
         {hasOptionalIdentity && hasText(term.vocabularyTopic) ? (
           <Box>
-            <Typography component="dt">Topic</Typography>
+            <Typography component="dt">{t('lookup.details.topic')}</Typography>
             <Typography component="dd">{term.vocabularyTopic}</Typography>
           </Box>
         ) : null}
         {hasOptionalIdentity && hasText(term.skill) ? (
           <Box>
-            <Typography component="dt">Skill</Typography>
+            <Typography component="dt">{t('lookup.details.skill')}</Typography>
             <Typography component="dd">{term.skill}</Typography>
           </Box>
         ) : null}
       </Box>
 
       {hasText(term.definitionEn) ? (
-        <DetailSection title="English definition">
+        <DetailSection title={t('lookup.sections.englishDefinition')}>
           <Typography sx={{ lineHeight: 1.7 }}>
             {term.definitionEn}
           </Typography>
@@ -458,14 +474,14 @@ function LookupDetails({
       ) : null}
 
       {hasText(term.contextualExplanation) ? (
-        <DetailSection title="Contextual explanation">
+        <DetailSection title={t('lookup.sections.contextualExplanation')}>
           <Typography sx={{ lineHeight: 1.7 }}>
             {term.contextualExplanation}
           </Typography>
         </DetailSection>
       ) : null}
 
-      <DetailSection title="Source sentence">
+      <DetailSection title={t('lookup.sections.sourceSentence')}>
         <Paper
           component="blockquote"
           variant="outlined"
@@ -489,7 +505,7 @@ function LookupDetails({
       </DetailSection>
 
       {hasText(parentSentence.explanationVi) ? (
-        <DetailSection title="Sentence explanation">
+        <DetailSection title={t('lookup.sections.sentenceExplanation')}>
           <Typography sx={{ lineHeight: 1.7 }}>
             {parentSentence.explanationVi}
           </Typography>
@@ -497,7 +513,7 @@ function LookupDetails({
       ) : null}
 
       {hasText(parentSentence.referenceExplanation) ? (
-        <DetailSection title="Reference note">
+        <DetailSection title={t('lookup.sections.referenceNote')}>
           <Typography sx={{ lineHeight: 1.7 }}>
             {parentSentence.referenceExplanation}
           </Typography>
@@ -505,7 +521,7 @@ function LookupDetails({
       ) : null}
 
       {examples.length > 0 ? (
-        <DetailSection title="Examples">
+        <DetailSection title={t('lookup.sections.examples')}>
           <Box component="ol" sx={{ m: 0, pl: 2.5 }}>
             {examples.map((example, index) => (
               <Box
@@ -531,14 +547,14 @@ function LookupDetails({
         </DetailSection>
       ) : null}
 
-      <TermList title="Synonyms" items={term.synonyms} />
-      <TermList title="Antonyms" items={term.antonyms} />
-      <TermList title="Collocations" items={term.collocations} />
-      <TermList title="Related terms" items={term.relatedTerms} />
+      <TermList title={t('lookup.sections.synonyms')} items={term.synonyms} />
+      <TermList title={t('lookup.sections.antonyms')} items={term.antonyms} />
+      <TermList title={t('lookup.sections.collocations')} items={term.collocations} />
+      <TermList title={t('lookup.sections.relatedTerms')} items={term.relatedTerms} />
 
       <Divider />
 
-      <DetailSection title="Save this term">
+      <DetailSection title={t('lookup.sections.saveTerm')}>
         <SaveVocabularyForm articleId={articleId} data={data} />
       </DetailSection>
     </Stack>
@@ -558,6 +574,7 @@ export function ContextualTermDrawer({
   open,
   onClose,
 }: ContextualTermDrawerProps) {
+  const { t } = useTranslation('articles')
   const lookupQuery = useContextualTermQuery(
     articleId,
     termId ?? '',
@@ -617,7 +634,7 @@ export function ContextualTermDrawer({
                 textTransform: 'uppercase',
               }}
             >
-              Contextual vocabulary
+              {t('lookup.eyebrow')}
             </Typography>
             <Typography
               id="contextual-term-drawer-title"
@@ -630,7 +647,7 @@ export function ContextualTermDrawer({
                 textWrap: 'balance',
               }}
             >
-              {lookupQuery.data?.term.wordDisplay ?? 'Vocabulary lookup'}
+              {lookupQuery.data?.term.wordDisplay ?? t('lookup.title')}
             </Typography>
             <Typography
               id="contextual-term-drawer-description"
@@ -638,11 +655,11 @@ export function ContextualTermDrawer({
               variant="body2"
               sx={{ mt: 0.5 }}
             >
-              Details for this sentence occurrence.
+              {t('lookup.description')}
             </Typography>
           </Box>
           <Button type="button" color="inherit" onClick={onClose}>
-            Close
+            {t('lookup.close')}
           </Button>
         </Stack>
       </Box>
@@ -660,19 +677,19 @@ export function ContextualTermDrawer({
         >
           <CircularProgress size={34} />
           <Typography color="text.secondary">
-            Loading vocabulary details…
+            {t('lookup.loading')}
           </Typography>
         </Stack>
       ) : lookupQuery.isError ? (
         <Stack spacing={2} sx={{ p: { xs: 2.5, sm: 3.5 } }}>
           <Alert severity={apiError?.status === 403 ? 'warning' : 'error'}>
             {apiError?.status === 403
-              ? 'Lookup is disabled for this contextual term.'
+              ? t('lookup.errors.disabled')
               : apiError?.status === 404
-                ? 'This contextual term is no longer available in the article.'
+                ? t('lookup.errors.notFound')
                 : apiError?.status === 409 || apiError?.status === 503
-                  ? 'This term is being prepared. Please try again shortly.'
-                : 'Vocabulary details could not be loaded. Try again.'}
+                  ? t('lookup.errors.preparing')
+                  : t('lookup.errors.load')}
           </Alert>
           {apiError?.status !== 403 && apiError?.status !== 404 ? (
             <Button
@@ -680,7 +697,7 @@ export function ContextualTermDrawer({
               onClick={() => lookupQuery.refetch()}
               sx={{ alignSelf: 'flex-start' }}
             >
-              Try again
+              {t('lookup.tryAgain')}
             </Button>
           ) : null}
         </Stack>

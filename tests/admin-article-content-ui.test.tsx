@@ -1,6 +1,12 @@
 import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -373,13 +379,13 @@ describe('Admin article content workspace', () => {
     expect(await screen.findByText('Article archived.')).toBeInTheDocument()
   })
 
-  it('runs local vocabulary analysis and shows approved WinkNLP terms with deferred metadata', async () => {
+  it('runs local CEFR vocabulary analysis and shows the assigned term level', async () => {
     const nlpTerm: ArticleTermListItem = {
       ...termListItem,
       wordDisplay: null,
       normalizedLemma: null,
       partOfSpeech: null,
-      cefrLevel: null,
+      cefrLevel: 'B1',
       contextualMeaningVi: null,
       origin: 'NLP',
       reviewStatus: 'APPROVED',
@@ -409,20 +415,24 @@ describe('Admin article content workspace', () => {
       await screen.findByRole('button', { name: 'Analyze vocabulary' }),
     )
     expect(
-      screen.getByText(/tokenizes every current sentence locally with WinkNLP/i),
+      screen.getByText(/uses cefr-analyzer to set the article CEFR/i),
     ).toBeInTheDocument()
+    const analysisDialog = screen.getByRole('dialog', {
+      name: 'Analyze this draft',
+    })
     await user.click(
-      within(
-        screen.getByRole('dialog', { name: 'Analyze this draft' }),
-      ).getByRole('button', { name: 'Run analysis' }),
+      within(analysisDialog).getByRole('button', { name: 'Run analysis' }),
     )
 
     await waitFor(() => expect(analyze).toHaveBeenCalledWith(articleId))
     expect(
-      await screen.findByText(/vocabulary analysis created 1 terms/i),
+      await screen.findByText(
+        /vocabulary analysis created 1 terms and set article CEFR to B1/i,
+      ),
     ).toBeInTheDocument()
+    await waitForElementToBeRemoved(analysisDialog)
     expect(await screen.findByText('Digital tools')).toBeInTheDocument()
-    expect(screen.getByText('CEFR pending')).toBeInTheDocument()
+    expect(screen.getByText('B1')).toBeInTheDocument()
     expect(adminArticleContentApi.listTerms).toHaveBeenLastCalledWith(
       articleId,
       expect.objectContaining({

@@ -16,6 +16,7 @@ import { profileApi } from '@/api/User/ProfileApi'
 import { authApi } from '@/api/Auth/AuthApi'
 import { AuthProvider } from '@/components/Auth/AuthProvider'
 import { UserAvatar } from '@/components/Shared/UserAvatar'
+import { authQueryKeys } from '@/hooks/Auth/useAuth'
 import { readingQueryKeys } from '@/hooks/Reading/useReading'
 import { AppRoutes } from '@/routes/AppRoutes'
 import {
@@ -38,6 +39,7 @@ const currentUser: CurrentUser = {
     avatarUrl: null,
     currentCefrLevel: 'B1',
     learningGoal: 'C1',
+    dailyStudyMinutes: 10,
     preferredLanguage: 'en',
   },
 }
@@ -88,6 +90,7 @@ describe('profile DTO mapping and validation', () => {
         avatarUrl: undefined,
         currentCefrLevel: 'B1',
         learningGoal: 'C1',
+        dailyStudyMinutes: 10,
         preferredLanguage: 'en',
       },
       currentUser.profile,
@@ -95,7 +98,6 @@ describe('profile DTO mapping and validation', () => {
 
     expect(request).toEqual({
       displayName: 'Mai Nguyen',
-      preferredLanguage: 'en',
     })
     expect(request).not.toHaveProperty('email')
     expect(request).not.toHaveProperty('role')
@@ -109,6 +111,7 @@ describe('profile DTO mapping and validation', () => {
       avatarUrl: '',
       currentCefrLevel: 'B2',
       learningGoal: 'C1',
+      dailyStudyMinutes: 10,
       preferredLanguage: '',
     })
 
@@ -126,13 +129,14 @@ describe('profile DTO mapping and validation', () => {
       avatarUrl: '',
       currentCefrLevel: 'B2',
       learningGoal: 'B1',
+      dailyStudyMinutes: 10,
       preferredLanguage: 'en',
     })
 
     expect(invalid.success).toBe(false)
     if (invalid.success) return
     expect(invalid.error.flatten().fieldErrors.learningGoal).toEqual([
-      'Learning goal must be higher than your current CEFR level.',
+      'Learning goal cannot be lower than your current CEFR level.',
     ])
   })
 })
@@ -171,7 +175,7 @@ describe('Profile settings UI', () => {
       .mockResolvedValue(
         updateResult({
           ...currentUser.profile,
-          preferredLanguage: 'en',
+          preferredLanguage: 'vi',
         }),
       )
     renderSettings()
@@ -191,15 +195,15 @@ describe('Profile settings UI', () => {
     ).toBeInTheDocument()
     await user.click(
       screen.getByRole('menuitem', {
-        name: /Language settings Current: VI · Switch to EN/,
+        name: /Language settings Current: EN · Switch to VI/,
       }),
     )
 
     expect(updateSpy.mock.calls[0]?.[0]).toEqual({
-      preferredLanguage: 'en',
+      preferredLanguage: 'vi',
     })
     expect(
-      await screen.findByText('Preferred language changed to EN.'),
+      await screen.findByText('Preferred language changed to VI.'),
     ).toBeInTheDocument()
   })
 
@@ -273,6 +277,8 @@ describe('Profile settings UI', () => {
               currentUser.profile.currentCefrLevel,
             learningGoal:
               request.learningGoal ?? currentUser.profile.learningGoal,
+            dailyStudyMinutes:
+              request.dailyStudyMinutes ?? currentUser.profile.dailyStudyMinutes,
             preferredLanguage:
               request.preferredLanguage ??
               currentUser.profile.preferredLanguage,
@@ -323,4 +329,30 @@ describe('Profile settings UI', () => {
     },
     10_000,
   )
+
+  it('invalidates reader payloads after the target CEFR changes', async () => {
+    const updateSpy = vi.spyOn(profileApi, 'update').mockResolvedValue(
+      updateResult({
+        ...currentUser.profile,
+        learningGoal: 'C2',
+      }),
+    )
+    const { queryClient } = renderSettings()
+    queryClient.setQueryData(readingQueryKeys.article('city-trees'), {
+      highlightedTermIds: ['term-1'],
+    })
+    const user = userEvent.setup()
+
+    await user.click(await screen.findByLabelText('Learning goal'))
+    await user.click(screen.getByRole('option', { name: 'C2' }))
+    await user.click(screen.getByRole('button', { name: 'Save changes' }))
+
+    await waitFor(() => {
+      expect(updateSpy.mock.calls[0]?.[0]).toEqual({ learningGoal: 'C2' })
+      expect(
+        queryClient.getQueryState(readingQueryKeys.article('city-trees'))
+          ?.isInvalidated,
+      ).toBe(true)
+    })
+  })
 })

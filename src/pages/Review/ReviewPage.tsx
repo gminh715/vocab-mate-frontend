@@ -27,7 +27,9 @@ import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 import {
   useAbandonReviewSessionMutation,
   useActiveReviewSessionQuery,
+  useRevealReviewHintMutation,
   useReviewSessionQuery,
+  useReviewPreparationQuery,
   useSkipReviewItemMutation,
   useStartReviewSessionMutation,
   useSubmitReviewAnswerMutation,
@@ -54,6 +56,7 @@ const CORRECT_FEEDBACK_DELAY_MS = 900
 const COACHING_WAIT_LIMIT_MS = 5_000
 const MAX_RESPONSE_TIME_MS = 2_147_483_647
 const ACTIVE_SESSION_RECOVERY_INTERVAL_MS = 1_000
+const BLANK_MARKER_PATTERN = /_{3,}/u
 
 interface ReviewSummaryNavigationState {
   result: ReviewResult
@@ -61,27 +64,113 @@ interface ReviewSummaryNavigationState {
 
 type ReviewTransition = SubmittedReviewAnswer | SkippedReviewItem
 
-const questionHints = (question: ReviewQuestion): string[] => {
+interface FillBlankSentenceProps {
+  sentence: string
+  wordLengths: number[]
+  revealedCharacters: Record<string, string>
+  slotLabel: string
+}
+
+const hintCharacterKey = (wordIndex: number, characterIndex: number): string =>
+  `${wordIndex}:${characterIndex}`
+
+function FillBlankSentence({
+  sentence,
+  wordLengths,
+  revealedCharacters,
+  slotLabel,
+}: FillBlankSentenceProps) {
+  const marker = sentence.match(BLANK_MARKER_PATTERN)
+  if (!marker || marker.index === undefined) {
+    return (
+      <Typography sx={{ fontSize: { xs: 17, sm: 19 }, lineHeight: 1.7 }}>
+        {sentence}
+      </Typography>
+    )
+  }
+
+  const beforeBlank = sentence.slice(0, marker.index)
+  const afterBlank = sentence.slice(marker.index + marker[0].length)
+
+  return (
+    <Typography sx={{ fontSize: { xs: 17, sm: 19 }, lineHeight: 1.9 }}>
+      {beforeBlank}
+      <Box
+        component="span"
+        role="status"
+        aria-live="polite"
+        aria-label={slotLabel}
+        sx={{
+          display: 'inline-flex',
+          flexWrap: 'wrap',
+          gap: 0.75,
+          mx: 0.5,
+          verticalAlign: 'baseline',
+        }}
+      >
+        {wordLengths.map((wordLength, wordIndex) => (
+          <Box
+            key={wordIndex}
+            component="span"
+            aria-hidden="true"
+            sx={{ display: 'inline-flex', gap: 0.3 }}
+          >
+            {Array.from({ length: wordLength }, (_, characterIndex) => {
+              const revealedCharacter =
+                revealedCharacters[
+                  hintCharacterKey(wordIndex, characterIndex)
+                ]
+              return (
+                <Box
+                  key={characterIndex}
+                  component="span"
+                  sx={{
+                    display: 'inline-block',
+                    minWidth: '0.8ch',
+                    px: revealedCharacter ? 0.25 : 0,
+                    color: revealedCharacter ? 'primary.dark' : 'text.primary',
+                    bgcolor: revealedCharacter
+                      ? 'rgba(23, 107, 75, 0.1)'
+                      : 'transparent',
+                    borderRadius: 0.5,
+                    fontWeight: 850,
+                    lineHeight: 1.45,
+                    textAlign: 'center',
+                  }}
+                >
+                  {revealedCharacter || '_'}
+                </Box>
+              )
+            })}
+          </Box>
+        ))}
+      </Box>
+      {afterBlank}
+    </Typography>
+  )
+}
+
+const questionHintKeys = (question: ReviewQuestion): string[] => {
   switch (question.questionType) {
     case 'FILL_BLANK':
       return [
-        'Read the whole sentence and notice what kind of word the blank needs.',
-        'Check the words beside the blank for clues about tense, form, or number.',
+        'question.hints.fillBlank.context',
+        'question.hints.fillBlank.grammar',
       ]
     case 'SELECT_MEANING':
       return [
-        'Recall how the word was used in its original sentence.',
-        'Choose the most specific meaning that fits that context.',
+        'question.hints.selectMeaning.context',
+        'question.hints.selectMeaning.specific',
       ]
     case 'SELECT_WORD':
       return [
-        'Say the meaning in your own words before looking at the choices again.',
-        'Look for the word whose form and tone best match the meaning.',
+        'question.hints.selectWord.rephrase',
+        'question.hints.selectWord.form',
       ]
     case 'SELECT_CORRECT_CONTEXT':
       return [
-        'Look for the sentence where the word carries the meaning you learned.',
-        'Read each choice with the target word and remove contexts that feel unrelated.',
+        'question.hints.selectContext.meaning',
+        'question.hints.selectContext.eliminate',
       ]
   }
 }
@@ -197,7 +286,7 @@ function ReviewShell({
         <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
           {actions ?? (
             <Button component={RouterLink} to={routePaths.home} color="inherit">
-              Exit
+              {t('session.exit')}
             </Button>
           )}
         </Box>
@@ -215,18 +304,27 @@ function ReviewShell({
 }
 
 function ReviewStarter() {
+  const { t } = useTranslation('review')
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const mutation = useStartReviewSessionMutation()
+  const [preparationId] = useState(() => crypto.randomUUID())
   const activeSessionQuery = useActiveReviewSessionQuery(
     mutation.isPending ? ACTIVE_SESSION_RECOVERY_INTERVAL_MS : false,
   )
+  const preparationQuery = useReviewPreparationQuery(
+    preparationId,
+    mutation.isPending,
+  )
   const startedRef = useRef(false)
   const searchString = searchParams.toString()
-  const request = useMemo(
-    () => startRequestFromSearch(new URLSearchParams(searchString)),
-    [searchString],
-  )
+  const request = useMemo(() => {
+    const parsed = startRequestFromSearch(new URLSearchParams(searchString))
+    return parsed ? { ...parsed, preparationId } : null
+  }, [preparationId, searchString])
+  const preparation = preparationQuery.data
+  const preparationPercent = preparation?.progressPercent
+  const preparationStage = preparation?.stage ?? 'SELECTING_VOCABULARY'
 
   const start = useCallback(() => {
     if (!request || mutation.isPending) return
@@ -257,7 +355,7 @@ function ReviewStarter() {
     return (
       <ReviewShell>
         <Alert severity="error">
-          This review link is not valid. Return home and choose a review again.
+          {t('starter.invalidLink')}
         </Alert>
       </ReviewShell>
     )
@@ -271,12 +369,14 @@ function ReviewStarter() {
       <ReviewShell>
         <Paper variant="outlined" sx={{ p: { xs: 3, sm: 5 }, textAlign: 'center' }}>
           <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 34, sm: 44 } }}>
-            {noEligibleVocabulary ? 'Nothing is ready here yet' : 'Review could not start'}
+            {noEligibleVocabulary
+              ? t('starter.emptyTitle')
+              : t('starter.errorTitle')}
           </Typography>
           <Typography color="text.secondary" sx={{ mt: 1.5, maxWidth: 560, mx: 'auto' }}>
             {noEligibleVocabulary
-              ? 'There are no saved words ready for this review. Keep reading or choose another collection.'
-              : 'Your saved words are safe. Check your connection and try again.'}
+              ? t('starter.emptyDescription')
+              : t('starter.errorDescription')}
           </Typography>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
@@ -292,11 +392,11 @@ function ReviewStarter() {
                   start()
                 }}
               >
-                Try Again
+                {t('starter.tryAgain')}
               </Button>
             ) : null}
             <Button component={RouterLink} to={routePaths.home} variant="outlined">
-              Back Home
+              {t('session.backHome')}
             </Button>
           </Stack>
         </Paper>
@@ -306,10 +406,83 @@ function ReviewStarter() {
 
   return (
     <ReviewShell>
-      <Stack role="status" spacing={2} sx={{ minHeight: 360, alignItems: 'center', justifyContent: 'center' }}>
-        <CircularProgress size={38} />
-        <Typography color="text.secondary">Preparing your review…</Typography>
-      </Stack>
+      <Paper
+        role="status"
+        aria-live="polite"
+        variant="outlined"
+        sx={{
+          maxWidth: 640,
+          mx: 'auto',
+          mt: { xs: 5, sm: 9 },
+          p: { xs: 3, sm: 4.5 },
+          borderColor: 'primary.light',
+          background:
+            'linear-gradient(145deg, rgba(255,255,255,0.98), rgba(236,247,241,0.9))',
+        }}
+      >
+        <Typography
+          sx={{
+            color: 'primary.dark',
+            fontSize: 12,
+            fontWeight: 800,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+          }}
+        >
+          {t('preparation.eyebrow')}
+        </Typography>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ mt: 1.25, alignItems: 'baseline', justifyContent: 'space-between' }}
+        >
+          <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 30, sm: 38 } }}>
+            {t('preparation.title')}
+          </Typography>
+          {preparationPercent !== undefined ? (
+            <Typography
+              aria-label={t('preparation.percentLabel', {
+                percent: preparationPercent,
+              })}
+              sx={{
+                color: 'primary.dark',
+                fontSize: { xs: 28, sm: 34 },
+                fontWeight: 800,
+                fontVariantNumeric: 'tabular-nums',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {preparationPercent}%
+            </Typography>
+          ) : null}
+        </Stack>
+        <Typography color="text.secondary" sx={{ mt: 1 }}>
+          {t(`preparation.stages.${preparationStage}`)}
+        </Typography>
+        <LinearProgress
+          aria-label={t('preparation.progressLabel')}
+          variant={preparationPercent === undefined ? 'indeterminate' : 'determinate'}
+          value={preparationPercent}
+          sx={{
+            mt: 2.5,
+            height: 10,
+            borderRadius: 999,
+            bgcolor: 'rgba(23, 107, 75, 0.12)',
+            '& .MuiLinearProgress-bar': { borderRadius: 999 },
+          }}
+        />
+        {preparation && preparation.totalItems > 0 ? (
+          <Typography sx={{ mt: 1.5, fontWeight: 700 }}>
+            {t('preparation.itemProgress', {
+              completed: preparation.completedItems,
+              total: preparation.totalItems,
+            })}
+          </Typography>
+        ) : null}
+        <Typography color="text.secondary" variant="body2" sx={{ mt: 1.5 }}>
+          {t('preparation.note')}
+        </Typography>
+      </Paper>
     </ReviewShell>
   )
 }
@@ -319,12 +492,17 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   const navigate = useNavigate()
   const sessionQuery = useReviewSessionQuery(sessionId)
   const answerMutation = useSubmitReviewAnswerMutation(sessionId)
+  const hintMutation = useRevealReviewHintMutation(sessionId)
   const skipMutation = useSkipReviewItemMutation(sessionId)
   const abandonMutation = useAbandonReviewSessionMutation(sessionId)
   const [transitionItem, setTransitionItem] = useState<ReviewSessionItem | null>(null)
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
   const [answerText, setAnswerText] = useState('')
   const [hintsUsed, setHintsUsed] = useState(0)
+  const [revealedHintCharacters, setRevealedHintCharacters] = useState<
+    Record<string, string>
+  >({})
+  const [hintError, setHintError] = useState<string | null>(null)
   const [feedback, setFeedback] = useState<SubmittedReviewAnswer | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [hasStaleConflict, setHasStaleConflict] = useState(false)
@@ -335,6 +513,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   const [coachingWaitExpired, setCoachingWaitExpired] = useState(false)
   const questionStartedAtRef = useRef(0)
   const submissionLockRef = useRef(false)
+  const hintRequestLockRef = useRef(false)
   const activeSubmissionRef = useRef(0)
   const questionHeadingRef = useRef<HTMLHeadingElement>(null)
   const displayItem = transitionItem ?? sessionQuery.data?.nextItem ?? null
@@ -346,6 +525,8 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     setSelectedOptionId(null)
     setAnswerText('')
     setHintsUsed(0)
+    setRevealedHintCharacters({})
+    setHintError(null)
     setFeedback(null)
     setActionError(null)
     setHasStaleConflict(false)
@@ -353,6 +534,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     setCoachingWaitExpired(false)
     questionStartedAtRef.current = Date.now()
     submissionLockRef.current = false
+    hintRequestLockRef.current = false
     setIsLocked(false)
   }, [])
 
@@ -371,9 +553,9 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       }
       submissionLockRef.current = false
       setIsLocked(false)
-      setActionError('The next question is not available. Reload this review to continue.')
+      setActionError(t('errors.nextQuestionUnavailable'))
     },
-    [navigate, resetQuestion, sessionId],
+    [navigate, resetQuestion, sessionId, t],
   )
 
   useEffect(() => {
@@ -413,8 +595,21 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
   const visibleAgentFeedback =
     feedback?.agentFeedback ?? sessionQuery.data?.agentFeedback
   const question = displayItem?.question
-  const hints = question ? questionHints(question) : []
+  const hints = question
+    ? questionHintKeys(question).map((key) => t(key))
+    : []
   const isFillBlank = question?.questionType === 'FILL_BLANK'
+  const fillBlankWordLengths = question?.answerWordLengths?.length
+    ? question.answerWordLengths
+    : [1]
+  const fillBlankCharacterCount = fillBlankWordLengths.reduce(
+    (total, length) => total + length,
+    0,
+  )
+  const revealedHintCharacterCount = Object.keys(revealedHintCharacters).length
+  const hasMoreHints = isFillBlank
+    ? hintsUsed < fillBlankCharacterCount
+    : hintsUsed < hints.length
   const canSubmit = Boolean(
     displayItem &&
       !feedback &&
@@ -425,7 +620,48 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     hasStaleConflict ||
     answerMutation.isPending ||
     skipMutation.isPending ||
-    abandonMutation.isPending
+    abandonMutation.isPending ||
+    hintMutation.isPending
+
+  const revealNextHint = async () => {
+    if (
+      !displayItem ||
+      !question ||
+      feedback ||
+      isBusy ||
+      !hasMoreHints ||
+      hintRequestLockRef.current
+    ) return
+    setHintError(null)
+
+    if (!isFillBlank) {
+      setHintsUsed((count) => Math.min(count + 1, hints.length))
+      return
+    }
+
+    hintRequestLockRef.current = true
+    try {
+      const hint = await hintMutation.mutateAsync({
+        reviewSessionItemId: displayItem.id,
+        hintIndex: hintsUsed,
+      })
+      setRevealedHintCharacters((current) => ({
+        ...current,
+        [hintCharacterKey(hint.wordIndex, hint.characterIndex)]:
+          hint.revealedCharacter,
+      }))
+      setHintsUsed((count) => count + 1)
+    } catch (error: unknown) {
+      const apiError = normalizeApiError(error)
+      setHintError(
+        apiError.status === 409
+          ? t('fillBlank.hintStale')
+          : t('fillBlank.hintError'),
+      )
+    } finally {
+      hintRequestLockRef.current = false
+    }
+  }
 
   const refreshAfterStaleConflict = async () => {
     const refreshed = await sessionQuery.refetch()
@@ -437,8 +673,8 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     setStaleRecoveryReady(canRecover)
     setActionError(
       canRecover
-        ? 'This question changed in another request. The latest review state is ready.'
-        : 'The latest review state could not be loaded. Try refreshing again.',
+        ? t('errors.staleReady')
+        : t('errors.staleLoadFailed'),
     )
   }
 
@@ -521,11 +757,11 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       if (apiError.status === 409) {
         setHasStaleConflict(true)
         setStaleRecoveryReady(false)
-        setActionError('This question changed. Loading the latest review state…')
+        setActionError(t('errors.staleLoading'))
         await refreshAfterStaleConflict()
       } else {
         setActionError(
-          'Your answer could not be saved. Check your connection and try again.',
+          t('errors.answerSave'),
         )
       }
     }
@@ -557,11 +793,11 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       if (apiError.status === 409) {
         setHasStaleConflict(true)
         setStaleRecoveryReady(false)
-        setActionError('This question changed. Loading the latest review state…')
+        setActionError(t('errors.staleLoading'))
         await refreshAfterStaleConflict()
       } else {
         setActionError(
-          'This word could not be skipped. Check your connection and try again.',
+          t('errors.skip'),
         )
       }
     }
@@ -576,8 +812,8 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       const apiError = normalizeApiError(error)
       setEndSessionError(
         apiError.status === 409
-          ? 'This session changed before it could be ended. Close this dialog and refresh the review.'
-          : 'The session could not be ended. Check your connection and try again.',
+          ? t('errors.endConflict')
+          : t('errors.end'),
       )
     }
   }
@@ -591,14 +827,14 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           action={
             error.status !== 404 ? (
               <Button color="inherit" onClick={() => void sessionQuery.refetch()}>
-                Try Again
+                {t('starter.tryAgain')}
               </Button>
             ) : undefined
           }
         >
           {error.status === 404
-            ? 'This review session is not available.'
-            : 'Your review could not be restored. Try again.'}
+            ? t('errors.sessionUnavailable')
+            : t('errors.restore')}
         </Alert>
       </ReviewShell>
     )
@@ -626,7 +862,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       <ReviewShell>
         <Stack role="status" spacing={2} sx={{ minHeight: 360, alignItems: 'center', justifyContent: 'center' }}>
           <CircularProgress size={38} />
-          <Typography color="text.secondary">Restoring your review…</Typography>
+          <Typography color="text.secondary">{t('session.restoring')}</Typography>
         </Stack>
       </ReviewShell>
     )
@@ -656,7 +892,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
               isBusy && !(answerMutation.isPending && coachingWaitExpired)
             }
           >
-            Save and exit
+            {t('actions.saveExit')}
           </Button>
           <Button
             color="error"
@@ -667,7 +903,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
               setEndDialogOpen(true)
             }}
           >
-            End session
+            {t('actions.endSession')}
           </Button>
         </Stack>
       }
@@ -733,16 +969,22 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
         <Box>
           <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
             <Typography sx={{ fontWeight: 800 }}>
-              Question {Math.min(progress.answeredCount + 1, progress.totalQuestions)} of {progress.totalQuestions}
+              {t('progress.question', {
+                current: Math.min(
+                  progress.answeredCount + 1,
+                  progress.totalQuestions,
+                ),
+                total: progress.totalQuestions,
+              })}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-              {progress.remainingCount} remaining
+              {t('progress.remaining', { count: progress.remainingCount })}
             </Typography>
           </Stack>
           <LinearProgress
             variant="determinate"
             value={Math.min(100, Math.max(0, progress.progressPercent))}
-            aria-label="Review progress"
+            aria-label={t('progress.ariaLabel')}
             sx={{ mt: 1, height: 8, borderRadius: 99, bgcolor: 'primary.light' }}
           />
         </Box>
@@ -760,7 +1002,9 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           <Typography
             sx={{ color: 'primary.main', fontSize: 12, fontWeight: 850, letterSpacing: '0.1em', textTransform: 'uppercase' }}
           >
-            {isFillBlank ? 'Complete the sentence' : 'Choose one answer'}
+            {isFillBlank
+              ? t('question.types.fillBlank')
+              : t('question.types.chooseAnswer')}
           </Typography>
           <Typography
             id="review-question"
@@ -786,16 +1030,29 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
             <Box
               sx={{ mt: 2.5, p: 2, borderLeft: 4, borderColor: 'secondary.main', bgcolor: 'secondary.light' }}
             >
-              <Typography sx={{ fontSize: { xs: 17, sm: 19 }, lineHeight: 1.7 }}>
-                {question.blankSentence}
-              </Typography>
+              {isFillBlank ? (
+                <FillBlankSentence
+                  sentence={question.blankSentence}
+                  wordLengths={fillBlankWordLengths}
+                  revealedCharacters={revealedHintCharacters}
+                  slotLabel={t('fillBlank.slotLabel', {
+                    wordCount: fillBlankWordLengths.length,
+                    characterCount: fillBlankCharacterCount,
+                    revealed: revealedHintCharacterCount,
+                  })}
+                />
+              ) : (
+                <Typography sx={{ fontSize: { xs: 17, sm: 19 }, lineHeight: 1.7 }}>
+                  {question.blankSentence}
+                </Typography>
+              )}
             </Box>
           ) : null}
 
           <Box component="form" onSubmit={(event) => { event.preventDefault(); void submitAnswer() }} sx={{ mt: 3 }}>
             {isFillBlank ? (
               <TextField
-                label="Your answer"
+                label={t('question.answerLabel')}
                 name="reviewAnswer"
                 value={answerText}
                 onChange={(event) => setAnswerText(event.target.value)}
@@ -804,7 +1061,11 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
                 slotProps={{ htmlInput: { maxLength: 2_000 } }}
               />
             ) : (
-              <Stack spacing={1.25} role="group" aria-label="Answer choices">
+              <Stack
+                spacing={1.25}
+                role="group"
+                aria-label={t('question.answerChoices')}
+              >
                 {question.options.map((option) => {
                   const selected = selectedOptionId === option.id
                   return (
@@ -832,28 +1093,42 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
               </Stack>
             )}
 
-            {hintsUsed > 0 && !feedback ? (
+            {!isFillBlank && hintsUsed > 0 && !feedback ? (
               <Alert severity="info" aria-live="polite" sx={{ mt: 2 }}>
                 {hints[hintsUsed - 1]}
+              </Alert>
+            ) : null}
+
+            {hintError ? (
+              <Alert severity="error" aria-live="polite" sx={{ mt: 2 }}>
+                {hintError}
               </Alert>
             ) : null}
 
             {feedback ? (
               feedback.isCorrect ? (
                 <Alert severity="success" role="status" sx={{ mt: 2.5 }}>
-                  <Typography sx={{ fontWeight: 800 }}>Nice work.</Typography>
-                  <Typography variant="body2">Moving to the next word…</Typography>
+                  <Typography sx={{ fontWeight: 800 }}>
+                    {t('feedback.correctTitle')}
+                  </Typography>
+                  <Typography variant="body2">
+                    {t('feedback.movingNext')}
+                  </Typography>
                 </Alert>
               ) : (
                 <Alert severity="error" role="alert" sx={{ mt: 2.5 }}>
-                  <Typography sx={{ fontWeight: 850 }}>Correct answer: {feedback.correctAnswer}</Typography>
+                  <Typography sx={{ fontWeight: 850 }}>
+                    {t('feedback.correctAnswer', {
+                      answer: feedback.correctAnswer,
+                    })}
+                  </Typography>
                   <Typography variant="body2" sx={{ mt: 0.5 }}>
                     {feedback.explanation}
                   </Typography>
                   {feedback.willReturnLater &&
                   !feedback.agentFeedback?.retestAfterItems ? (
                     <Typography variant="body2" sx={{ mt: 1, fontWeight: 750 }}>
-                      You’ll see this word again near the end with a different question.
+                      {t('feedback.returnLater')}
                     </Typography>
                   ) : null}
                 </Alert>
@@ -897,7 +1172,9 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
                       disabled={sessionQuery.isFetching}
                       onClick={recoverFromStaleConflict}
                     >
-                      {staleRecoveryReady ? 'Use latest question' : 'Refresh'}
+                      {staleRecoveryReady
+                        ? t('actions.useLatestQuestion')
+                        : t('actions.refresh')}
                     </Button>
                   ) : undefined
                 }
@@ -916,24 +1193,38 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
                   <Button
                     type="button"
                     color="inherit"
-                    disabled={isBusy || hintsUsed >= hints.length}
-                    onClick={() => setHintsUsed((count) => Math.min(count + 1, hints.length))}
+                    disabled={isBusy || !hasMoreHints}
+                    onClick={() => void revealNextHint()}
                   >
-                    {hintsUsed === 0 ? 'Hint' : 'Another Hint'}
+                    {isFillBlank
+                      ? hintMutation.isPending
+                        ? t('fillBlank.hintLoading')
+                        : !hasMoreHints
+                          ? t('fillBlank.hintComplete')
+                          : hintsUsed === 0
+                            ? t('fillBlank.hintFirst')
+                            : t('fillBlank.hintNext')
+                      : hintsUsed === 0
+                        ? t('actions.hint')
+                        : t('actions.anotherHint')}
                   </Button>
                   <Button type="button" color="inherit" disabled={isBusy} onClick={() => void skipQuestion()}>
-                    {skipMutation.isPending ? 'Skipping…' : 'Skip'}
+                    {skipMutation.isPending
+                      ? t('actions.skipping')
+                      : t('actions.skip')}
                   </Button>
                 </Stack>
               ) : <Box />}
 
               {feedback && !feedback.isCorrect ? (
                 <Button type="button" variant="contained" onClick={() => finishOrAdvance(feedback)}>
-                  Continue
+                  {t('actions.continue')}
                 </Button>
               ) : !feedback ? (
                 <Button type="submit" variant="contained" disabled={!canSubmit || isBusy}>
-                  {answerMutation.isPending ? 'Checking…' : 'Check Answer'}
+                  {answerMutation.isPending
+                    ? t('actions.checking')
+                    : t('actions.checkAnswer')}
                 </Button>
               ) : null}
             </Stack>
@@ -942,10 +1233,10 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       </Stack>
       <ConfirmationDialog
         open={endDialogOpen}
-        title="End this review session?"
-        description="This closes the current session, so it will no longer be available to resume. Choose Save and exit instead if you want to continue later."
-        confirmLabel="End session"
-        pendingLabel="Ending…"
+        title={t('endDialog.title')}
+        description={t('endDialog.description')}
+        confirmLabel={t('actions.endSession')}
+        pendingLabel={t('endDialog.pending')}
         isPending={abandonMutation.isPending}
         errorMessage={endSessionError}
         onCancel={() => {

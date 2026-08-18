@@ -7,7 +7,7 @@
   "profile": {
     "eyebrow": "Danh tính học tập của bạn",
     "title": "Cài đặt hồ sơ",
-    "subtitle": "Cập nhật trình độ học tập và thông tin hồ sơ của bạn. Các từ được tô sáng trong bài đọc dựa theo trình độ CEFR hiện tại.",
+    "subtitle": "Cập nhật trình độ học tập và thông tin hồ sơ của bạn. Từ trong bài đọc được tô sáng theo khoảng từ CEFR hiện tại đến CEFR mục tiêu.",
     "avatarAlt": "Xem trước ảnh đại diện",
     "successMessage": "Đã lưu thay đổi hồ sơ.",
     "cannotRemoveAvatar": "API hiện tại không thể xóa URL ảnh đại diện. Hãy nhập URL thay thế.",
@@ -21,7 +21,7 @@
     },
     "cefrCard": {
       "title": "Trình độ học tập hiện tại",
-      "hint": "Lưu trình độ mới sẽ làm mới các từ được tô sáng trong bài đọc."
+      "hint": "Lưu một trong hai trình độ CEFR sẽ làm mới các từ được tô sáng trong bài đọc."
     },
     "form": {
       "title": "Hồ sơ học tập",
@@ -30,10 +30,13 @@
       "avatarUrl": "URL ảnh đại diện",
       "avatarUrlHint": "Dán URL hình ảnh công khai. Không hỗ trợ tải file lên.",
       "cefrLevel": "Trình độ CEFR hiện tại",
-      "cefrLevelHint": "Từ được tô sáng trong bài đọc dùng trình độ này.",
+      "cefrLevelHint": "Từ ở trình độ này đến mục tiêu sẽ được tô sáng.",
       "learningGoal": "Mục tiêu học tập",
-      "learningGoalHint": "Chọn trình độ CEFR cao hơn trình độ hiện tại của bạn.",
+      "learningGoalHint": "Chọn trình độ hiện tại hoặc mục tiêu CEFR cao hơn.",
       "learningGoalNotSet": "Chưa đặt",
+      "dailyStudyMinutes": "Thời gian học mỗi ngày",
+      "dailyStudyMinutesHint": "Được dùng tự động khi bắt đầu ôn tập hằng ngày.",
+      "minutes": "{{count}} phút",
       "unsavedChanges": "Chưa lưu thay đổi",
       "saving": "Đang lưu…",
       "saveChanges": "Lưu thay đổi"

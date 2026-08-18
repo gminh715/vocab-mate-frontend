@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import {
   GuestRoute,
+  OnboardingRoute,
   ProtectedRoute,
   RoleRoute,
 } from '@/components/Auth/AuthRouteGuards'
@@ -238,18 +239,31 @@ const RegisterPage = lazy(() =>
   })),
 )
 
+const OnboardingPage = lazy(() =>
+  import('@/pages/Onboarding/OnboardingPage').then(
+    ({ OnboardingPage: Component }) => ({ default: Component }),
+  ),
+)
+
 function ArticleDetailRedirect() {
   const { slug = '' } = useParams()
   return <Navigate to={readerPath(slug)} replace />
 }
 
 function RootIndexRoute() {
-  const { isAuthenticated, isInitializing } = useAuth()
+  const { currentUser, isAuthenticated, isInitializing } = useAuth()
 
   if (isInitializing) return <SessionLoading />
 
   if (!isAuthenticated) {
     return <LandingPage />
+  }
+
+  if (
+    currentUser?.role === 'USER' &&
+    currentUser.profile.dailyStudyMinutes === null
+  ) {
+    return <Navigate to={routePaths.onboarding} replace />
   }
 
   return <HomePage />
@@ -306,6 +320,12 @@ export function AppRoutes() {
             path={routePaths.forbidden}
             element={<ForbiddenPage />}
           />
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<OnboardingRoute />}>
+          <Route path={routePaths.onboarding} element={<OnboardingPage />} />
         </Route>
       </Route>
 

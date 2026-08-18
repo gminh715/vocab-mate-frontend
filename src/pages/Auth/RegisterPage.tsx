@@ -3,13 +3,12 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
-import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { normalizeApiError } from '@/config/apiClient'
-import { postAuthPath, routePaths } from '@/utils/paths'
+import { routePaths } from '@/utils/paths'
 import { AuthPageLayout } from '@/components/Auth/AuthPageLayout'
 import { useRegisterMutation } from '@/hooks/Auth/useAuth'
 import {
@@ -18,11 +17,9 @@ import {
   type RegistrationFormOutput,
   type RegistrationFormValues,
 } from '@/schemas/Auth/auth'
-import { CEFR_LEVELS } from '@/types/Auth/auth'
 
 export function RegisterPage() {
   const registerMutation = useRegisterMutation()
-  const location = useLocation()
   const navigate = useNavigate()
   const {
     formState: { errors },
@@ -40,20 +37,14 @@ export function RegisterPage() {
       email: '',
       password: '',
       confirmPassword: '',
-      currentCefrLevel: 'B1',
-      learningGoal: '',
       preferredLanguage: 'vi',
     },
   })
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const currentUser = await registerMutation.mutateAsync(
-        toRegisterRequest(values),
-      )
-      navigate(postAuthPath(currentUser.role, location.state), {
-        replace: true,
-      })
+      await registerMutation.mutateAsync(toRegisterRequest(values))
+      navigate(routePaths.login, { replace: true })
     } catch (error: unknown) {
       const apiError = normalizeApiError(error)
 
@@ -81,7 +72,7 @@ export function RegisterPage() {
   return (
     <AuthPageLayout
       title="Create Your Account"
-      description="Tell us where you are starting so Vocab Mate can show the prepared learning content that fits you."
+      description="Create your account first. After signing in, a short placement test will personalize your learning plan."
       alternatePrompt="Already have an account?"
       alternateAction="Sign in"
       alternateHref={routePaths.login}
@@ -141,56 +132,6 @@ export function RegisterPage() {
             {...register('confirmPassword')}
           />
         </Box>
-
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-            gap: 2.25,
-          }}
-        >
-          <TextField
-            id="register-cefr"
-            label="Current CEFR Level"
-            select
-            defaultValue="B1"
-            error={Boolean(errors.currentCefrLevel)}
-            helperText={
-              errors.currentCefrLevel?.message ??
-              'Choose your current English level.'
-            }
-            {...register('currentCefrLevel')}
-          >
-            {CEFR_LEVELS.map((level) => (
-              <MenuItem key={level} value={level}>
-                {level}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            id="register-language"
-            label="Preferred Language"
-            autoComplete="language"
-            error={Boolean(errors.preferredLanguage)}
-            helperText={
-              errors.preferredLanguage?.message ??
-              'Use a language code such as vi or en.'
-            }
-            {...register('preferredLanguage')}
-          />
-        </Box>
-
-        <TextField
-          id="register-learning-goal"
-          label="Learning Goal (Optional)"
-          autoComplete="off"
-          multiline
-          minRows={2}
-          error={Boolean(errors.learningGoal)}
-          helperText={errors.learningGoal?.message}
-          placeholder="e.g. Learn 10 useful words each day…"
-          {...register('learningGoal')}
-        />
 
         <Button
           type="submit"

@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { CEFR_LEVELS } from '@/types/Auth/auth'
 
 const emailSchema = z
   .string()
@@ -34,19 +33,6 @@ export const registerSchema = z.object({
     .trim()
     .min(1, 'Enter your display name.')
     .max(100, 'Display name must be 100 characters or fewer.'),
-  currentCefrLevel: z.enum(CEFR_LEVELS, {
-    error: 'Choose a valid CEFR level.',
-  }),
-  learningGoal: z
-    .preprocess(
-      (value) =>
-        typeof value === 'string' && value.trim() === '' ? undefined : value,
-      z
-        .string()
-        .trim()
-        .max(500, 'Learning goal must be 500 characters or fewer.')
-        .optional(),
-    ),
   preferredLanguage: z
     .string()
     .trim()

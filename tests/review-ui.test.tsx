@@ -2,11 +2,13 @@ import "@testing-library/jest-dom/vitest";
 import { ThemeProvider } from "@mui/material/styles";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { I18nextProvider } from "react-i18next";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   CompletedReviewResult,
   ReviewAgentFeedback,
+  ReviewPreparationProgress,
   ReviewSessionItem,
   ReviewSessionState,
   SubmittedReviewAnswer,
@@ -18,6 +20,8 @@ const {
   startSession,
   startReset,
   activeQueryHook,
+  preparationQueryHook,
+  revealHint,
   submitAnswer,
   skipItem,
   abandonSession,
@@ -43,11 +47,19 @@ const {
       isError: false,
       error: null as unknown,
     },
+    preparation: {
+      data: undefined as ReviewPreparationProgress | undefined,
+      isPending: false,
+      isError: false,
+      error: null as unknown,
+    },
   },
-  mutationState: { answerPending: false, startPending: false },
+  mutationState: { answerPending: false, hintPending: false, startPending: false },
   startSession: vi.fn(),
   startReset: vi.fn(),
   activeQueryHook: vi.fn(),
+  preparationQueryHook: vi.fn(),
+  revealHint: vi.fn(),
   submitAnswer: vi.fn(),
   skipItem: vi.fn(),
   abandonSession: vi.fn(),
@@ -61,9 +73,17 @@ vi.mock("@/hooks/Review/useReviews", () => ({
     return queryState.active
   },
   useReviewSessionQuery: () => queryState,
+  useReviewPreparationQuery: (preparationId: string, enabled: boolean) => {
+    preparationQueryHook(preparationId, enabled)
+    return queryState.preparation
+  },
   useSubmitReviewAnswerMutation: () => ({
     mutateAsync: submitAnswer,
     isPending: mutationState.answerPending,
+  }),
+  useRevealReviewHintMutation: () => ({
+    mutateAsync: revealHint,
+    isPending: mutationState.hintPending,
   }),
   useSkipReviewItemMutation: () => ({
     mutateAsync: skipItem,
@@ -90,6 +110,7 @@ vi.mock("@/hooks/Review/useReviews", () => ({
 import { ReviewPage } from "@/pages/Review/ReviewPage";
 import { ReviewSummaryPage } from "@/pages/Review/ReviewSummaryPage";
 import { ApiError } from "@/config/apiClient";
+import i18n from "@/i18n/i18n";
 import { appTheme } from "@/theme";
 
 const firstItem: ReviewSessionItem = {
@@ -101,6 +122,7 @@ const firstItem: ReviewSessionItem = {
     questionType: "SELECT_MEANING",
     prompt: "Choose the saved meaning of “impact”.",
     blankSentence: null,
+    answerWordLengths: null,
     points: 1,
     displayOrder: 1,
     options: [
@@ -118,7 +140,8 @@ const retryItem: ReviewSessionItem = {
     id: "question-2",
     questionType: "FILL_BLANK",
     prompt: "Complete the original sentence.",
-    blankSentence: "The policy had a lasting ___.",
+    blankSentence: "Please ___ this detail.",
+    answerWordLengths: [4, 4, 7],
     points: 1,
     displayOrder: 1,
     options: [],
@@ -184,20 +207,34 @@ const incorrectResponse: SubmittedReviewAnswer = {
   agentFeedback: coachingFeedback,
 };
 
-const renderReview = () =>
+const localized = (
+  children: React.ReactNode,
+  language: "en" | "vi" = "en",
+) => (
+  <I18nextProvider
+    i18n={i18n.cloneInstance({ lng: language, fallbackLng: language })}
+  >
+    {children}
+  </I18nextProvider>
+);
+
+const renderReview = (language: "en" | "vi" = "en") =>
   render(
-    <ThemeProvider theme={appTheme}>
-      <MemoryRouter initialEntries={["/review/session-1"]}>
-        <Routes>
-          <Route path="/review/:sessionId" element={<ReviewPage />} />
-          <Route
-            path="/review/:sessionId/summary"
-            element={<h1>Session Summary</h1>}
-          />
-          <Route path="/" element={<h1>Home</h1>} />
-        </Routes>
-      </MemoryRouter>
-    </ThemeProvider>,
+    localized(
+      <ThemeProvider theme={appTheme}>
+        <MemoryRouter initialEntries={["/review/session-1"]}>
+          <Routes>
+            <Route path="/review/:sessionId" element={<ReviewPage />} />
+            <Route
+              path="/review/:sessionId/summary"
+              element={<h1>Session Summary</h1>}
+            />
+            <Route path="/" element={<h1>Home</h1>} />
+          </Routes>
+        </MemoryRouter>
+      </ThemeProvider>,
+      language,
+    ),
   );
 
 const expectNoSelfRatingControls = () => {
@@ -215,14 +252,30 @@ describe("ReviewPage", () => {
     queryState.isError = false;
     queryState.error = null;
     mutationState.answerPending = false;
+    mutationState.hintPending = false;
     mutationState.startPending = false;
     startSession.mockReset();
     startReset.mockReset();
     activeQueryHook.mockReset();
+    preparationQueryHook.mockReset();
+    revealHint.mockReset();
+    revealHint.mockImplementation(
+      ({ hintIndex }: { hintIndex: number }) =>
+        Promise.resolve({
+          revealedCharacter: ["c", "a", "n"][hintIndex],
+          wordIndex: [2, 0, 1][hintIndex],
+          characterIndex: [1, 1, 1][hintIndex],
+          totalCharacters: 15,
+        }),
+    );
     queryState.active.data = undefined;
     queryState.active.isPending = false;
     queryState.active.isError = false;
     queryState.active.error = null;
+    queryState.preparation.data = undefined;
+    queryState.preparation.isPending = false;
+    queryState.preparation.isError = false;
+    queryState.preparation.error = null;
     submitAnswer.mockReset();
     skipItem.mockReset();
     abandonSession.mockReset();
@@ -240,18 +293,41 @@ describe("ReviewPage", () => {
     mutationState.startPending = true;
     const { rerender } = renderReviewStarter();
 
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Preparing your review…",
-    );
+    expect(screen.getByRole('progressbar')).not.toHaveAttribute('aria-valuenow')
     expect(activeQueryHook).toHaveBeenCalledWith(1_000);
+    expect(preparationQueryHook).toHaveBeenCalledWith(
+      expect.any(String),
+      true,
+    )
 
     queryState.active.data = sessionState();
     rerender();
 
     expect(
-      await screen.findByRole("heading", { name: "A Focused Practice Set" }),
+      await screen.findByRole('heading', { name: /impact/i }),
     ).toBeInTheDocument();
   });
+
+  it('shows real preparation percentage and prepared-word counts', () => {
+    mutationState.startPending = true
+    queryState.preparation.data = {
+      preparationId: '11111111-1111-4111-8111-111111111111',
+      status: 'PREPARING',
+      stage: 'GENERATING_QUESTIONS',
+      progressPercent: 45,
+      completedItems: 2,
+      totalItems: 4,
+    }
+
+    renderReviewStarter()
+
+    expect(screen.getByText('45%')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar')).toHaveAttribute(
+      'aria-valuenow',
+      '45',
+    )
+    expect(screen.getByText(/2.*4/)).toBeInTheDocument()
+  })
 
   it('maps the selected daily duration and goal into the start request', async () => {
     renderReviewStarter(
@@ -261,6 +337,7 @@ describe("ReviewPage", () => {
     await waitFor(() => {
       expect(startSession).toHaveBeenCalledWith(
         {
+          preparationId: expect.any(String),
           sessionType: 'DAILY_REVIEW',
           targetDurationMinutes: 15,
           reviewGoal: 'CONTEXT',
@@ -537,12 +614,51 @@ describe("ReviewPage", () => {
     }
   });
 
+  it("renders one underscore per character and reveals random letters in place", async () => {
+    queryState.data = sessionState(retryItem);
+    renderReview();
+
+    const blank = screen.getByLabelText(
+      "3-word blank with 15 letters; 0 letters revealed",
+    );
+    expect(blank.textContent?.match(/_/gu)).toHaveLength(15);
+
+    fireEvent.click(screen.getByRole("button", { name: "Reveal a letter" }));
+    await waitFor(() => expect(blank).toHaveTextContent("c"));
+    expect(blank.textContent?.match(/_/gu)).toHaveLength(14);
+    expect(revealHint).toHaveBeenLastCalledWith({
+      reviewSessionItemId: "item-1",
+      hintIndex: 0,
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Reveal another letter" }),
+    );
+    await waitFor(() => expect(blank).toHaveTextContent("a"));
+    expect(blank.textContent?.match(/_/gu)).toHaveLength(13);
+  });
+
+  it("prevents duplicate progressive-hint requests from rapid clicks", () => {
+    queryState.data = sessionState(retryItem);
+    revealHint.mockReturnValue(new Promise(() => undefined));
+    renderReview();
+
+    const hintButton = screen.getByRole("button", {
+      name: "Reveal a letter",
+    });
+    fireEvent.click(hintButton);
+    fireEvent.click(hintButton);
+
+    expect(revealHint).toHaveBeenCalledTimes(1);
+  });
+
   it("submits fill-in text and hint count without a client attempt number", async () => {
     queryState.data = sessionState(retryItem);
     submitAnswer.mockResolvedValue(incorrectResponse);
     renderReview();
 
-    fireEvent.click(screen.getByRole("button", { name: "Hint" }));
+    fireEvent.click(screen.getByRole("button", { name: "Reveal a letter" }));
+    await waitFor(() => expect(revealHint).toHaveBeenCalledTimes(1));
     fireEvent.change(screen.getByLabelText("Your answer"), {
       target: { value: "impact" },
     });
@@ -674,6 +790,32 @@ describe("ReviewPage", () => {
       screen.queryByRole("button", { name: "Use latest question" }),
     ).not.toBeInTheDocument();
   });
+
+  it("renders the review-taking controls in Vietnamese", async () => {
+    renderReview("vi");
+
+    expect(screen.getByText("Câu 1/2")).toBeInTheDocument();
+    expect(screen.getByText("Còn 2 câu")).toBeInTheDocument();
+    expect(screen.getByText("Chọn một đáp án")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Tiến độ ôn tập"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Gợi ý" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Bỏ qua" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Kiểm tra đáp án" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Lưu và thoát" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Kết thúc lượt ôn" }),
+    ).toBeInTheDocument();
+  });
 });
 
 const persistedSummary: CompletedReviewResult = {
@@ -723,31 +865,35 @@ const persistedSummary: CompletedReviewResult = {
 
 const renderSummary = (state?: unknown) =>
   render(
-    <ThemeProvider theme={appTheme}>
-      <MemoryRouter
-        initialEntries={[{ pathname: "/review/session-1/summary", state }]}
-      >
-        <Routes>
-          <Route
-            path="/review/:sessionId/summary"
-            element={<ReviewSummaryPage />}
-          />
-        </Routes>
-      </MemoryRouter>
-    </ThemeProvider>,
+    localized(
+      <ThemeProvider theme={appTheme}>
+        <MemoryRouter
+          initialEntries={[{ pathname: "/review/session-1/summary", state }]}
+        >
+          <Routes>
+            <Route
+              path="/review/:sessionId/summary"
+              element={<ReviewSummaryPage />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </ThemeProvider>,
+    ),
   );
 
 const renderReviewStarter = (initialEntry = "/review") => {
   const element = () => (
-    <ThemeProvider theme={appTheme}>
-      <MemoryRouter initialEntries={[initialEntry]}>
-        <Routes>
-          <Route path="/review" element={<ReviewPage />} />
-          <Route path="/review/:sessionId" element={<ReviewPage />} />
-          <Route path="/" element={<h1>Home</h1>} />
-        </Routes>
-      </MemoryRouter>
-    </ThemeProvider>
+    localized(
+      <ThemeProvider theme={appTheme}>
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <Routes>
+            <Route path="/review" element={<ReviewPage />} />
+            <Route path="/review/:sessionId" element={<ReviewPage />} />
+            <Route path="/" element={<h1>Home</h1>} />
+          </Routes>
+        </MemoryRouter>
+      </ThemeProvider>,
+    )
   );
   const view = render(element());
 

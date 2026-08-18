@@ -68,8 +68,8 @@
     },
     "vocabulary": {
       "panelTitle": "Từ vựng",
-      "noHighlights": "Không có từ nào được tô sáng theo trình độ hiện tại. Bạn vẫn có thể tra cứu từ vựng được chuẩn bị cho bài này.",
-      "hasHighlights": "Các từ được tô sáng phù hợp với trình độ học tập của bạn. Bật tra cứu để khám phá toàn bộ từ vựng được chuẩn bị, kể cả các từ dễ hơn.",
+      "noHighlights": "Không có từ nào nằm trong khoảng từ CEFR hiện tại đến CEFR mục tiêu của bạn. Bạn vẫn có thể tra cứu từ vựng được chuẩn bị cho bài này.",
+      "hasHighlights": "Các từ được tô sáng nằm từ CEFR hiện tại đến CEFR mục tiêu của bạn. Bật tra cứu để khám phá toàn bộ từ vựng được chuẩn bị cho bài này.",
       "turnOn": "Bật tra cứu từ vựng",
       "turnOff": "Tắt tra cứu từ vựng",
       "statusOff": "Tra cứu từ vựng đang tắt.",
@@ -78,6 +78,73 @@
       "statusOpen": "Thông tin từ vựng đang mở."
     },
     "termInstructions": "Từ vựng. Nhấn Enter hoặc Space để chọn. Dùng phím mũi tên để di chuyển giữa các từ được đánh dấu."
+  },
+  "lookup": {
+    "eyebrow": "Từ vựng theo ngữ cảnh",
+    "title": "Tra cứu từ vựng",
+    "description": "Thông tin của từ trong câu này.",
+    "close": "Đóng",
+    "loading": "Đang tải thông tin từ vựng…",
+    "tryAgain": "Thử lại",
+    "errors": {
+      "disabled": "Không thể tra cứu từ này trong ngữ cảnh hiện tại.",
+      "notFound": "Từ trong ngữ cảnh này không còn tồn tại trong bài viết.",
+      "preparing": "Thông tin của từ đang được chuẩn bị. Vui lòng thử lại sau giây lát.",
+      "load": "Không thể tải thông tin từ vựng. Vui lòng thử lại."
+    },
+    "details": {
+      "meaningInSentence": "Nghĩa trong câu này",
+      "meaningUnavailable": "Chưa có nghĩa tiếng Việt",
+      "lemma": "Dạng gốc",
+      "partOfSpeech": "Từ loại",
+      "cefrLevel": "Trình độ CEFR",
+      "termType": "Loại từ vựng",
+      "topic": "Chủ đề",
+      "skill": "Kỹ năng",
+      "unitTypes": {
+        "WORD": "Từ",
+        "PHRASE": "Cụm từ"
+      }
+    },
+    "sections": {
+      "englishDefinition": "Định nghĩa tiếng Anh",
+      "contextualExplanation": "Giải thích theo ngữ cảnh",
+      "sourceSentence": "Câu gốc",
+      "sentenceExplanation": "Giải thích câu",
+      "referenceNote": "Ghi chú tham chiếu",
+      "examples": "Ví dụ",
+      "synonyms": "Từ đồng nghĩa",
+      "antonyms": "Từ trái nghĩa",
+      "collocations": "Cụm từ thường dùng",
+      "relatedTerms": "Từ liên quan",
+      "saveTerm": "Lưu từ này"
+    },
+    "save": {
+      "alreadySaved": "Từ này đã được lưu. Đang cập nhật trạng thái…",
+      "noCollections": "Bạn chưa có bộ sưu tập nào. Hãy tạo một bộ sưu tập trước khi lưu từ.",
+      "collectionsLabel": "Bộ sưu tập (bắt buộc)",
+      "collectionsHelp": "Chọn một hoặc nhiều bộ sưu tập để thêm từ này.",
+      "noteLabel": "Ghi chú cá nhân (không bắt buộc)",
+      "noteHelp": "Thêm ghi chú cho lần xuất hiện của từ trong ngữ cảnh này.",
+      "saving": "Đang lưu…",
+      "submit": "Lưu từ vựng",
+      "additional": {
+        "title": "Thêm vào bộ sưu tập khác",
+        "selectLabel": "Chọn bộ sưu tập",
+        "adding": "Đang thêm…",
+        "add": "Thêm",
+        "alreadyAdded": "Từ này đã có trong bộ sưu tập.",
+        "added": "Đã thêm vào bộ sưu tập.",
+        "error": "Không thể thêm vào bộ sưu tập."
+      },
+      "errors": {
+        "signIn": "Hãy đăng nhập để lưu từ vựng.",
+        "collectionsUnavailable": "Một hoặc nhiều bộ sưu tập đã chọn không còn khả dụng. Hãy kiểm tra và thử lại.",
+        "generic": "Không thể lưu từ vựng. Vui lòng thử lại.",
+        "collectionRequired": "Hãy chọn ít nhất một bộ sưu tập hợp lệ.",
+        "noteTooLong": "Ghi chú cá nhân không được vượt quá 2.000 ký tự."
+      }
+    }
   },
   "history": {
     "title": "Lịch sử đọc",

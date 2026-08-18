@@ -25,16 +25,12 @@ describe('Auth schemas', () => {
         email: 'learner@example.com',
         password: 'StrongPass@123',
         displayName: '  Learner  ',
-        currentCefrLevel: 'B1',
-        learningGoal: '  Learn 10 words per day  ',
         preferredLanguage: '  vi  ',
       }),
     ).toEqual({
       email: 'learner@example.com',
       password: 'StrongPass@123',
       displayName: 'Learner',
-      currentCefrLevel: 'B1',
-      learningGoal: 'Learn 10 words per day',
       preferredLanguage: 'vi',
     })
   })
@@ -49,18 +45,6 @@ describe('Auth schemas', () => {
       email: 'learner@example.com',
       password,
       displayName: 'Learner',
-      currentCefrLevel: 'B1',
-    })
-
-    expect(result.success).toBe(false)
-  })
-
-  it('rejects client values outside the backend CEFR enum', () => {
-    const result = registerSchema.safeParse({
-      email: 'learner@example.com',
-      password: 'StrongPass@123',
-      displayName: 'Learner',
-      currentCefrLevel: 'NATIVE',
     })
 
     expect(result.success).toBe(false)
@@ -72,8 +56,6 @@ describe('Auth schemas', () => {
       password: 'StrongPass@123',
       confirmPassword: 'StrongPass@123',
       displayName: 'Learner',
-      currentCefrLevel: 'B1',
-      learningGoal: '',
       preferredLanguage: 'vi',
     })
 
@@ -81,8 +63,6 @@ describe('Auth schemas', () => {
       email: 'learner@example.com',
       password: 'StrongPass@123',
       displayName: 'Learner',
-      currentCefrLevel: 'B1',
-      learningGoal: undefined,
       preferredLanguage: 'vi',
     })
     expect(toRegisterRequest(values)).not.toHaveProperty('confirmPassword')
@@ -94,7 +74,6 @@ describe('Auth schemas', () => {
       password: 'StrongPass@123',
       confirmPassword: 'DifferentPass@123',
       displayName: 'Learner',
-      currentCefrLevel: 'B1',
     })
 
     expect(result.success).toBe(false)

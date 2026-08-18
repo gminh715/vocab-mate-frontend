@@ -37,7 +37,7 @@
     "contextTitle": "AI Contextual Precision",
     "contextDesc": "AI interprets exact word meanings in sentence context—say goodbye to generic dictionary definitions.",
     "cefrTitle": "CEFR Level Highlighting",
-    "cefrDesc": "Scans articles automatically and highlights terms matching or exceeding your target CEFR level (A1 to C2).",
+    "cefrDesc": "Scans articles automatically and highlights terms from your current CEFR level through your target level (A1 to C2).",
     "srTitle": "Spaced Repetition Review",
     "srDesc": "Calculates optimal review intervals based on memory decay curves so you review right before you forget.",
     "quizTitle": "AI Generated Quizzes",

@@ -1,5 +1,21 @@
 import { describe, expect, it } from 'vitest'
-import { postAuthPath } from '@/utils/paths'
+import { postAuthPath, postLoginPath } from '@/utils/paths'
+import type { CurrentUser } from '@/types/Auth/auth'
+
+const newLearner: CurrentUser = {
+  id: 'user-1',
+  email: 'learner@example.com',
+  role: 'USER',
+  status: 'ACTIVE',
+  profile: {
+    displayName: 'Learner',
+    avatarUrl: null,
+    currentCefrLevel: 'A1',
+    learningGoal: null,
+    dailyStudyMinutes: null,
+    preferredLanguage: 'vi',
+  },
+}
 
 describe('postAuthPath', () => {
   it('preserves a safe internal destination', () => {
@@ -30,5 +46,20 @@ describe('postAuthPath', () => {
   it('uses the role default when no destination is available', () => {
     expect(postAuthPath('USER', null)).toBe('/')
     expect(postAuthPath('ADMIN', null)).toBe('/admin')
+  })
+
+  it('requires onboarding before restoring a learner destination', () => {
+    expect(postLoginPath(newLearner, { from: '/reading-history' })).toBe(
+      '/onboarding',
+    )
+    expect(
+      postLoginPath(
+        {
+          ...newLearner,
+          profile: { ...newLearner.profile, dailyStudyMinutes: 10 },
+        },
+        { from: '/reading-history' },
+      ),
+    ).toBe('/reading-history')
   })
 })

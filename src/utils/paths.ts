@@ -1,5 +1,5 @@
 import type { Location } from 'react-router-dom'
-import type { UserRole } from '@/types/Auth/auth'
+import type { CurrentUser, UserRole } from '@/types/Auth/auth'
 import type {
   ReviewGoal,
   ReviewSessionType,
@@ -10,6 +10,7 @@ export const routePaths = {
   home: '/',
   login: '/login',
   register: '/register',
+  onboarding: '/onboarding',
   articles: '/articles',
   articleDetail: '/articles/:slug',
   reader: '/read/:slug',
@@ -140,3 +141,11 @@ export const postAuthPath = (
 
   return defaultAuthenticatedPath(role)
 }
+
+export const postLoginPath = (
+  user: CurrentUser,
+  state: unknown,
+): string =>
+  user.role === 'USER' && user.profile.dailyStudyMinutes === null
+    ? routePaths.onboarding
+    : postAuthPath(user.role, state)

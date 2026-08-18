@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { normalizeApiError } from '@/config/apiClient'
-import { postAuthPath, routePaths } from '@/utils/paths'
+import { postLoginPath, routePaths } from '@/utils/paths'
 import { AuthPageLayout } from '@/components/Auth/AuthPageLayout'
 import {
   authQueryKeys,
@@ -50,6 +50,7 @@ export function LoginPage() {
   )
   const passwordChanged =
     sessionNotice === 'PASSWORD_CHANGED'
+  const registered = sessionNotice === 'REGISTERED'
 
   useEffect(() => {
     if (!sessionNotice) return
@@ -73,7 +74,7 @@ export function LoginPage() {
   const onSubmit = handleSubmit(async (values) => {
     try {
       const currentUser = await loginMutation.mutateAsync(values)
-      navigate(postAuthPath(currentUser.role, location.state), {
+      navigate(postLoginPath(currentUser, location.state), {
         replace: true,
       })
     } catch {
@@ -93,6 +94,12 @@ export function LoginPage() {
         <Alert severity="success" role="status" aria-live="polite">
           Password changed successfully. Please sign in again with the
           new password.
+        </Alert>
+      ) : null}
+
+      {registered ? (
+        <Alert severity="success" role="status" aria-live="polite">
+          Account created. Sign in to set up your learning plan.
         </Alert>
       ) : null}
 

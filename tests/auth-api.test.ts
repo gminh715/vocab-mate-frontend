@@ -42,6 +42,7 @@ const currentUser: CurrentUser = {
     avatarUrl: null,
     currentCefrLevel: 'B1',
     learningGoal: null,
+    dailyStudyMinutes: 10,
     preferredLanguage: 'vi',
   },
 }
@@ -76,6 +77,22 @@ describe('authApi', () => {
     )
     expect(clientMocks.setAccessToken).toHaveBeenCalledWith('access-token')
     expect(clientMocks.get).toHaveBeenCalledWith('/users/me')
+  })
+
+  it('registers without establishing an authenticated session', async () => {
+    clientMocks.post.mockResolvedValue({ user: authData.user })
+
+    await expect(
+      authApi.register({
+        email: 'learner@example.com',
+        password: 'StrongPass@123',
+        displayName: 'Learner',
+        preferredLanguage: 'vi',
+      }),
+    ).resolves.toEqual(authData.user)
+
+    expect(clientMocks.setAccessToken).not.toHaveBeenCalled()
+    expect(clientMocks.get).not.toHaveBeenCalled()
   })
 
   it('restores an expired access session with a valid refresh cookie', async () => {

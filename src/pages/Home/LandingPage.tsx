@@ -8,6 +8,8 @@ import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
@@ -95,22 +97,42 @@ function ChevronDownIcon({ size = 20, color = 'currentColor' }: { size?: number;
   )
 }
 
-function GlobeIcon({ size = 20, color = 'currentColor' }: { size?: number; color?: string }) {
+function VietnamFlagIcon() {
   return (
     <Box
       component="svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      width={22}
+      height={15}
+      viewBox="0 0 30 20"
+      aria-hidden="true"
+      focusable="false"
+      sx={{ display: 'block', borderRadius: '2px', boxShadow: '0 0 0 1px rgba(23, 55, 43, 0.14)' }}
     >
-      <circle cx="12" cy="12" r="10" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+      <rect width="30" height="20" fill="#DA251D" />
+      <path
+        d="m15 3.4 1.55 4.77h5.02l-4.06 2.95 1.55 4.78L15 12.95l-4.06 2.95 1.55-4.78-4.06-2.95h5.02z"
+        fill="#FFEA00"
+      />
+    </Box>
+  )
+}
+
+function UnitedKingdomFlagIcon() {
+  return (
+    <Box
+      component="svg"
+      width={22}
+      height={15}
+      viewBox="0 0 30 20"
+      aria-hidden="true"
+      focusable="false"
+      sx={{ display: 'block', borderRadius: '2px', boxShadow: '0 0 0 1px rgba(23, 55, 43, 0.14)' }}
+    >
+      <rect width="30" height="20" fill="#012169" />
+      <path d="M0 0 30 20M30 0 0 20" stroke="#FFFFFF" strokeWidth="5" />
+      <path d="M0 0 30 20M30 0 0 20" stroke="#C8102E" strokeWidth="2" />
+      <path d="M15 0v20M0 10h30" stroke="#FFFFFF" strokeWidth="6" />
+      <path d="M15 0v20M0 10h30" stroke="#C8102E" strokeWidth="3.2" />
     </Box>
   )
 }
@@ -120,11 +142,16 @@ export function LandingPage() {
   const { isAuthenticated } = useAuth()
   const [selectedTermKey, setSelectedTermKey] = useState<string>('acquisition')
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [languageAnchorEl, setLanguageAnchorEl] = useState<HTMLElement | null>(null)
   const currentLang = i18n.language.startsWith('vi') ? 'vi' : 'en'
+  const alternateLang = currentLang === 'vi' ? 'en' : 'vi'
+  const currentLanguageName = currentLang === 'vi' ? 'Tiếng Việt' : 'English'
+  const alternateLanguageName = alternateLang === 'vi' ? 'Tiếng Việt' : 'English'
 
-  const toggleLanguage = () => {
-    const nextLang = currentLang === 'vi' ? 'en' : 'vi'
-    void i18n.changeLanguage(nextLang)
+  const changeLanguage = (language: 'vi' | 'en') => {
+    setLanguageAnchorEl(null)
+    if (language === currentLang) return
+    void i18n.changeLanguage(language)
   }
 
   const selectedTerm = DEMO_TERMS[selectedTermKey] ?? DEMO_TERMS.acquisition
@@ -209,28 +236,74 @@ export function LandingPage() {
 
             {/* Right Actions */}
             <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-              {/* Language Switcher Button */}
+              {/* Language Switcher */}
               <Button
-                onClick={toggleLanguage}
-                size="small"
-                variant="outlined"
-                startIcon={<GlobeIcon size={16} color="#176B4B" />}
+                id="landing-language-button"
+                onClick={(event) => setLanguageAnchorEl(event.currentTarget)}
+                aria-controls={languageAnchorEl ? 'landing-language-menu' : undefined}
+                aria-expanded={languageAnchorEl ? 'true' : undefined}
+                aria-haspopup="menu"
                 sx={{
-                  borderColor: '#D9E4DE',
-                  color: '#17372B',
+                  border: '1px solid #D9E4DE',
                   borderRadius: 2,
-                  px: 1.5,
-                  fontWeight: 700,
-                  fontSize: 13,
                   bgcolor: '#FFFFFF',
+                  color: '#17372B',
+                  minWidth: 0,
+                  height: 40,
+                  px: 1.25,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  textTransform: 'none',
+                  whiteSpace: 'nowrap',
                   '&:hover': {
                     borderColor: '#176B4B',
-                    bgcolor: '#DDF3E8',
+                    bgcolor: '#EAF6F0',
                   },
                 }}
               >
-                {currentLang === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}
+                <Box
+                  component="span"
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.75,
+                  }}
+                >
+                  {currentLang === 'vi' ? <VietnamFlagIcon /> : <UnitedKingdomFlagIcon />}
+                  <Box component="span">{currentLanguageName}</Box>
+                  <ChevronDownIcon size={15} />
+                </Box>
               </Button>
+              <Menu
+                id="landing-language-menu"
+                anchorEl={languageAnchorEl}
+                open={Boolean(languageAnchorEl)}
+                onClose={() => setLanguageAnchorEl(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                  list: {
+                    'aria-labelledby': 'landing-language-button',
+                  },
+                  paper: {
+                    sx: {
+                      mt: 0.75,
+                      minWidth: 142,
+                      border: '1px solid #D9E4DE',
+                      borderRadius: 2,
+                      boxShadow: '0 12px 28px rgba(23, 55, 43, 0.14)',
+                    },
+                  },
+                }}
+              >
+                <MenuItem
+                  onClick={() => changeLanguage(alternateLang)}
+                  sx={{ gap: 1, px: 1.5, py: 1, fontSize: 13, fontWeight: 650 }}
+                >
+                  {alternateLang === 'vi' ? <VietnamFlagIcon /> : <UnitedKingdomFlagIcon />}
+                  {alternateLanguageName}
+                </MenuItem>
+              </Menu>
 
               {isAuthenticated ? (
                 <Button

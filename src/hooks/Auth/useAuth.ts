@@ -14,7 +14,7 @@ export const authQueryKeys = {
   sessionNotice: () => [...authQueryKeys.all, 'session-notice'] as const,
 }
 
-export type AuthSessionNotice = 'PASSWORD_CHANGED'
+export type AuthSessionNotice = 'PASSWORD_CHANGED' | 'REGISTERED'
 
 const privateQueryRoots = new Set([
   'analytics',
@@ -89,8 +89,8 @@ export const useRegisterMutation = () => {
   return useMutation({
     gcTime: 0,
     mutationFn: authApi.register,
-    onSuccess: (currentUser) => {
-      queryClient.setQueryData(authQueryKeys.currentUser(), currentUser)
+    onSuccess: () => {
+      queryClient.setQueryData(authQueryKeys.sessionNotice(), 'REGISTERED')
     },
     retry: false,
   })

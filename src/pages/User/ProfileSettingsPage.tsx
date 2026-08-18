@@ -35,6 +35,7 @@ const backendFieldNames = [
   'avatarUrl',
   'currentCefrLevel',
   'learningGoal',
+  'dailyStudyMinutes',
   'preferredLanguage',
 ] as const
 
@@ -380,6 +381,29 @@ export function ProfileSettingsPage() {
                       {CEFR_LEVELS.map((level) => (
                         <MenuItem key={level} value={level}>
                           {level}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="dailyStudyMinutes"
+                  render={({ field }) => (
+                    <TextField
+                      select
+                      label={t('profile.form.dailyStudyMinutes')}
+                      error={Boolean(errors.dailyStudyMinutes)}
+                      helperText={
+                        errors.dailyStudyMinutes?.message ??
+                        t('profile.form.dailyStudyMinutesHint')
+                      }
+                      {...field}
+                    >
+                      {[5, 10, 15].map((minutes) => (
+                        <MenuItem key={minutes} value={minutes}>
+                          {t('profile.form.minutes', { count: minutes })}
                         </MenuItem>
                       ))}
                     </TextField>

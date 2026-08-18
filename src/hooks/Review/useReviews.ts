@@ -10,6 +10,7 @@ import { analyticsQueryKeys } from '@/hooks/Analytics/useAnalytics'
 import { vocabularyQueryKeys } from '@/hooks/Vocabulary/useVocabularies'
 import type {
   ReviewHistoryParams,
+  RevealReviewHintRequest,
   ReviewSessionState,
   SkipReviewItemRequest,
   SkippedReviewItem,
@@ -33,6 +34,9 @@ export const reviewQueryKeys = {
   histories: () => [...reviewQueryKeys.all, 'history'] as const,
   history: (params: ReviewHistoryParams) =>
     [...reviewQueryKeys.histories(), params] as const,
+  preparations: () => [...reviewQueryKeys.all, 'preparation'] as const,
+  preparation: (preparationId: string) =>
+    [...reviewQueryKeys.preparations(), preparationId] as const,
 }
 
 export const useTodayReviewsQuery = () =>
@@ -52,6 +56,19 @@ export const useActiveReviewSessionQuery = (
     retry: false,
     staleTime: 30_000,
     refetchInterval,
+  })
+
+export const useReviewPreparationQuery = (
+  preparationId: string,
+  enabled: boolean,
+) =>
+  useQuery({
+    queryKey: reviewQueryKeys.preparation(preparationId),
+    queryFn: () => reviewsApi.preparation(preparationId),
+    enabled: Boolean(preparationId) && enabled,
+    retry: false,
+    refetchInterval: enabled ? 500 : false,
+    refetchIntervalInBackground: true,
   })
 
 export const useReviewSessionQuery = (sessionId: string) =>
@@ -211,6 +228,13 @@ export const useSubmitReviewAnswerMutation = (sessionId: string) => {
     retry: false,
   })
 }
+
+export const useRevealReviewHintMutation = (sessionId: string) =>
+  useMutation({
+    mutationFn: (request: RevealReviewHintRequest) =>
+      reviewsApi.revealHint(sessionId, request),
+    retry: false,
+  })
 
 export const useSkipReviewItemMutation = (sessionId: string) => {
   const queryClient = useQueryClient()

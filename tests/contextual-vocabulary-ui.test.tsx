@@ -2,11 +2,13 @@ import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { I18nextProvider } from 'react-i18next'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { collectionsApi, readingApi, vocabulariesApi } from '@/api'
 import { ApiError } from '@/config/apiClient'
 import { readingQueryKeys } from '@/hooks/Reading/useReading'
+import i18n from '@/i18n/i18n'
 import { ArticleReaderPage } from '@/pages/Article/ArticleReaderPage'
 import { appTheme } from '@/theme'
 import type {
@@ -133,24 +135,27 @@ const deferred = <T,>() => {
   return { promise, resolve }
 }
 
-const renderReader = () => {
+const renderReader = (language: 'en' | 'vi' = 'en') => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
       mutations: { retry: false },
     },
   })
+  const testI18n = i18n.cloneInstance({ lng: language, fallbackLng: language })
 
   const result = render(
-    <ThemeProvider theme={appTheme}>
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[`/read/${slug}`]}>
-          <Routes>
-            <Route path="/read/:slug" element={<ArticleReaderPage />} />
-          </Routes>
-        </MemoryRouter>
-      </QueryClientProvider>
-    </ThemeProvider>,
+    <I18nextProvider i18n={testI18n}>
+      <ThemeProvider theme={appTheme}>
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={[`/read/${slug}`]}>
+            <Routes>
+              <Route path="/read/:slug" element={<ArticleReaderPage />} />
+            </Routes>
+          </MemoryRouter>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </I18nextProvider>,
   )
 
   return { ...result, queryClient }
@@ -245,6 +250,32 @@ describe('contextual vocabulary lookup and save flow', () => {
     expect(activatedTerm).toHaveFocus()
     expect(activatedTerm).toHaveAttribute('aria-pressed', 'false')
     expect(activatedTerm).not.toHaveClass('article-term-selected')
+  })
+
+  it('renders the contextual lookup interface in Vietnamese', async () => {
+    vi.spyOn(readingApi, 'term').mockResolvedValue(unsavedLookup)
+    renderReader('vi')
+    const user = userEvent.setup()
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Bật tra cứu từ vựng' }),
+    )
+    await user.click(await screen.findByRole('button', { name: 'harmful' }))
+
+    expect(
+      await screen.findByRole('heading', { name: 'harmful' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Nghĩa trong câu này')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Định nghĩa tiếng Anh' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Ghi chú cá nhân (không bắt buộc)'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Lưu từ vựng' }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Đóng' })).toBeInTheDocument()
   })
 
   it('maps the save request, blocks duplicates, and updates the selected lookup state', async () => {

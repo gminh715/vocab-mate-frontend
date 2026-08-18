@@ -14,10 +14,13 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link as RouterLink, Outlet, useMatch } from 'react-router-dom'
+import { Link as RouterLink, Outlet, useMatch, useNavigate } from 'react-router-dom'
 import { UserAvatar } from '@/components/Shared/UserAvatar'
 import { routePaths } from '@/utils/paths'
-import { useLogoutMutation } from '@/hooks/Auth/useAuth'
+import {
+  useClearAuthSession,
+  useLogoutMutation,
+} from '@/hooks/Auth/useAuth'
 import { useUpdateMyProfileMutation } from '@/hooks/User/useProfile'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -54,7 +57,9 @@ function NavLink({ to, end = true, children }: { to: string; end?: boolean; chil
 
 export function AuthenticatedLayout() {
   const { t } = useTranslation('home')
+  const navigate = useNavigate()
   const { currentUser, isInitializing } = useAuth()
+  const clearAuthSession = useClearAuthSession()
   const logoutMutation = useLogoutMutation()
   const updateProfileMutation = useUpdateMyProfileMutation()
   const [accountMenuAnchor, setAccountMenuAnchor] =
@@ -87,7 +92,12 @@ export function AuthenticatedLayout() {
 
   const logout = () => {
     closeAccountMenu()
+    navigate(routePaths.login, {
+      replace: true,
+      state: { loggingOut: true },
+    })
     logoutMutation.mutate()
+    clearAuthSession()
   }
 
   return (

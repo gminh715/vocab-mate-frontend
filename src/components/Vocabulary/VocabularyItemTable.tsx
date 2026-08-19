@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
 import Chip from '@mui/material/Chip'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
-import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
-import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -22,30 +20,46 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  LEARNING_STATUSES,
-  type LearningStatus,
-  type VocabularyListItem,
-} from '@/types/Vocabulary/vocabulary'
+import type { LearningStatus, VocabularyListItem } from '@/types/Vocabulary/vocabulary'
 import { vocabularyDetailPath } from '@/utils/paths'
+
+const statusColorMap: Record<
+  LearningStatus,
+  'info' | 'warning' | 'secondary' | 'success' | 'default'
+> = {
+  NEW: 'info',
+  LEARNING: 'warning',
+  REVIEWING: 'secondary',
+  MASTERED: 'success',
+  IGNORED: 'default',
+}
 
 interface VocabularyItemTableProps {
   items: VocabularyListItem[]
-  onUpdateStatus: (id: string, newStatus: LearningStatus) => void
+  selectedIds: ReadonlySet<string>
+  onToggleSelected: (id: string) => void
+  onToggleAll: () => void
   onDelete: (id: string) => void
-  updatingId?: string | null
+  onBulkDelete: (ids: string[]) => void
   deletingId?: string | null
+  isBulkDeleting?: boolean
 }
 
 export function VocabularyItemTable({
   items,
-  onUpdateStatus,
+  selectedIds,
+  onToggleSelected,
+  onToggleAll,
   onDelete,
-  updatingId,
+  onBulkDelete,
   deletingId,
+  isBulkDeleting = false,
 }: VocabularyItemTableProps) {
   const { t } = useTranslation('vocabulary')
   const [deleteTargetItem, setDeleteTargetItem] = useState<VocabularyListItem | null>(null)
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false)
+  const allSelected = items.length > 0 && items.every((item) => selectedIds.has(item.id))
+  const someSelected = items.some((item) => selectedIds.has(item.id))
 
   const playAudio = (text: string) => {
     try {
@@ -68,17 +82,52 @@ export function VocabularyItemTable({
         overflow: 'hidden',
       }}
     >
+      {selectedIds.size > 0 ? (
+        <Stack
+          direction="row"
+          sx={{
+            px: 2,
+            py: 1.25,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            bgcolor: 'rgba(229, 57, 53, 0.06)',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: 800 }}>
+            {t('table.bulk.selected', { count: selectedIds.size })}
+          </Typography>
+          <Button
+            color="error"
+            size="small"
+            variant="contained"
+            disabled={isBulkDeleting}
+            onClick={() => setBulkDeleteDialogOpen(true)}
+          >
+            {t('table.bulk.deleteSelected')}
+          </Button>
+        </Stack>
+      ) : null}
+
       <Table aria-label={t('table.ariaLabel')}>
         <TableHead sx={{ bgcolor: '#F8F9FA' }}>
           <TableRow>
+            <TableCell padding="checkbox">
+              <Checkbox
+                checked={allSelected}
+                indeterminate={!allSelected && someSelected}
+                onChange={onToggleAll}
+                slotProps={{
+                  input: { 'aria-label': t('table.bulk.selectAll') },
+                }}
+              />
+            </TableCell>
             <TableCell sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colStatus')}
             </TableCell>
             <TableCell sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colVocabulary')}
-            </TableCell>
-            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
-              {t('table.colPhonetic')}
             </TableCell>
             <TableCell sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colPos')}
@@ -102,44 +151,31 @@ export function VocabularyItemTable({
               <TableRow
                 key={item.id}
                 hover
+                selected={selectedIds.has(item.id)}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                {/* 1. Status Dropdown Pill */}
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={selectedIds.has(item.id)}
+                    onChange={() => onToggleSelected(item.id)}
+                    slotProps={{
+                      input: {
+                        'aria-label': t('table.bulk.selectWord', {
+                          word: item.savedWordDisplay,
+                        }),
+                      },
+                    }}
+                  />
+                </TableCell>
+
                 <TableCell sx={{ verticalAlign: 'middle', minWidth: 140 }}>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                    <FormControl size="small" fullWidth>
-                      <Select
-                        id={`table-status-select-${item.id}`}
-                        value={item.learningStatus}
-                        disabled={updatingId === item.id}
-                        onChange={(e) =>
-                          onUpdateStatus(
-                            item.id,
-                            e.target.value as LearningStatus,
-                          )
-                        }
-                        sx={{
-                          fontSize: 13,
-                          fontWeight: 750,
-                          height: 34,
-                          borderRadius: 5,
-                          bgcolor: '#F3F4F6',
-                          '& .MuiOutlinedInput-notchedOutline': {
-                            borderColor: 'transparent',
-                          },
-                          '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: 'divider',
-                          },
-                        }}
-                      >
-                        {LEARNING_STATUSES.map((status) => (
-                          <MenuItem key={status} value={status}>
-                            {t(`statusLabels.${status}`)}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-
+                    <Chip
+                      label={t(`statusLabels.${item.learningStatus}`)}
+                      size="small"
+                      color={statusColorMap[item.learningStatus]}
+                      sx={{ fontWeight: 750, fontSize: 11 }}
+                    />
                     {isDue ? (
                       <Chip
                         label={t('table.dueChip')}
@@ -151,7 +187,6 @@ export function VocabularyItemTable({
                   </Stack>
                 </TableCell>
 
-                {/* 2. Vocabulary Word + Audio */}
                 <TableCell sx={{ verticalAlign: 'middle', minWidth: 150 }}>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                     <Typography
@@ -167,7 +202,6 @@ export function VocabularyItemTable({
                     >
                       {item.savedWordDisplay}
                     </Typography>
-
                     <Tooltip title={t('table.listenTooltip')}>
                       <IconButton
                         size="small"
@@ -177,6 +211,7 @@ export function VocabularyItemTable({
                           p: 0.5,
                           '&:hover': { bgcolor: 'rgba(229, 57, 53, 0.08)' },
                         }}
+                        aria-label={t('table.listenAriaLabel', { word: item.savedWordDisplay })}
                       >
                         🔊
                       </IconButton>
@@ -184,46 +219,25 @@ export function VocabularyItemTable({
                   </Stack>
                 </TableCell>
 
-                {/* 3. Phonetic / Lemma */}
-                <TableCell sx={{ verticalAlign: 'middle', minWidth: 120 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    {item.savedIpa
-                      ? `/${item.savedIpa}/`
-                      : item.savedLemma !== item.savedWordDisplay
-                        ? item.savedLemma
-                        : '—'}
-                  </Typography>
-                </TableCell>
-
-                {/* 4. POS / CEFR Level */}
                 <TableCell sx={{ verticalAlign: 'middle', minWidth: 110 }}>
                   <Stack spacing={0.5}>
                     <Typography variant="body2" color="text.secondary">
                       {item.savedPartOfSpeech || '—'}
                     </Typography>
-                    {item.savedCefrLevel ? (
-                      <Chip
-                        label={item.savedCefrLevel}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          height: 20,
-                          fontSize: 10,
-                          fontWeight: 800,
-                          alignSelf: 'flex-start',
-                        }}
-                      />
-                    ) : null}
+                    <Chip
+                      label={item.savedCefrLevel}
+                      size="small"
+                      variant="outlined"
+                      sx={{ height: 20, fontSize: 10, fontWeight: 800, alignSelf: 'flex-start' }}
+                    />
                   </Stack>
                 </TableCell>
 
-                {/* 5. Meaning & Context Examples */}
                 <TableCell sx={{ verticalAlign: 'middle', minWidth: 240 }}>
                   <Stack spacing={0.5}>
                     <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.primary' }}>
                       {item.savedMeaningVi}
                     </Typography>
-
                     {item.personalNote ? (
                       <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 260 }}>
                         {t('table.notePrefix')}{item.personalNote}
@@ -232,7 +246,6 @@ export function VocabularyItemTable({
                   </Stack>
                 </TableCell>
 
-                {/* 6. Action Icon Buttons */}
                 <TableCell align="right" sx={{ verticalAlign: 'middle', minWidth: 100 }}>
                   <Stack direction="row" spacing={0.5} sx={{ justifyContent: 'flex-end' }}>
                     <Tooltip title={t('table.detailsTooltip')}>
@@ -246,12 +259,11 @@ export function VocabularyItemTable({
                         ✏️
                       </IconButton>
                     </Tooltip>
-
                     <Tooltip title={t('table.deleteTooltip')}>
                       <IconButton
                         size="small"
                         onClick={() => setDeleteTargetItem(item)}
-                        disabled={deletingId === item.id}
+                        disabled={deletingId === item.id || isBulkDeleting}
                         sx={{ color: 'text.secondary', '&:hover': { color: '#E53935' } }}
                         aria-label={t('table.deleteAriaLabel', { word: item.savedWordDisplay })}
                       >
@@ -271,9 +283,7 @@ export function VocabularyItemTable({
         onClose={() => setDeleteTargetItem(null)}
         aria-labelledby="table-delete-dialog-title"
       >
-        <DialogTitle id="table-delete-dialog-title">
-          {t('table.dialog.title')}
-        </DialogTitle>
+        <DialogTitle id="table-delete-dialog-title">{t('table.dialog.title')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             {t('table.dialog.description', { word: deleteTargetItem?.savedWordDisplay ?? '' })}
@@ -292,6 +302,35 @@ export function VocabularyItemTable({
             variant="contained"
           >
             {t('table.dialog.confirm')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={bulkDeleteDialogOpen}
+        onClose={() => setBulkDeleteDialogOpen(false)}
+        aria-labelledby="bulk-delete-dialog-title"
+      >
+        <DialogTitle id="bulk-delete-dialog-title">
+          {t('table.bulk.dialog.title', { count: selectedIds.size })}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t('table.bulk.dialog.description', { count: selectedIds.size })}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBulkDeleteDialogOpen(false)}>{t('table.dialog.cancel')}</Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={isBulkDeleting}
+            onClick={() => {
+              onBulkDelete([...selectedIds])
+              setBulkDeleteDialogOpen(false)
+            }}
+          >
+            {t('table.bulk.dialog.confirm', { count: selectedIds.size })}
           </Button>
         </DialogActions>
       </Dialog>

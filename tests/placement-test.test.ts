@@ -42,13 +42,13 @@ describe('placement test generation', () => {
     ])
   })
 
-  it('creates 15 basic, 10 intermediate, and 5 advanced questions', () => {
+  it('creates 10 basic, 12 intermediate, and 8 advanced questions', () => {
     const questions = createPlacementQuestions(vocabulary, () => 0.42)
 
     expect(questions).toHaveLength(30)
-    expect(questions.filter(({ band }) => band === 'BASIC')).toHaveLength(15)
-    expect(questions.filter(({ band }) => band === 'INTERMEDIATE')).toHaveLength(10)
-    expect(questions.filter(({ band }) => band === 'ADVANCED')).toHaveLength(5)
+    expect(questions.filter(({ band }) => band === 'BASIC')).toHaveLength(10)
+    expect(questions.filter(({ band }) => band === 'INTERMEDIATE')).toHaveLength(12)
+    expect(questions.filter(({ band }) => band === 'ADVANCED')).toHaveLength(8)
     expect(questions.every(({ options }) => options.length === 4)).toBe(true)
     expect(new Set(questions.map(({ word }) => word)).size).toBe(30)
   })
@@ -61,19 +61,19 @@ describe('placement test generation', () => {
     const scores = scorePlacementTest(questions, answers)
 
     expect(scores).toEqual({
-      BASIC: { correct: 15, total: 15 },
-      INTERMEDIATE: { correct: 10, total: 10 },
-      ADVANCED: { correct: 5, total: 5 },
+      BASIC: { correct: 10, total: 10 },
+      INTERMEDIATE: { correct: 12, total: 12 },
+      ADVANCED: { correct: 8, total: 8 },
     })
     expect(placementLevelFromScores(scores)).toBe('C2')
   })
 
   it.each([
-    [{ BASIC: { correct: 5, total: 15 }, INTERMEDIATE: { correct: 10, total: 10 }, ADVANCED: { correct: 5, total: 5 } }, 'A1'],
-    [{ BASIC: { correct: 8, total: 15 }, INTERMEDIATE: { correct: 10, total: 10 }, ADVANCED: { correct: 5, total: 5 } }, 'A2'],
-    [{ BASIC: { correct: 12, total: 15 }, INTERMEDIATE: { correct: 4, total: 10 }, ADVANCED: { correct: 5, total: 5 } }, 'B1'],
-    [{ BASIC: { correct: 12, total: 15 }, INTERMEDIATE: { correct: 6, total: 10 }, ADVANCED: { correct: 5, total: 5 } }, 'B2'],
-    [{ BASIC: { correct: 12, total: 15 }, INTERMEDIATE: { correct: 8, total: 10 }, ADVANCED: { correct: 3, total: 5 } }, 'C1'],
+    [{ BASIC: { correct: 3, total: 10 }, INTERMEDIATE: { correct: 12, total: 12 }, ADVANCED: { correct: 8, total: 8 } }, 'A1'],
+    [{ BASIC: { correct: 5, total: 10 }, INTERMEDIATE: { correct: 12, total: 12 }, ADVANCED: { correct: 8, total: 8 } }, 'A2'],
+    [{ BASIC: { correct: 8, total: 10 }, INTERMEDIATE: { correct: 5, total: 12 }, ADVANCED: { correct: 8, total: 8 } }, 'B1'],
+    [{ BASIC: { correct: 8, total: 10 }, INTERMEDIATE: { correct: 7, total: 12 }, ADVANCED: { correct: 8, total: 8 } }, 'B2'],
+    [{ BASIC: { correct: 8, total: 10 }, INTERMEDIATE: { correct: 10, total: 12 }, ADVANCED: { correct: 6, total: 8 } }, 'C1'],
   ] as const)('derives %s as %s', (scores, expected) => {
     expect(placementLevelFromScores(scores)).toBe(expected)
   })

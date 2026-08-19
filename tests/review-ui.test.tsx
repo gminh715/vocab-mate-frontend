@@ -329,7 +329,7 @@ describe("ReviewPage", () => {
     expect(screen.getByText(/2.*4/)).toBeInTheDocument()
   })
 
-  it('maps the selected daily duration and goal into the start request', async () => {
+  it('starts a daily review with the selected mode', async () => {
     renderReviewStarter(
       '/review?sessionType=DAILY_REVIEW&targetDurationMinutes=15&reviewGoal=CONTEXT',
     )
@@ -339,12 +339,25 @@ describe("ReviewPage", () => {
         {
           preparationId: expect.any(String),
           sessionType: 'DAILY_REVIEW',
-          targetDurationMinutes: 15,
           reviewGoal: 'CONTEXT',
+          targetDurationMinutes: 10,
         },
         expect.objectContaining({ onSuccess: expect.any(Function) }),
       )
     })
+  })
+
+  it('requires a mode before starting a daily review', () => {
+    renderReviewStarter('/review?sessionType=DAILY_REVIEW')
+
+    expect(
+      screen.getByRole('heading', { name: 'How would you like to review?' }),
+    ).toBeInTheDocument()
+    expect(startSession).not.toHaveBeenCalled()
+    expect(screen.getByRole('link', { name: /Recall/ })).toHaveAttribute(
+      'href',
+      '/review?sessionType=DAILY_REVIEW&reviewGoal=RECALL',
+    )
   })
 
   it("renders the current session plan before the question", () => {
@@ -881,7 +894,9 @@ const renderSummary = (state?: unknown) =>
     ),
   );
 
-const renderReviewStarter = (initialEntry = "/review") => {
+const renderReviewStarter = (
+  initialEntry = "/review?sessionType=DAILY_REVIEW&reviewGoal=BALANCED",
+) => {
   const element = () => (
     localized(
       <ThemeProvider theme={appTheme}>

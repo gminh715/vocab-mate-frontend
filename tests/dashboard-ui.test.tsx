@@ -309,18 +309,18 @@ describe('HomePage', () => {
     ).toBeInTheDocument()
   })
 
-  it('starts the stored daily plan without asking for a duration', () => {
+  it('starts a review with every due word and no timed plan', () => {
     renderDashboard()
     const card = screen.getByRole('region', {
       name: 'Keep familiar words close',
     })
 
     expect(within(card).getByText('3')).toBeInTheDocument()
-    expect(within(card).getByText('10 min')).toBeInTheDocument()
-    fireEvent.click(within(card).getByRole('button', { name: 'Start Review' }))
+    expect(within(card).queryByText(/min$/)).not.toBeInTheDocument()
+    fireEvent.click(within(card).getByRole('link', { name: 'Start Review' }))
 
     expect(screen.getByLabelText('Current path')).toHaveTextContent(
-      '/review?sessionType=DAILY_REVIEW&targetDurationMinutes=10&reviewGoal=BALANCED',
+      '/review?sessionType=DAILY_REVIEW',
     )
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })

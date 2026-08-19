@@ -34,17 +34,15 @@ import {
   useStartReviewSessionMutation,
   useSubmitReviewAnswerMutation,
 } from '@/hooks/Review/useReviews'
+import { REVIEW_GOALS } from '@/types/Review/review'
 import type {
   ReviewQuestion,
+  ReviewGoal,
   ReviewSessionItem,
   ReviewResult,
   SkippedReviewItem,
   StartReviewSessionRequest,
   SubmittedReviewAnswer,
-} from '@/types/Review/review'
-import {
-  REVIEW_GOALS,
-  REVIEW_TARGET_DURATIONS,
 } from '@/types/Review/review'
 import {
   reviewSessionPath,
@@ -182,24 +180,15 @@ const startRequestFromSearch = (
   const quizId = searchParams.get('quizId')
   const articleId = searchParams.get('articleId')
   const collectionId = searchParams.get('collectionId')
-  const durationParam = searchParams.get('targetDurationMinutes')
-  const goalParam = searchParams.get('reviewGoal')
+  const reviewGoal = REVIEW_GOALS.find(
+    (goal) => goal === searchParams.get('reviewGoal'),
+  )
 
   if (sessionType === 'DAILY_REVIEW') {
-    const targetDurationMinutes =
-      REVIEW_TARGET_DURATIONS.find(
-        (duration) => String(duration) === durationParam,
-      ) ?? (durationParam === null ? 10 : null)
-    const reviewGoal =
-      REVIEW_GOALS.find((goal) => goal === goalParam) ??
-      (goalParam === null ? 'BALANCED' : null)
-    return quizId || articleId || collectionId
+    return quizId || articleId || collectionId || !reviewGoal
       ? null
-      : targetDurationMinutes && reviewGoal
-        ? { sessionType, targetDurationMinutes, reviewGoal }
-        : null
+      : { sessionType, reviewGoal, targetDurationMinutes: 10 }
   }
-  if (durationParam || goalParam) return null
   if (sessionType === 'ARTICLE_REVIEW' && articleId && !quizId && !collectionId) {
     return { sessionType, articleId, limit: 20 }
   }
@@ -216,6 +205,16 @@ const startRequestFromSearch = (
   }
   return null
 }
+
+const isReviewGoal = (value: string | null): value is ReviewGoal =>
+  REVIEW_GOALS.some((goal) => goal === value)
+
+const isDailyReviewModeSelection = (searchParams: URLSearchParams): boolean =>
+  (searchParams.get('sessionType') ?? 'DAILY_REVIEW') === 'DAILY_REVIEW' &&
+  !searchParams.get('quizId') &&
+  !searchParams.get('articleId') &&
+  !searchParams.get('collectionId') &&
+  !isReviewGoal(searchParams.get('reviewGoal'))
 
 function ReviewShell({
   children,
@@ -318,6 +317,10 @@ function ReviewStarter() {
   )
   const startedRef = useRef(false)
   const searchString = searchParams.toString()
+  const needsModeSelection = useMemo(
+    () => isDailyReviewModeSelection(new URLSearchParams(searchString)),
+    [searchString],
+  )
   const request = useMemo(() => {
     const parsed = startRequestFromSearch(new URLSearchParams(searchString))
     return parsed ? { ...parsed, preparationId } : null
@@ -350,6 +353,47 @@ function ReviewStarter() {
       navigate(reviewSessionPath(recoveredSessionId), { replace: true })
     }
   }, [navigate, recoveredSessionId])
+
+  if (needsModeSelection) {
+    return (
+      <ReviewShell>
+        <Paper
+          variant="outlined"
+          sx={{ maxWidth: 680, mx: 'auto', mt: { xs: 3, sm: 7 }, p: { xs: 2.5, sm: 4 } }}
+        >
+          <Typography color="primary.main" sx={{ fontSize: 12, fontWeight: 850, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            {t('starter.modeEyebrow')}
+          </Typography>
+          <Typography component="h1" variant="h1" sx={{ mt: 0.75, fontSize: { xs: 30, sm: 38 } }}>
+            {t('starter.modeTitle')}
+          </Typography>
+          <Typography color="text.secondary" sx={{ mt: 1 }}>
+            {t('starter.modeDescription')}
+          </Typography>
+          <Stack spacing={1.25} sx={{ mt: 3 }}>
+            {REVIEW_GOALS.map((goal) => (
+              <Button
+                key={goal}
+                component={RouterLink}
+                to={`${routePaths.review}?${new URLSearchParams({ sessionType: 'DAILY_REVIEW', reviewGoal: goal }).toString()}`}
+                variant="outlined"
+                sx={{ justifyContent: 'flex-start', px: 2, py: 1.5, textAlign: 'left' }}
+              >
+                <Stack spacing={0.25} sx={{ alignItems: 'flex-start' }}>
+                  <Typography component="span" sx={{ fontWeight: 800 }}>
+                    {t(`plan.goals.${goal}`)}
+                  </Typography>
+                  <Typography component="span" variant="body2" color="text.secondary">
+                    {t(`starter.modeDescriptions.${goal}`)}
+                  </Typography>
+                </Stack>
+              </Button>
+            ))}
+          </Stack>
+        </Paper>
+      </ReviewShell>
+    )
+  }
 
   if (!request) {
     return (
@@ -947,23 +991,6 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
                 count: progress.totalQuestions,
               })}
           </Typography>
-          {sessionQuery.data.session.targetDurationMinutes &&
-          sessionQuery.data.session.reviewGoal ? (
-            <Typography
-              variant="body2"
-              sx={{ mt: 1, color: 'primary.dark', fontWeight: 750 }}
-            >
-              {t('plan.details', {
-                minutes: sessionQuery.data.session.targetDurationMinutes,
-                count:
-                  sessionQuery.data.session.plannedItemCount ??
-                  progress.totalQuestions,
-                goal: t(
-                  `plan.goals.${sessionQuery.data.session.reviewGoal}`,
-                ),
-              })}
-            </Typography>
-          ) : null}
         </Paper>
 
         <Box>

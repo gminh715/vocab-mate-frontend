@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
@@ -20,13 +21,12 @@ import { VocabularyItemTable } from '@/components/Vocabulary/VocabularyItemTable
 import { useCollectionsQuery } from '@/hooks/Vocabulary/useCollections'
 import {
   useDeleteVocabularyMutation,
-  useUpdateVocabularyStatusMutation,
+  useDeleteVocabulariesMutation,
   useVocabulariesQuery,
 } from '@/hooks/Vocabulary/useVocabularies'
 import type {
   CollectionListItem,
   GetVocabulariesQueryParams,
-  LearningStatus,
 } from '@/types/Vocabulary/vocabulary'
 import {
   vocabularyParamsFromSearchParams,
@@ -39,6 +39,8 @@ export function SavedVocabularyPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'))
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
+  const [bulkDeleteError, setBulkDeleteError] = useState(false)
 
   const currentParams = vocabularyParamsFromSearchParams(searchParams)
 
@@ -55,10 +57,11 @@ export function SavedVocabularyPage() {
     (c: CollectionListItem) => c.id === currentParams.collectionId,
   )
 
-  const updateStatusMutation = useUpdateVocabularyStatusMutation()
   const deleteMutation = useDeleteVocabularyMutation()
+  const bulkDeleteMutation = useDeleteVocabulariesMutation()
 
   const handleFilterChange = (updates: Partial<GetVocabulariesQueryParams>) => {
+    setSelectedIds(new Set())
     const nextParams: GetVocabulariesQueryParams = {
       ...currentParams,
       ...updates,
@@ -73,6 +76,7 @@ export function SavedVocabularyPage() {
   }
 
   const handlePageChange = (_event: unknown, newPage: number) => {
+    setSelectedIds(new Set())
     const nextParams: GetVocabulariesQueryParams = {
       ...currentParams,
       page: newPage,
@@ -93,18 +97,49 @@ export function SavedVocabularyPage() {
     handleFilterChange({ dueOnly: dueOnly ? true : undefined })
   }
 
-  const handleUpdateStatus = (id: string, newStatus: LearningStatus) => {
-    updateStatusMutation.mutate({ userVocabularyId: id, learningStatus: newStatus })
-  }
-
   const handleDelete = (id: string) => {
-    deleteMutation.mutate(id)
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        setSelectedIds((current) => {
+          const next = new Set(current)
+          next.delete(id)
+          return next
+        })
+      },
+    })
   }
 
   const items = data?.items ?? []
   const meta = data?.meta
   const total = meta?.total ?? 0
   const totalPages = meta?.totalPages ?? 1
+
+  const handleToggleSelected = (id: string) => {
+    setSelectedIds((current) => {
+      const next = new Set(current)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const handleToggleAll = () => {
+    setSelectedIds((current) => {
+      const allSelected = items.every((item) => current.has(item.id))
+      return allSelected ? new Set() : new Set(items.map((item) => item.id))
+    })
+  }
+
+  const handleBulkDelete = (ids: string[]) => {
+    setBulkDeleteError(false)
+    bulkDeleteMutation.mutate(ids, {
+      onSuccess: () => setSelectedIds(new Set()),
+      onError: () => {
+        setSelectedIds(new Set())
+        setBulkDeleteError(true)
+      },
+    })
+  }
 
   const hasActiveFilters = Boolean(
     currentParams.q ||
@@ -200,6 +235,12 @@ export function SavedVocabularyPage() {
                 </Alert>
               ) : null}
 
+              {bulkDeleteError ? (
+                <Alert severity="error" sx={{ mb: 3, borderRadius: 2.5 }}>
+                  {t('table.bulk.error')}
+                </Alert>
+              ) : null}
+
               {isLoading ? (
                 <Stack spacing={2}>
                   {[1, 2, 3, 4].map((key) => (
@@ -246,16 +287,15 @@ export function SavedVocabularyPage() {
                   {isDesktop ? (
                     <VocabularyItemTable
                       items={items}
-                      onUpdateStatus={handleUpdateStatus}
+                      selectedIds={selectedIds}
+                      onToggleSelected={handleToggleSelected}
+                      onToggleAll={handleToggleAll}
                       onDelete={handleDelete}
-                      updatingId={
-                        updateStatusMutation.isPending
-                          ? updateStatusMutation.variables.userVocabularyId
-                          : null
-                      }
+                      onBulkDelete={handleBulkDelete}
                       deletingId={
                         deleteMutation.isPending ? deleteMutation.variables : null
                       }
+                      isBulkDeleting={bulkDeleteMutation.isPending}
                     />
                   ) : (
                     <Grid container spacing={2}>
@@ -263,12 +303,7 @@ export function SavedVocabularyPage() {
                         <Grid key={item.id} size={{ xs: 12 }}>
                           <VocabularyItemCard
                             item={item}
-                            onUpdateStatus={handleUpdateStatus}
                             onDelete={handleDelete}
-                            isUpdating={
-                              updateStatusMutation.isPending &&
-                              updateStatusMutation.variables.userVocabularyId === item.id
-                            }
                             isDeleting={
                               deleteMutation.isPending &&
                               deleteMutation.variables === item.id

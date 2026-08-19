@@ -167,15 +167,9 @@ export function VocabularyDetailPage() {
         setDeleteDialogOpen(false)
         navigate(routePaths.vocabularies)
       },
-      onError: (err) => {
+      onError: () => {
         setDeleteDialogOpen(false)
-        if (isApiError(err) && err.status === 409) {
-          setDeleteError(
-            'This vocabulary item is referenced in your review history and cannot be deleted.',
-          )
-        } else {
-          setDeleteError('Failed to delete vocabulary item. Try again.')
-        }
+        setDeleteError('Failed to delete vocabulary item. Try again.')
       },
     })
   }

@@ -7,9 +7,8 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 import { normalizeApiError } from '@/config/apiClient'
-import { useAuth } from '@/contexts/AuthContext'
 import {
   useActiveReviewSessionQuery,
   useTodayReviewsQuery,
@@ -18,13 +17,11 @@ import {
   reviewSessionPath,
   reviewStartPath,
 } from '@/utils/paths'
-import { ArrowRightIcon, ClockIcon, FlameIcon, SparklesIcon } from './DashboardIcons'
+import { ArrowRightIcon, FlameIcon, SparklesIcon } from './DashboardIcons'
 
 const numberFormatter = new Intl.NumberFormat()
 export function ReviewReadyCard() {
   const { t } = useTranslation('home')
-  const navigate = useNavigate()
-  const { currentUser } = useAuth()
   const todayQuery = useTodayReviewsQuery()
   const activeQuery = useActiveReviewSessionQuery()
   const activeSession = activeQuery.data
@@ -36,10 +33,6 @@ export function ReviewReadyCard() {
     (activeQuery.isError && !hasExpectedMissingActiveSession)
   const activeRemaining = activeSession?.progress.remainingCount
   const displayedItemCount = activeRemaining ?? dueCount
-  const displayedDuration =
-    activeSession?.session.targetDurationMinutes ??
-    currentUser?.profile.dailyStudyMinutes ??
-    10
   const canStart = Boolean(activeSession) || dueCount > 0
 
   return (
@@ -134,7 +127,6 @@ export function ReviewReadyCard() {
         ) : (
           <Stack
             direction="row"
-            spacing={{ xs: 2.5, sm: 4 }}
             sx={{
               p: 1.5,
               px: 2.5,
@@ -165,25 +157,6 @@ export function ReviewReadyCard() {
               </Typography>
             </Box>
 
-            <Box sx={{ borderLeft: '1px solid', borderColor: 'divider', pl: { xs: 2.5, sm: 4 } }}>
-              <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-                <ClockIcon size={16} />
-                <Typography
-                  sx={{
-                    fontFamily: '"Merriweather", serif',
-                    fontSize: { xs: 26, sm: 30 },
-                    fontWeight: 700,
-                    fontVariantNumeric: 'tabular-nums',
-                    lineHeight: 1,
-                  }}
-                >
-                  {displayedDuration} min
-                </Typography>
-              </Stack>
-              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-                {t('review.estTime')}
-              </Typography>
-            </Box>
           </Stack>
         )}
 
@@ -200,6 +173,8 @@ export function ReviewReadyCard() {
           </Button>
         ) : (
           <Button
+            component={RouterLink}
+            to={reviewStartPath({ sessionType: 'DAILY_REVIEW' })}
             variant="contained"
             size="large"
             endIcon={<ArrowRightIcon size={18} />}
@@ -207,15 +182,6 @@ export function ReviewReadyCard() {
               todayQuery.isPending ||
               todayQuery.isError ||
               (!canStart && todayQuery.data !== undefined && dueCount === 0)
-            }
-            onClick={() =>
-              navigate(
-                reviewStartPath({
-                  sessionType: 'DAILY_REVIEW',
-                  targetDurationMinutes: displayedDuration,
-                  reviewGoal: 'BALANCED',
-                }),
-              )
             }
             sx={{ py: 1.5, px: 3, borderRadius: 2, boxShadow: 2, whiteSpace: 'nowrap' }}
           >

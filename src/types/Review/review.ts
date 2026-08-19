@@ -125,8 +125,6 @@ export interface StartReviewSessionRequest {
   articleId?: string | null
   collectionId?: string | null
   limit?: number
-  targetDurationMinutes?: ReviewTargetDuration
-  reviewGoal?: ReviewGoal
 }
 
 export interface RevealReviewHintRequest {

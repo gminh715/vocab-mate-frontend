@@ -11,9 +11,9 @@ const BAND_CONFIG: ReadonlyArray<{
   levels: readonly CefrLevel[]
   count: number
 }> = [
-  { band: 'BASIC', levels: ['A1', 'A2'], count: 15 },
-  { band: 'INTERMEDIATE', levels: ['B1', 'B2'], count: 10 },
-  { band: 'ADVANCED', levels: ['C1', 'C2'], count: 5 },
+  { band: 'BASIC', levels: ['A1', 'A2'], count: 10 },
+  { band: 'INTERMEDIATE', levels: ['B1', 'B2'], count: 12 },
+  { band: 'ADVANCED', levels: ['C1', 'C2'], count: 8 },
 ]
 
 const shuffled = <T>(values: readonly T[], random: () => number): T[] => {

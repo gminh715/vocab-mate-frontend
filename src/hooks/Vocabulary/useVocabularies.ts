@@ -99,6 +99,29 @@ export const useDeleteVocabularyMutation = () => {
   })
 }
 
+export const useDeleteVocabulariesMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (userVocabularyIds: readonly string[]) => {
+      const results = await Promise.allSettled(
+        userVocabularyIds.map((userVocabularyId) =>
+          vocabulariesApi.remove(userVocabularyId),
+        ),
+      )
+      if (results.some((result) => result.status === 'rejected')) {
+        throw new Error('One or more vocabulary deletions failed')
+      }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({
+        queryKey: vocabularyQueryKeys.all,
+      })
+    },
+    retry: false,
+  })
+}
+
 export const useSaveVocabularyMutation = (
   articleId: string,
   termId: string,

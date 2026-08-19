@@ -6,6 +6,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { collectionsApi, vocabulariesApi } from '@/api'
 import { ApiError } from '@/config/apiClient'
+import i18n from '@/i18n/i18n'
 import { SavedVocabularyPage } from '@/pages/Vocabulary/SavedVocabularyPage'
 import { appTheme } from '@/theme'
 import type {
@@ -37,12 +38,23 @@ const mockVocabularyItem: VocabularyListItem = {
   ],
 }
 
+const secondVocabularyItem: VocabularyListItem = {
+  ...mockVocabularyItem,
+  id: '880e8400-e29b-41d4-a716-446655440000',
+  articleSentenceTermId: '660e8400-e29b-41d4-a716-446655440002',
+  savedWordDisplay: 'sustainable',
+  savedLemma: 'sustainable',
+  savedIpa: 'səˈsteɪnəbəl',
+  savedMeaningVi: 'bền vững',
+  learningStatus: 'REVIEWING',
+}
+
 const mockVocabularyList: VocabularyListData = {
-  items: [mockVocabularyItem],
+  items: [mockVocabularyItem, secondVocabularyItem],
   meta: {
     page: 1,
     limit: 20,
-    total: 1,
+    total: 2,
     totalPages: 1,
   },
 }
@@ -110,7 +122,21 @@ const renderPage = (initialEntries = ['/vocabularies']) => {
 }
 
 describe('Saved Vocabulary Page UI', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('en')
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn((query: string): MediaQueryList => ({
+        matches: query.includes('min-width'),
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    )
     vi.spyOn(vocabulariesApi, 'findAll').mockResolvedValue(mockVocabularyList)
     vi.spyOn(vocabulariesApi, 'getDue').mockResolvedValue(mockDueVocabularyList)
     vi.spyOn(collectionsApi, 'findAll').mockResolvedValue(mockCollectionList)
@@ -118,6 +144,7 @@ describe('Saved Vocabulary Page UI', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   it('renders heading, due banner, filter bar, and vocabulary items table', async () => {
@@ -128,6 +155,32 @@ describe('Saved Vocabulary Page UI', () => {
     expect(screen.getByText('harmful')).toBeInTheDocument()
     expect(screen.getByText('có hại')).toBeInTheDocument()
     expect(screen.getAllByText('Environment').length).toBeGreaterThan(0)
+    expect(screen.queryByText('Phonetic / IPA')).not.toBeInTheDocument()
+    expect(document.querySelector('[id^="table-status-select-"]')).toBeNull()
+  })
+
+  it('selects the current page and deletes the selected vocabulary in bulk', async () => {
+    vi.spyOn(vocabulariesApi, 'remove').mockResolvedValue(undefined)
+    renderPage()
+
+    const user = userEvent.setup()
+    await user.click(
+      await screen.findByRole('checkbox', {
+        name: 'Select all vocabulary on this page',
+      }),
+    )
+
+    expect(screen.getByText('2 words selected')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Delete selected' }))
+    expect(
+      await screen.findByRole('heading', { name: 'Remove 2 selected words?' }),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Remove 2 words' }))
+
+    expect(vocabulariesApi.remove).toHaveBeenCalledTimes(2)
+    expect(vocabulariesApi.remove).toHaveBeenCalledWith(mockVocabularyItem.id)
+    expect(vocabulariesApi.remove).toHaveBeenCalledWith(secondVocabularyItem.id)
   })
 
   it('renders empty state when user has no saved vocabulary', async () => {
@@ -190,7 +243,7 @@ describe('Saved Vocabulary Page UI', () => {
     await user.click(viewDueButton)
 
     expect(
-      await screen.findByText('Showing Due Vocabulary Items Only'),
+      await screen.findByText('Showing Due Items Only'),
     ).toBeInTheDocument()
   })
 

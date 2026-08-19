@@ -60,17 +60,29 @@
     "ariaLabel": "Bảng danh sách từ vựng đã lưu",
     "colStatus": "Trạng thái",
     "colVocabulary": "Từ vựng",
-    "colPhonetic": "Phiên âm / IPA",
     "colPos": "Từ loại / Cấp độ",
     "colMeaning": "Nghĩa & Ví dụ",
     "colActions": "Hành động",
     "notePrefix": "Ghi chú: ",
     "listenTooltip": "Nghe phát âm",
+    "listenAriaLabel": "Nghe phát âm {{word}}",
     "detailsTooltip": "Xem chi tiết / Chỉnh sửa",
     "detailsAriaLabel": "Chi tiết {{word}}",
     "deleteTooltip": "Xóa từ đã lưu",
     "deleteAriaLabel": "Xóa {{word}}",
     "dueChip": "Đến hạn",
+    "bulk": {
+      "selectAll": "Chọn tất cả từ vựng trên trang này",
+      "selectWord": "Chọn {{word}}",
+      "selected": "Đã chọn {{count}} từ",
+      "deleteSelected": "Xóa mục đã chọn",
+      "error": "Không thể xóa một số từ đã chọn. Danh sách đã được làm mới; hãy chọn lại các từ còn lại và thử lại.",
+      "dialog": {
+        "title": "Xóa {{count}} từ đã chọn?",
+        "description": "{{count}} từ này sẽ bị xóa khỏi danh sách từ vựng và các bộ sưu tập. Hành động này không thể hoàn tác.",
+        "confirm": "Xóa {{count}} từ"
+      }
+    },
     "dialog": {
       "title": "Xóa Từ Vựng Đã Lưu?",
       "description": "Bạn có chắc muốn xóa \"{{word}}\" khỏi danh sách từ vựng? Hành động này không thể hoàn tác.",

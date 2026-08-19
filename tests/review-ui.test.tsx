@@ -329,7 +329,7 @@ describe("ReviewPage", () => {
     expect(screen.getByText(/2.*4/)).toBeInTheDocument()
   })
 
-  it('maps the selected daily duration and goal into the start request', async () => {
+  it('ignores legacy timing parameters when starting a daily review', async () => {
     renderReviewStarter(
       '/review?sessionType=DAILY_REVIEW&targetDurationMinutes=15&reviewGoal=CONTEXT',
     )
@@ -339,8 +339,6 @@ describe("ReviewPage", () => {
         {
           preparationId: expect.any(String),
           sessionType: 'DAILY_REVIEW',
-          targetDurationMinutes: 15,
-          reviewGoal: 'CONTEXT',
         },
         expect.objectContaining({ onSuccess: expect.any(Function) }),
       )

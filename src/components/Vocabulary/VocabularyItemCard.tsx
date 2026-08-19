@@ -7,20 +7,13 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
-import MenuItem from '@mui/material/MenuItem'
-import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  LEARNING_STATUSES,
-  type LearningStatus,
-  type VocabularyListItem,
-} from '@/types/Vocabulary/vocabulary'
+import type { LearningStatus, VocabularyListItem } from '@/types/Vocabulary/vocabulary'
 import { vocabularyDetailPath } from '@/utils/paths'
 
 const statusColorMap: Record<
@@ -45,17 +38,13 @@ const cefrColorMap: Record<string, string> = {
 
 interface VocabularyItemCardProps {
   item: VocabularyListItem
-  onUpdateStatus: (id: string, newStatus: LearningStatus) => void
   onDelete: (id: string) => void
-  isUpdating?: boolean
   isDeleting?: boolean
 }
 
 export function VocabularyItemCard({
   item,
-  onUpdateStatus,
   onDelete,
-  isUpdating = false,
   isDeleting = false,
 }: VocabularyItemCardProps) {
   const { t } = useTranslation('vocabulary')
@@ -193,33 +182,12 @@ export function VocabularyItemCard({
             justifyContent: 'space-between',
           }}
         >
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <Select
-              id={`status-select-${item.id}`}
-              value={item.learningStatus}
-              disabled={isUpdating}
-              onChange={(e) =>
-                onUpdateStatus(item.id, e.target.value as LearningStatus)
-              }
-              sx={{
-                fontSize: 13,
-                fontWeight: 700,
-                height: 34,
-              }}
-            >
-              {LEARNING_STATUSES.map((status) => (
-                <MenuItem key={status} value={status}>
-                  <Chip
-                    label={t(`statusLabels.${status}`)}
-                    size="small"
-                    color={statusColorMap[status]}
-                    sx={{ fontWeight: 700, fontSize: 10, mr: 1 }}
-                  />
-                  {t(`statusLabels.${status}`)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Chip
+            label={t(`statusLabels.${item.learningStatus}`)}
+            size="small"
+            color={statusColorMap[item.learningStatus]}
+            sx={{ fontWeight: 700, fontSize: 11 }}
+          />
 
           <Stack direction="row" spacing={1}>
             <Button

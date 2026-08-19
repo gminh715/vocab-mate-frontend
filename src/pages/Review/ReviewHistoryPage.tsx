@@ -49,6 +49,9 @@ const positivePage = (value: string | null): number => {
 function HistoryCard({ item }: { item: ReviewHistoryItem }) {
   const { t } = useTranslation('review')
   const { session, aggregates } = item
+  const reviewMode =
+    session.reviewGoal ??
+    (session.sessionType === 'DAILY_REVIEW' ? 'BALANCED' : null)
   const sourceTitle =
     item.article?.title ??
     item.quiz?.title ??
@@ -113,7 +116,7 @@ function HistoryCard({ item }: { item: ReviewHistoryItem }) {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(4, minmax(0, 1fr))' },
+            gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(3, minmax(0, 1fr))' },
             gap: 1,
           }}
         >
@@ -127,15 +130,9 @@ function HistoryCard({ item }: { item: ReviewHistoryItem }) {
               value: `${aggregates.correctCount}/${aggregates.answeredCount}`,
             },
             {
-              label: t('history.metrics.duration'),
-              value: session.targetDurationMinutes
-                ? t('history.minutes', { count: session.targetDurationMinutes })
-                : '—',
-            },
-            {
-              label: t('history.metrics.focus'),
-              value: session.reviewGoal
-                ? t(`plan.goals.${session.reviewGoal}`)
+              label: t('history.metrics.mode'),
+              value: reviewMode
+                ? t(`plan.goals.${reviewMode}`)
                 : '—',
             },
           ].map((metric) => (

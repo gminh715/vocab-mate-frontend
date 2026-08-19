@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReviewHistory } from '@/types/Review/review'
+import i18n from '@/i18n/i18n'
 import { appTheme } from '@/theme'
 
 const { historyHook, queryState } = vi.hoisted(() => ({
@@ -70,7 +71,8 @@ const renderPage = (entry = '/review-history') =>
   )
 
 describe('ReviewHistoryPage', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('en')
     historyHook.mockReset()
     queryState.data = completedHistory
     queryState.isPending = false
@@ -89,6 +91,9 @@ describe('ReviewHistoryPage', () => {
     expect(screen.getByRole('heading', { name: 'Daily review' })).toBeInTheDocument()
     expect(screen.getByText('Recall first, then reinforce in context.')).toBeInTheDocument()
     expect(screen.getByText('75%')).toBeInTheDocument()
+    expect(screen.getByText('Recall')).toBeInTheDocument()
+    expect(screen.getByText('Mode')).toBeInTheDocument()
+    expect(screen.queryByText('Plan')).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'View Summary' })).toHaveAttribute(
       'href',
       '/review/session-1/summary',
@@ -109,5 +114,24 @@ describe('ReviewHistoryPage', () => {
       'href',
       '/review?sessionType=DAILY_REVIEW',
     )
+  })
+
+  it('shows the legacy daily-review mode as Balanced', () => {
+    queryState.data = {
+      ...completedHistory,
+      items: [
+        {
+          ...completedHistory.items[0],
+          session: {
+            ...completedHistory.items[0].session,
+            reviewGoal: null,
+          },
+        },
+      ],
+    }
+
+    renderPage()
+
+    expect(screen.getByText('Balanced')).toBeInTheDocument()
   })
 })

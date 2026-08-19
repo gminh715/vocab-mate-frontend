@@ -26,6 +26,15 @@
     "hintStale": "Câu hỏi đã thay đổi. Hãy tải lại lượt ôn trước khi xem gợi ý tiếp theo."
   },
   "starter": {
+    "modeEyebrow": "Chế độ ôn tập",
+    "modeTitle": "Bạn muốn ôn theo cách nào?",
+    "modeDescription": "Chọn một chế độ để tạo câu hỏi phù hợp với mục tiêu hôm nay.",
+    "modeDescriptions": {
+      "BALANCED": "Kết hợp nhận diện, gợi nhớ, chính tả và ngữ cảnh.",
+      "RECALL": "Luyện nhớ và tìm đúng từ dựa trên nghĩa.",
+      "SPELLING": "Luyện gõ chính xác từ qua gợi ý trong câu.",
+      "CONTEXT": "Luyện chọn nghĩa phù hợp với ngữ cảnh thực tế."
+    },
     "invalidLink": "Liên kết ôn tập không hợp lệ. Hãy về trang chủ và chọn lại lượt ôn.",
     "emptyTitle": "Chưa có từ nào sẵn sàng để ôn",
     "errorTitle": "Không thể bắt đầu lượt ôn",
@@ -193,8 +202,7 @@
     "metrics": {
       "accuracy": "Độ chính xác",
       "correct": "Câu đúng",
-      "duration": "Kế hoạch",
-      "focus": "Trọng tâm"
+      "mode": "Chế độ"
     },
     "filters": {
       "ariaLabel": "Bộ lọc lịch sử ôn tập",

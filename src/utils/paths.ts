@@ -1,6 +1,6 @@
 import type { Location } from 'react-router-dom'
 import type { CurrentUser, UserRole } from '@/types/Auth/auth'
-import type { ReviewSessionType } from '@/types/Review/review'
+import type { ReviewGoal, ReviewSessionType } from '@/types/Review/review'
 
 export const routePaths = {
   home: '/',
@@ -88,16 +88,19 @@ export const reviewStartPath = ({
   quizId,
   articleId,
   collectionId,
+  reviewGoal,
 }: {
   sessionType: ReviewSessionType
   quizId?: string
   articleId?: string
   collectionId?: string
+  reviewGoal?: ReviewGoal
 }): string => {
   const params = new URLSearchParams({ sessionType })
   if (quizId) params.set('quizId', quizId)
   if (articleId) params.set('articleId', articleId)
   if (collectionId) params.set('collectionId', collectionId)
+  if (reviewGoal) params.set('reviewGoal', reviewGoal)
   return `${routePaths.review}?${params.toString()}`
 }
 

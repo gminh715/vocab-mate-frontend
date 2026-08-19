@@ -26,6 +26,15 @@
     "hintStale": "This question changed. Refresh the review before requesting another hint."
   },
   "starter": {
+    "modeEyebrow": "Review mode",
+    "modeTitle": "How would you like to review?",
+    "modeDescription": "Choose a mode to create questions that suit today's goal.",
+    "modeDescriptions": {
+      "BALANCED": "Mix recognition, recall, spelling, and context.",
+      "RECALL": "Practice recalling the right word from its meaning.",
+      "SPELLING": "Practice typing words accurately from sentence clues.",
+      "CONTEXT": "Practice choosing meanings that fit real contexts."
+    },
     "invalidLink": "This review link is not valid. Return home and choose a review again.",
     "emptyTitle": "Nothing is ready here yet",
     "errorTitle": "Review could not start",
@@ -195,8 +204,7 @@
     "metrics": {
       "accuracy": "Accuracy",
       "correct": "Correct",
-      "duration": "Plan",
-      "focus": "Focus"
+      "mode": "Mode"
     },
     "filters": {
       "ariaLabel": "Review history filters",

@@ -71,7 +71,6 @@ export interface AdminArticleDetail {
   article: AdminArticle
   sentenceCount: number
   termCount: number
-  quizCount: number
 }
 
 export interface CreateArticleRequest {

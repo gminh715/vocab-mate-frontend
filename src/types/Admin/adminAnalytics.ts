@@ -43,7 +43,6 @@ export interface AdminTopArticle {
   openedCount: number
   completedCount: number
   savedVocabularyCount: number
-  completedQuizSessions: number
 }
 
 export interface AdminArticleCompletion {
@@ -64,21 +63,10 @@ export interface AdminTermSave {
   saveCount: number
 }
 
-export interface AdminQuizPerformance {
-  quizId: string
-  quizTitle: string
-  articleId: string
-  articleTitle: string
-  completedSessions: number
-  accuracy: number
-  averageScore: number
-}
-
 export interface AdminContentAnalytics {
   topArticles: AdminTopArticle[]
   completionRates: AdminArticleCompletion[]
   termSaveCounts: AdminTermSave[]
-  quizPerformance: AdminQuizPerformance[]
 }
 
 export interface RegistrationTrendBucket {
@@ -97,7 +85,7 @@ export interface LearningDistribution {
   inactive: number
   readingOnly: number
   vocabularyOnly: number
-  quizOnly: number
+  reviewOnly: number
   multiActivity: number
 }
 

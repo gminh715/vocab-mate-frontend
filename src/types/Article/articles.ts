@@ -49,5 +49,4 @@ export interface PublicArticleMetadata {
 export interface ArticleDetailData {
   article: PublicArticleMetadata
   category: PublicCategory
-  quizCount: number
 }

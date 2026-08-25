@@ -52,7 +52,7 @@ export function AdminPage() {
               Start with content
             </Typography>
             <Typography color="text.secondary">
-              Article, quiz, user, category, and aggregate analytics tools are
+              Article, user, category, and aggregate analytics tools are
               available from the admin navigation.
             </Typography>
           </Stack>

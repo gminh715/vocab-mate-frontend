@@ -54,10 +54,6 @@ const nextItem: ReviewSessionItem = {
 const initialState: ReviewSessionState = {
   session: {
     id: 'session-1',
-    sessionType: 'DAILY_REVIEW',
-    quizId: null,
-    articleId: null,
-    collectionId: null,
     planSummary: null,
     status: 'IN_PROGRESS',
     startedAt: '2026-08-03T01:00:00.000Z',
@@ -127,7 +123,7 @@ describe('review mutations', () => {
     await act(() =>
       result.current.mutateAsync({
         reviewSessionItemId: 'item-1',
-        quizQuestionId: 'question-1',
+        reviewQuestionId: 'question-1',
         selectedOptionId: 'option-1',
       }),
     )
@@ -181,7 +177,7 @@ describe('review mutations', () => {
     await act(() =>
       result.current.mutateAsync({
         reviewSessionItemId: 'item-1',
-        quizQuestionId: 'question-1',
+        reviewQuestionId: 'question-1',
       }),
     )
 
@@ -236,7 +232,7 @@ describe('review mutations', () => {
     await act(() =>
       result.current.mutateAsync({
         reviewSessionItemId: 'item-1',
-        quizQuestionId: 'question-1',
+        reviewQuestionId: 'question-1',
         selectedOptionId: 'option-1',
       }),
     )
@@ -281,7 +277,7 @@ describe('review mutations', () => {
     await act(() =>
       result.current.mutateAsync({
         reviewSessionItemId: 'item-1',
-        quizQuestionId: 'question-1',
+        reviewQuestionId: 'question-1',
         selectedOptionId: 'option-1',
       }),
     )

@@ -26,9 +26,7 @@ describe('reviewsApi', () => {
     await reviewsApi.session('session/id')
     await reviewsApi.summary('session/id')
 
-    expect(apiGet).toHaveBeenNthCalledWith(1, '/reviews/today', {
-      params: { limit: 10 },
-    })
+    expect(apiGet).toHaveBeenNthCalledWith(1, '/reviews/today')
     expect(apiGet).toHaveBeenNthCalledWith(2, '/review-sessions/active')
     expect(apiGet).toHaveBeenNthCalledWith(
       3,
@@ -48,7 +46,7 @@ describe('reviewsApi', () => {
   it('submits only the backend-owned question pair and interaction metadata', async () => {
     const request = {
       reviewSessionItemId: 'item-id',
-      quizQuestionId: 'question-id',
+      reviewQuestionId: 'question-id',
       selectedOptionId: 'option-id',
       responseTimeMs: 1_200,
       hintsUsed: 1,
@@ -57,7 +55,7 @@ describe('reviewsApi', () => {
     await reviewsApi.answer('session-id', request)
     await reviewsApi.skip('session-id', {
       reviewSessionItemId: 'item-id',
-      quizQuestionId: 'question-id',
+      reviewQuestionId: 'question-id',
     })
     await reviewsApi.abandon('session/id')
 
@@ -71,7 +69,7 @@ describe('reviewsApi', () => {
       '/review-sessions/session-id/skip',
       {
         reviewSessionItemId: 'item-id',
-        quizQuestionId: 'question-id',
+        reviewQuestionId: 'question-id',
       },
     )
     expect(request).not.toHaveProperty('attemptNumber')

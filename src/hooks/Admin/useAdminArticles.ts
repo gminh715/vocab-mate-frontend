@@ -75,8 +75,7 @@ export const useUpdateAdminArticleMutation = (articleId: string) => {
             typeof current !== 'object' ||
             current === null ||
             !('sentenceCount' in current) ||
-            !('termCount' in current) ||
-            !('quizCount' in current)
+            !('termCount' in current)
           ) {
             return current
           }

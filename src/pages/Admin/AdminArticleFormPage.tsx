@@ -323,8 +323,7 @@ export function AdminArticleEditPage() {
     )
   }
 
-  const { article, sentenceCount, termCount, quizCount } =
-    detailQuery.data
+  const { article, sentenceCount, termCount } = detailQuery.data
   const initialValues = articleToFormValues(article)
 
   if (article.status === 'ARCHIVED') {
@@ -437,7 +436,6 @@ export function AdminArticleEditPage() {
             />
             <SummaryItem label="Sentences" value={sentenceCount} />
             <SummaryItem label="Terms" value={termCount} />
-            <SummaryItem label="Quizzes" value={quizCount} />
           </Box>
         </Stack>
       </Paper>

@@ -20,7 +20,7 @@ describe('analyticsApi', () => {
       dueToday: 1,
       mastered: 2,
       articlesCompleted: 3,
-      quizAccuracy: 0.75,
+      reviewAccuracy: 0.75,
       sessions: 2,
     })
   })
@@ -53,10 +53,6 @@ describe('analyticsApi', () => {
 
     await analyticsApi.vocabulary({ ...dateParams, groupBy: 'WEEK' })
     await analyticsApi.reading(dateParams)
-    await analyticsApi.quizzes({
-      ...dateParams,
-      articleId: '550e8400-e29b-41d4-a716-446655440000',
-    })
     await analyticsApi.reviews(dateParams)
 
     expect(apiGet).toHaveBeenNthCalledWith(
@@ -67,13 +63,7 @@ describe('analyticsApi', () => {
     expect(apiGet).toHaveBeenNthCalledWith(2, '/analytics/me/reading', {
       params: dateParams,
     })
-    expect(apiGet).toHaveBeenNthCalledWith(3, '/analytics/me/quizzes', {
-      params: {
-        ...dateParams,
-        articleId: '550e8400-e29b-41d4-a716-446655440000',
-      },
-    })
-    expect(apiGet).toHaveBeenNthCalledWith(4, '/analytics/me/reviews', {
+    expect(apiGet).toHaveBeenNthCalledWith(3, '/analytics/me/reviews', {
       params: dateParams,
     })
     expect(apiGet.mock.calls.flat().join(' ')).not.toContain('/admin/')

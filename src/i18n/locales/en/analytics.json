@@ -15,14 +15,12 @@
     "daily": "Daily",
     "weekly": "Weekly",
     "monthly": "Monthly",
-    "rangeErrorSuffix": "Analytics requests are paused.",
-    "filteredToArticle": "Quiz analytics filtered to article:"
+    "rangeErrorSuffix": "Analytics requests are paused."
   },
   "tabs": {
     "ariaLabel": "Learning analytics sections",
     "vocabularyGrowth": "Vocabulary Growth",
     "readingProgress": "Reading Progress",
-    "quizPerformance": "Quiz Performance",
     "reviewImpact": "Review Impact"
   },
   "sections": {
@@ -37,12 +35,6 @@
       "title": "Reading Progress",
       "refreshingLabel": "Refreshing reading progress",
       "loadingLabel": "Loading reading progress"
-    },
-    "quiz": {
-      "eyebrow": "Quizzes",
-      "title": "Quiz Performance",
-      "refreshingLabel": "Refreshing quiz performance",
-      "loadingLabel": "Loading quiz performance"
     },
     "review": {
       "eyebrow": "Adaptive review",
@@ -87,22 +79,6 @@
     "opened": "Opened",
     "completed": "Completed",
     "articles": "Articles",
-    "noTrendActivity": "No activity was recorded for this trend."
-  },
-  "quiz": {
-    "completedSessions": "Completed sessions",
-    "completedSessionsDetail": "In-progress and abandoned excluded",
-    "accuracy": "Accuracy",
-    "accuracyDetail": "Correct answers ÷ total answers",
-    "averageScore": "Average score",
-    "averageScoreDetail": "Normalized completed-session score",
-    "byQuestionType": "Performance by question type",
-    "performanceTrend": "Quiz performance trend",
-    "trendPeriod": "Period",
-    "trendSessions": "Sessions",
-    "trendAccuracy": "Accuracy",
-    "trendAverageScore": "Average score",
-    "noDistributionActivity": "No activity was recorded for this distribution.",
     "noTrendActivity": "No activity was recorded for this trend."
   },
   "review": {

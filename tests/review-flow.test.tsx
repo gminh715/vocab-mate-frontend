@@ -70,10 +70,6 @@ const secondItem = {
 const initialState: ReviewSessionState = {
   session: {
     id: sessionId,
-    sessionType: 'DAILY_REVIEW',
-    quizId: null,
-    articleId: null,
-    collectionId: null,
     planSummary: null,
     status: 'IN_PROGRESS',
     startedAt: '2026-08-09T02:00:00.000Z',
@@ -159,7 +155,7 @@ describe('Review PR1 state consistency', () => {
     await act(async () => {
       await result.current.mutateAsync({
         reviewSessionItemId: firstItem.id,
-        quizQuestionId: firstItem.question.id,
+        reviewQuestionId: firstItem.question.id,
         selectedOptionId: 'option-1',
       })
     })
@@ -198,7 +194,7 @@ describe('Review PR1 state consistency', () => {
     await act(async () => {
       await result.current.mutateAsync({
         reviewSessionItemId: secondItem.id,
-        quizQuestionId: secondItem.question.id,
+        reviewQuestionId: secondItem.question.id,
       })
     })
 
@@ -259,7 +255,7 @@ describe('Review PR1 state consistency', () => {
       },
       answers: [
         {
-          quizQuestionId: 'question-1',
+          reviewQuestionId: 'question-1',
           questionType: 'SELECT_MEANING',
           prompt: firstItem.question.prompt,
           selectedOption: firstItem.question.options[1],

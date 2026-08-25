@@ -94,24 +94,6 @@ const AdminArticlePreviewPage = lazy(() =>
   ),
 )
 
-const AdminQuizzesPage = lazy(() =>
-  import('@/pages/Admin/AdminQuizzesPage').then(
-    ({ AdminQuizzesPage: Component }) => ({ default: Component }),
-  ),
-)
-
-const AdminQuizCreatePage = lazy(() =>
-  import('@/pages/Admin/AdminQuizCreatePage').then(
-    ({ AdminQuizCreatePage: Component }) => ({ default: Component }),
-  ),
-)
-
-const AdminQuizBuilderPage = lazy(() =>
-  import('@/pages/Admin/AdminQuizBuilderPage').then(
-    ({ AdminQuizBuilderPage: Component }) => ({ default: Component }),
-  ),
-)
-
 const AdminAnalyticsPage = lazy(() =>
   import('@/pages/Admin/AdminAnalyticsPage').then(
     ({ AdminAnalyticsPage: Component }) => ({ default: Component }),
@@ -375,18 +357,6 @@ export function AppRoutes() {
             <Route
               path={routePaths.adminArticlePreview}
               element={<AdminArticlePreviewPage />}
-            />
-            <Route
-              path={routePaths.adminQuizzes}
-              element={<AdminQuizzesPage />}
-            />
-            <Route
-              path={routePaths.adminQuizNew}
-              element={<AdminQuizCreatePage />}
-            />
-            <Route
-              path={routePaths.adminQuizEdit}
-              element={<AdminQuizBuilderPage />}
             />
             <Route
               path={routePaths.adminAnalytics}

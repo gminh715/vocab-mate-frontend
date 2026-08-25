@@ -24,7 +24,6 @@ import { useSearchParams } from 'react-router-dom'
 import { normalizeApiError } from '@/config/apiClient'
 import { SkillBreakdown } from '@/components/Review/SkillBreakdown'
 import {
-  useQuizAnalyticsQuery,
   useReadingAnalyticsQuery,
   useReviewAnalyticsQuery,
   useVocabularyAnalyticsQuery,
@@ -32,7 +31,6 @@ import {
 import { ANALYTICS_SECTIONS } from '@/types/Analytics/analytics'
 import type {
   AnalyticsFilters,
-  QuizAnalytics,
   ReadingAnalytics,
   ReadingTrendBucket,
   ReviewAnalytics,
@@ -45,21 +43,18 @@ import {
   analyticsRequestParams,
   analyticsSearchParamsFromFilters,
   normalizeAnalyticsSearchParams,
-  quizAnalyticsRequestParams,
   vocabularyAnalyticsRequestParams,
 } from '@/utils/Analytics/analyticsParams'
 import {
   cefrLevelLabel,
   formatAnalyticsRatio,
   learningStatusLabel,
-  questionTypeLabel,
 } from '@/utils/Analytics/analyticsPresentation'
 import {
   BookOpenIcon,
   BookmarkIcon,
   FilterIcon,
   SparklesIcon,
-  TargetIcon,
 } from './DashboardIcons'
 
 const integerFormatter = new Intl.NumberFormat()
@@ -96,8 +91,7 @@ function AnalyticsFiltersPanel({
   const hasFilters = Boolean(
     filters.from ||
       filters.to ||
-      filters.groupBy ||
-      filters.articleId,
+      filters.groupBy,
   )
 
   const handlePreset = (days: number | null) => {
@@ -265,22 +259,6 @@ function AnalyticsFiltersPanel({
           >
             {rangeError} {t('filters.rangeErrorSuffix')}
           </Typography>
-        ) : null}
-        {filters.articleId ? (
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ alignItems: 'center', flexWrap: 'wrap' }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              {t('filters.filteredToArticle')}
-            </Typography>
-            <Chip
-              size="small"
-              label={filters.articleId}
-              onDelete={() => onChange({ articleId: undefined })}
-            />
-          </Stack>
         ) : null}
       </Stack>
     </Paper>
@@ -579,7 +557,7 @@ function TrendPanel({
       </Box>
       {empty ? (
         <Typography color="text.secondary" sx={{ px: 2, pb: 2 }}>
-          {emptyMessage ?? t('quiz.noTrendActivity')}
+          {emptyMessage ?? t('review.noTrendEvidence')}
         </Typography>
       ) : (
         <TableContainer sx={{ maxHeight: 360 }}>
@@ -1203,74 +1181,6 @@ function ReadingAnalyticsContent({ data }: { data: ReadingAnalytics }) {
   )
 }
 
-function QuizAnalyticsContent({ data }: { data: QuizAnalytics }) {
-  const { t } = useTranslation('analytics')
-  const questionSummary = data.byQuestionType
-    .map(
-      (item) =>
-        `${questionTypeLabel(item.questionType)} ${formatAnalyticsRatio(item.accuracy)} from ${integerFormatter.format(item.answers)} answers`,
-    )
-    .join('; ')
-  const trendSessions = data.trend.reduce(
-    (total, item) => total + item.sessions,
-    0,
-  )
-
-  return (
-    <Stack spacing={2}>
-      <MetricStrip
-        items={[
-          {
-            label: t('quiz.completedSessions'),
-            value: integerFormatter.format(data.sessions),
-            detail: t('quiz.completedSessionsDetail'),
-          },
-          {
-            label: t('quiz.accuracy'),
-            value: formatAnalyticsRatio(data.accuracy),
-            detail: t('quiz.accuracyDetail'),
-          },
-          {
-            label: t('quiz.averageScore'),
-            value: formatAnalyticsRatio(data.averageScore),
-            detail: t('quiz.averageScoreDetail'),
-          },
-        ]}
-      />
-      <DistributionPanel
-        title={t('quiz.byQuestionType')}
-        summary={`Question-type performance: ${questionSummary}. Only answers from completed sessions are included.`}
-        scaleMaximum={1}
-        empty={data.byQuestionType.every((item) => item.answers === 0)}
-        emptyMessage={t('quiz.noDistributionActivity')}
-        items={data.byQuestionType.map((item) => ({
-          key: item.questionType,
-          label: questionTypeLabel(item.questionType),
-          value: item.accuracy,
-          valueLabel: `${integerFormatter.format(item.correctAnswers)} / ${integerFormatter.format(item.answers)}`,
-          supportingLabel: formatAnalyticsRatio(item.accuracy),
-        }))}
-      />
-      <TrendPanel
-        title={t('quiz.performanceTrend')}
-        summary={`${integerFormatter.format(data.sessions)} completed sessions across ${integerFormatter.format(data.trend.length)} time buckets. Accuracy and score are backend-calculated ratios.`}
-        headers={[t('quiz.trendPeriod'), t('quiz.trendSessions'), t('quiz.trendAccuracy'), t('quiz.trendAverageScore')]}
-        emptyMessage={t('quiz.noTrendActivity')}
-        rows={data.trend.map((item) => ({
-          key: item.bucket,
-          cells: [
-            formatBucket(item.bucket),
-            integerFormatter.format(item.sessions),
-            formatAnalyticsRatio(item.accuracy),
-            formatAnalyticsRatio(item.averageScore),
-          ],
-        }))}
-        empty={trendSessions === 0}
-      />
-    </Stack>
-  )
-}
-
 function ReviewAnalyticsContent({ data }: { data: ReviewAnalytics }) {
   const { t } = useTranslation('analytics')
   const formatResponseTime = (milliseconds: number | null) =>
@@ -1452,16 +1362,11 @@ export function LearningAnalyticsSections() {
     () => vocabularyAnalyticsRequestParams(filters),
     [filters],
   )
-  const quizParams = useMemo(
-    () => quizAnalyticsRequestParams(filters),
-    [filters],
-  )
   const vocabularyQuery = useVocabularyAnalyticsQuery(
     vocabularyParams,
     enabled,
   )
   const readingQuery = useReadingAnalyticsQuery(dateParams, enabled)
-  const quizQuery = useQuizAnalyticsQuery(quizParams, enabled)
   const reviewQuery = useReviewAnalyticsQuery(dateParams, enabled)
 
   useEffect(() => {
@@ -1541,18 +1446,11 @@ export function LearningAnalyticsSections() {
             aria-controls="analytics-tabpanel-1"
           />
           <Tab
-            icon={<TargetIcon size={18} />}
-            iconPosition="start"
-            label={t('tabs.quizPerformance')}
-            id="analytics-tab-2"
-            aria-controls="analytics-tabpanel-2"
-          />
-          <Tab
             icon={<SparklesIcon size={18} />}
             iconPosition="start"
             label={t('tabs.reviewImpact')}
-            id="analytics-tab-3"
-            aria-controls="analytics-tabpanel-3"
+            id="analytics-tab-2"
+            aria-controls="analytics-tabpanel-2"
           />
         </Tabs>
       </Paper>
@@ -1601,28 +1499,9 @@ export function LearningAnalyticsSections() {
 
       {activeTab === 2 ? (
         <SectionShell
-          id="quiz-analytics"
+          id="review-analytics"
           tabPanelId="analytics-tabpanel-2"
           tabLabelledBy="analytics-tab-2"
-          eyebrow={t('sections.quiz.eyebrow')}
-          title={t('sections.quiz.title')}
-          refreshingLabel={t('sections.quiz.refreshingLabel')}
-          loadingLabel={t('sections.quiz.loadingLabel')}
-          isPending={quizQuery.isPending}
-          isFetching={quizQuery.isFetching}
-          error={quizQuery.isError ? quizQuery.error : null}
-          rangeError={rangeError}
-          onRetry={() => void quizQuery.refetch()}
-        >
-          {quizQuery.data ? <QuizAnalyticsContent data={quizQuery.data} /> : null}
-        </SectionShell>
-      ) : null}
-
-      {activeTab === 3 ? (
-        <SectionShell
-          id="review-analytics"
-          tabPanelId="analytics-tabpanel-3"
-          tabLabelledBy="analytics-tab-3"
           eyebrow={t('sections.review.eyebrow')}
           title={t('sections.review.title')}
           refreshingLabel={t('sections.review.refreshingLabel')}

@@ -476,7 +476,7 @@ export function AdminArticlesPage() {
         title="Delete draft article"
         description={
           deleteArticle
-            ? `Permanently delete ${deleteArticle.title}? Deletion only succeeds when the draft has no reading progress, saved vocabulary, quizzes, or review data.`
+            ? `Permanently delete ${deleteArticle.title}? Deletion only succeeds when the draft has no reading progress, saved vocabulary, or review data.`
             : ''
         }
         confirmLabel="Delete draft"

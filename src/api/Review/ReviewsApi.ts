@@ -19,8 +19,8 @@ import type {
 const reviewSessionsPath = '/review-sessions'
 
 export const reviewsApi = {
-  today: (limit = 10): Promise<DueReviews> =>
-    apiClient.get<DueReviews>('/reviews/today', { params: { limit } }),
+  today: (): Promise<DueReviews> =>
+    apiClient.get<DueReviews>('/reviews/today'),
 
   active: (): Promise<ReviewSessionState> =>
     apiClient.get<ReviewSessionState>(`${reviewSessionsPath}/active`),

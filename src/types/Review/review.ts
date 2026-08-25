@@ -1,13 +1,11 @@
-import type { QuestionType } from '@/types/Admin/adminQuizzes'
-
-export const REVIEW_SESSION_TYPES = [
-  'QUIZ',
-  'DAILY_REVIEW',
-  'ARTICLE_REVIEW',
-  'COLLECTION_REVIEW',
+export const QUESTION_TYPES = [
+  'SELECT_MEANING',
+  'SELECT_WORD',
+  'SELECT_CORRECT_CONTEXT',
+  'FILL_BLANK',
 ] as const
+export type QuestionType = (typeof QUESTION_TYPES)[number]
 
-export type ReviewSessionType = (typeof REVIEW_SESSION_TYPES)[number]
 export const REVIEW_TARGET_DURATIONS = [5, 10, 15] as const
 export const REVIEW_GOALS = [
   'BALANCED',
@@ -52,10 +50,6 @@ export type ReviewErrorType =
 
 export interface ReviewSession {
   id: string
-  sessionType: ReviewSessionType
-  quizId: string | null
-  articleId: string | null
-  collectionId: string | null
   targetDurationMinutes: ReviewTargetDuration | null
   reviewGoal: ReviewGoal | null
   plannedItemCount: number | null
@@ -120,10 +114,6 @@ export interface ReviewSessionState {
 
 export interface StartReviewSessionRequest {
   preparationId?: string
-  sessionType: ReviewSessionType
-  quizId?: string | null
-  articleId?: string | null
-  collectionId?: string | null
   limit?: number
   targetDurationMinutes?: ReviewTargetDuration
   reviewGoal?: ReviewGoal
@@ -152,7 +142,7 @@ export interface ReviewPreparationProgress {
 
 export interface SubmitReviewAnswerRequest {
   reviewSessionItemId: string
-  quizQuestionId: string
+  reviewQuestionId: string
   selectedOptionId?: string
   userAnswerText?: string
   responseTimeMs?: number
@@ -161,7 +151,7 @@ export interface SubmitReviewAnswerRequest {
 
 export interface SkipReviewItemRequest {
   reviewSessionItemId: string
-  quizQuestionId: string
+  reviewQuestionId: string
 }
 
 export interface ReviewResult {
@@ -201,7 +191,7 @@ export interface AbandonedReviewSession {
 }
 
 export interface CompletedReviewAnswer {
-  quizQuestionId: string
+  reviewQuestionId: string
   questionType: QuestionType
   prompt: string
   selectedOption: ReviewQuestionOption | null
@@ -264,18 +254,6 @@ export interface ReviewHistoryAggregate {
 
 export interface ReviewHistoryItem {
   session: ReviewSession
-  quiz: {
-    id: string
-    title: string
-    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
-  } | null
-  article: {
-    id: string
-    title: string
-    slug: string
-    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
-    thumbnailUrl: string | null
-  } | null
   aggregates: ReviewHistoryAggregate
 }
 
@@ -289,33 +267,6 @@ export interface ReviewHistory {
   }
 }
 
-export interface RecommendedReviewQuiz {
-  id: string
-  title: string
-  description: string | null
-  publishedAt: string | null
-  matchingDueVocabularyCount: number
-  activeQuestionCount: number
-  totalPoints: number
-  article: {
-    id: string
-    title: string
-    slug: string
-    thumbnailUrl: string | null
-  }
-}
-
-export interface DailyReviewEstimate {
-  targetDurationMinutes: ReviewTargetDuration
-  estimatedItemCount: number
-  goalEstimates?: Array<{
-    reviewGoal: ReviewGoal
-    estimatedItemCount: number
-  }>
-}
-
 export interface DueReviews {
   dueVocabularyCount: number
-  dailyReviewEstimates: DailyReviewEstimate[]
-  recommendedQuizzes: RecommendedReviewQuiz[]
 }

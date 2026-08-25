@@ -4,7 +4,6 @@ import {
   analyticsFiltersFromSearchParams,
   analyticsRequestParams,
   normalizeAnalyticsSearchParams,
-  quizAnalyticsRequestParams,
   vocabularyAnalyticsRequestParams,
 } from '@/utils/Analytics/analyticsParams'
 import {
@@ -26,7 +25,6 @@ describe('learner analytics parameter mapping', () => {
       from: '2026-07-01',
       to: '2026-07-26',
       groupBy: 'WEEK',
-      articleId: '550e8400-e29b-41d4-a716-446655440000',
       section: 'reviews',
     })
     expect(
@@ -48,24 +46,16 @@ describe('learner analytics parameter mapping', () => {
     expect(params.to).toBe(new Date(2026, 6, 26).toISOString())
   })
 
-  it('scopes groupBy to vocabulary and articleId to quizzes', () => {
+  it('scopes groupBy to vocabulary analytics', () => {
     const filters = {
       from: '2026-07-01',
       to: '2026-07-26',
       groupBy: 'MONTH',
-      articleId: '550e8400-e29b-41d4-a716-446655440000',
     } as const
 
     expect(vocabularyAnalyticsRequestParams(filters)).toMatchObject({
       groupBy: 'MONTH',
     })
-    expect(vocabularyAnalyticsRequestParams(filters)).not.toHaveProperty(
-      'articleId',
-    )
-    expect(quizAnalyticsRequestParams(filters)).toMatchObject({
-      articleId: filters.articleId,
-    })
-    expect(quizAnalyticsRequestParams(filters)).not.toHaveProperty('groupBy')
   })
 
   it('prevents reversed and overlong date ranges', () => {

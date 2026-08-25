@@ -4,13 +4,13 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LearningAnalyticsSections } from '@/components/Dashboard/LearningAnalyticsSections'
+import i18n from '@/i18n/i18n'
 import { appTheme } from '@/theme'
 
 const { analyticsMocks, sectionState } = vi.hoisted(() => ({
   analyticsMocks: {
     vocabulary: vi.fn(),
     reading: vi.fn(),
-    quizzes: vi.fn(),
     reviews: vi.fn(),
   },
   sectionState: {
@@ -47,46 +47,6 @@ const readingData = {
   completionRate: 0,
   byCategory: [],
   trend: [{ bucket: '2026-07-01', opened: 0, completed: 0 }],
-}
-
-const quizData = {
-  sessions: 2,
-  accuracy: 0.75,
-  averageScore: 0.625,
-  byQuestionType: [
-    {
-      questionType: 'SELECT_MEANING',
-      answers: 4,
-      correctAnswers: 3,
-      accuracy: 0.75,
-    },
-    {
-      questionType: 'SELECT_WORD',
-      answers: 0,
-      correctAnswers: 0,
-      accuracy: 0,
-    },
-    {
-      questionType: 'SELECT_CORRECT_CONTEXT',
-      answers: 0,
-      correctAnswers: 0,
-      accuracy: 0,
-    },
-    {
-      questionType: 'FILL_BLANK',
-      answers: 0,
-      correctAnswers: 0,
-      accuracy: 0,
-    },
-  ],
-  trend: [
-    {
-      bucket: '2026-07-01',
-      sessions: 2,
-      accuracy: 0.75,
-      averageScore: 0.625,
-    },
-  ],
 }
 
 const reviewData = {
@@ -161,17 +121,6 @@ vi.mock('@/hooks/Analytics/useAnalytics', () => ({
       refetch: vi.fn(),
     }
   },
-  useQuizAnalyticsQuery: (params: unknown, enabled: boolean) => {
-    analyticsMocks.quizzes(params, enabled)
-    return {
-      data: quizData,
-      isPending: false,
-      isFetching: false,
-      isError: false,
-      error: null,
-      refetch: vi.fn(),
-    }
-  },
   useReviewAnalyticsQuery: (params: unknown, enabled: boolean) => {
     analyticsMocks.reviews(params, enabled)
     return {
@@ -195,7 +144,8 @@ const renderAnalytics = (entry = '/') =>
   )
 
 describe('detailed learning analytics', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('en')
     sectionState.vocabularyError = false
     readingData.opened = 0
     readingData.completed = 0
@@ -205,13 +155,12 @@ describe('detailed learning analytics', () => {
     ]
     analyticsMocks.vocabulary.mockClear()
     analyticsMocks.reading.mockClear()
-    analyticsMocks.quizzes.mockClear()
     analyticsMocks.reviews.mockClear()
   })
 
   it('restores URL filters and scopes optional parameters to their endpoints', () => {
     renderAnalytics(
-      '/?from=2026-07-01&to=2026-07-26&groupBy=WEEK&articleId=550e8400-e29b-41d4-a716-446655440000',
+      '/?from=2026-07-01&to=2026-07-26&groupBy=WEEK',
     )
 
     expect(screen.getByLabelText('From')).toHaveValue('2026-07-01')
@@ -222,17 +171,12 @@ describe('detailed learning analytics', () => {
 
     const vocabularyParams = analyticsMocks.vocabulary.mock.calls.at(-1)?.[0]
     const readingParams = analyticsMocks.reading.mock.calls.at(-1)?.[0]
-    const quizParams = analyticsMocks.quizzes.mock.calls.at(-1)?.[0]
     const reviewParams = analyticsMocks.reviews.mock.calls.at(-1)?.[0]
 
     expect(vocabularyParams).toMatchObject({ groupBy: 'WEEK' })
     expect(vocabularyParams).not.toHaveProperty('articleId')
     expect(readingParams).not.toHaveProperty('groupBy')
     expect(readingParams).not.toHaveProperty('articleId')
-    expect(quizParams).toMatchObject({
-      articleId: '550e8400-e29b-41d4-a716-446655440000',
-    })
-    expect(quizParams).not.toHaveProperty('groupBy')
     expect(reviewParams).toEqual(readingParams)
   })
 
@@ -244,11 +188,10 @@ describe('detailed learning analytics', () => {
     )
     expect(analyticsMocks.vocabulary.mock.calls.at(-1)?.[1]).toBe(false)
     expect(analyticsMocks.reading.mock.calls.at(-1)?.[1]).toBe(false)
-    expect(analyticsMocks.quizzes.mock.calls.at(-1)?.[1]).toBe(false)
     expect(analyticsMocks.reviews.mock.calls.at(-1)?.[1]).toBe(false)
   })
 
-  it('keeps reading and quiz analytics visible when vocabulary fails', () => {
+  it('keeps reading and review analytics visible when vocabulary fails', () => {
     sectionState.vocabularyError = true
 
     renderAnalytics()
@@ -258,21 +201,18 @@ describe('detailed learning analytics', () => {
     ).toBeInTheDocument()
     fireEvent.click(screen.getByRole('tab', { name: 'Reading Progress' }))
     expect(screen.getByLabelText('Articles opened: 0')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('tab', { name: 'Quiz Performance' }))
-    expect(screen.getByLabelText('Accuracy: 75%')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: 'Review Impact' }))
+    expect(screen.getByLabelText('Answer accuracy: 66.7%')).toBeInTheDocument()
   })
 
-  it('shows safe zero-denominator reading copy and completed-session semantics', () => {
+  it('shows safe zero-denominator reading copy and Daily Review semantics', () => {
     renderAnalytics()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Reading Progress' }))
     expect(screen.getByLabelText('Completion rate: 0%')).toBeInTheDocument()
     expect(screen.getByText('No opened articles')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('tab', { name: 'Quiz Performance' }))
-    expect(
-      screen.getByText('In-progress and abandoned excluded'),
-    ).toBeInTheDocument()
-    expect(screen.getByLabelText('Average score: 62.5%')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: 'Review Impact' }))
+    expect(screen.getByLabelText('Completed sessions: 3')).toBeInTheDocument()
   })
 
   it('provides visible textual summaries and an accessible vocabulary chart', () => {
@@ -291,12 +231,9 @@ describe('detailed learning analytics', () => {
     expect(
       screen.getByLabelText('Saved vocabulary trend legend'),
     ).toHaveTextContent('Vocabulary saved')
-    fireEvent.click(screen.getByRole('tab', { name: 'Quiz Performance' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Review Impact' }))
     expect(
-      screen.getByText(/Only answers from completed sessions are included/i),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('table', { name: 'Quiz performance trend' }),
+      screen.getByRole('table', { name: 'Practice signals over time' }),
     ).toBeInTheDocument()
   })
 

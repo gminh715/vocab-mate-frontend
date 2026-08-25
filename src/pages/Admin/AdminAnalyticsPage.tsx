@@ -249,7 +249,7 @@ const distributionLabels: Array<{
   { key: 'inactive', label: 'Inactive' },
   { key: 'readingOnly', label: 'Reading only' },
   { key: 'vocabularyOnly', label: 'Vocabulary only' },
-  { key: 'quizOnly', label: 'Quiz only' },
+  { key: 'reviewOnly', label: 'Daily Review only' },
   { key: 'multiActivity', label: 'Multiple activities' },
 ]
 
@@ -320,8 +320,7 @@ export function AdminAnalyticsPage() {
     content &&
       content.topArticles.length === 0 &&
       content.completionRates.length === 0 &&
-      content.termSaveCounts.length === 0 &&
-      content.quizPerformance.length === 0,
+      content.termSaveCounts.length === 0,
   )
 
   return (
@@ -439,7 +438,7 @@ export function AdminAnalyticsPage() {
 
       <AsyncSection
         title="Content performance"
-        description="Server-ranked article, vocabulary, and quiz aggregates. Ranking order is preserved."
+        description="Server-ranked article and vocabulary aggregates. Ranking order is preserved."
         isPending={contentQuery.isPending && enabled}
         error={contentQuery.isError ? contentQuery.error : null}
         onRetry={() => contentQuery.refetch()}
@@ -463,7 +462,7 @@ export function AdminAnalyticsPage() {
                     <TableHead><TableRow>
                       <TableCell>Article</TableCell><TableCell>Status</TableCell>
                       <TableCell align="right">Opened</TableCell><TableCell align="right">Completed</TableCell>
-                      <TableCell align="right">Term saves</TableCell><TableCell align="right">Quiz sessions</TableCell>
+                       <TableCell align="right">Term saves</TableCell>
                     </TableRow></TableHead>
                     <TableBody>
                       {content.topArticles.map((article) => (
@@ -476,7 +475,6 @@ export function AdminAnalyticsPage() {
                           <TableCell align="right">{formatInteger(article.openedCount)}</TableCell>
                           <TableCell align="right">{formatInteger(article.completedCount)}</TableCell>
                           <TableCell align="right">{formatInteger(article.savedVocabularyCount)}</TableCell>
-                          <TableCell align="right">{formatInteger(article.completedQuizSessions)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -513,20 +511,6 @@ export function AdminAnalyticsPage() {
                 )}
               </Paper>
             </Box>
-
-            <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
-              <Box sx={{ p: 2.25, pb: 1 }}><Typography sx={{ fontWeight: 800 }}>Quiz performance</Typography></Box>
-              {content.quizPerformance.length === 0 ? (
-                <Box sx={{ p: 2.25 }}><Typography color="text.secondary">No completed quiz sessions.</Typography></Box>
-              ) : (
-                <TableContainer><Table size="small" aria-label="Quiz performance">
-                  <TableHead><TableRow><TableCell>Quiz</TableCell><TableCell>Article</TableCell><TableCell align="right">Sessions</TableCell><TableCell align="right">Accuracy</TableCell><TableCell align="right">Average score</TableCell></TableRow></TableHead>
-                  <TableBody>{content.quizPerformance.map((quiz) => (
-                    <TableRow key={quiz.quizId}><TableCell>{quiz.quizTitle}</TableCell><TableCell>{quiz.articleTitle}</TableCell><TableCell align="right">{formatInteger(quiz.completedSessions)}</TableCell><TableCell align="right">{formatPercent(quiz.accuracy)}</TableCell><TableCell align="right">{formatPercent(quiz.averageScore)}</TableCell></TableRow>
-                  ))}</TableBody>
-                </Table></TableContainer>
-              )}
-            </Paper>
           </Stack>
         ) : null}
       </AsyncSection>

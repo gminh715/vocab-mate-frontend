@@ -113,7 +113,6 @@ const articleDetail: AdminArticleDetail = {
   },
   sentenceCount: 1,
   termCount: 1,
-  quizCount: 0,
 }
 
 const termListItem: ArticleTermListItem = {
@@ -284,7 +283,7 @@ describe('Admin article content workspace', () => {
         status: 409,
         code: 'CONFLICT',
         message:
-          'Term is referenced by vocabulary, quiz, or review history and cannot be deleted',
+          'Term is referenced by vocabulary or review history and cannot be deleted',
       }),
     )
     const update = vi.mocked(adminArticleContentApi.updateTerm)

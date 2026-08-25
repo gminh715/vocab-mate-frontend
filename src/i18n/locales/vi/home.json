@@ -45,9 +45,9 @@
         "label": "Bài đọc hoàn thành",
         "detail": "Bài đọc đã đọc xong"
       },
-      "quizAccuracy": {
-        "label": "Độ chính xác",
-        "detail": "Điểm trung bình bài kiểm tra"
+      "reviewAccuracy": {
+        "label": "Độ chính xác ôn tập",
+        "detail": "Câu trả lời đúng trong Ôn tập hằng ngày"
       },
       "sessions": {
         "label": "Phiên ôn tập",
@@ -69,8 +69,8 @@
         "body": "Chọn các từ được chuẩn bị sẵn trong khi đọc để xây dựng danh sách ôn tập."
       },
       "2": {
-        "title": "Hoàn thành bài kiểm tra đầu tiên",
-        "body": "Khi bài đọc có bài kiểm tra, hãy làm xong để bắt đầu theo dõi độ chính xác."
+        "title": "Hoàn thành lượt Ôn tập hằng ngày đầu tiên",
+        "body": "Lưu các từ hữu ích rồi ôn lại khi chúng đến hạn."
       }
     }
   },

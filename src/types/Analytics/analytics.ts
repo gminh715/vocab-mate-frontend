@@ -1,4 +1,3 @@
-import type { QuestionType } from '@/types/Admin/adminQuizzes'
 import type { CefrLevel } from '@/types/Auth/auth'
 import type { LearningStatus } from '@/types/Vocabulary/vocabulary'
 import type {
@@ -10,7 +9,6 @@ export const ANALYTICS_GROUP_BY_VALUES = ['DAY', 'WEEK', 'MONTH'] as const
 export const ANALYTICS_SECTIONS = [
   'vocabulary',
   'reading',
-  'quizzes',
   'reviews',
 ] as const
 
@@ -25,7 +23,6 @@ export interface AnalyticsDateFilters {
 
 export interface AnalyticsFilters extends AnalyticsDateFilters {
   groupBy?: AnalyticsGroupBy
-  articleId?: string
   section?: AnalyticsSection
 }
 
@@ -39,17 +36,13 @@ export interface AnalyticsOverview {
   dueToday: number
   mastered: number
   articlesCompleted: number
-  quizAccuracy: number
+  reviewAccuracy: number
   sessions: number
 }
 
 export interface VocabularyAnalyticsParams
   extends AnalyticsOverviewParams {
   groupBy?: AnalyticsGroupBy
-}
-
-export interface QuizAnalyticsParams extends AnalyticsOverviewParams {
-  articleId?: string
 }
 
 export interface VocabularyAnalyticsTotals {
@@ -100,28 +93,6 @@ export interface ReadingAnalytics {
   completionRate: number
   byCategory: ReadingCategoryAnalytics[]
   trend: ReadingTrendBucket[]
-}
-
-export interface QuestionTypeAnalytics {
-  questionType: QuestionType
-  answers: number
-  correctAnswers: number
-  accuracy: number
-}
-
-export interface QuizTrendBucket {
-  bucket: string
-  sessions: number
-  accuracy: number
-  averageScore: number
-}
-
-export interface QuizAnalytics {
-  sessions: number
-  accuracy: number
-  averageScore: number
-  byQuestionType: QuestionTypeAnalytics[]
-  trend: QuizTrendBucket[]
 }
 
 export interface ReviewRetestAnalytics {

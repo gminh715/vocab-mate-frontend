@@ -45,6 +45,7 @@ import type {
   SubmittedReviewAnswer,
 } from '@/types/Review/review'
 import {
+  reviewStartPath,
   reviewSessionPath,
   reviewSummaryPath,
   routePaths,
@@ -176,44 +177,16 @@ const questionHintKeys = (question: ReviewQuestion): string[] => {
 const startRequestFromSearch = (
   searchParams: URLSearchParams,
 ): StartReviewSessionRequest | null => {
-  const sessionType = searchParams.get('sessionType') ?? 'DAILY_REVIEW'
-  const quizId = searchParams.get('quizId')
-  const articleId = searchParams.get('articleId')
-  const collectionId = searchParams.get('collectionId')
   const reviewGoal = REVIEW_GOALS.find(
     (goal) => goal === searchParams.get('reviewGoal'),
   )
-
-  if (sessionType === 'DAILY_REVIEW') {
-    return quizId || articleId || collectionId || !reviewGoal
-      ? null
-      : { sessionType, reviewGoal, targetDurationMinutes: 10 }
-  }
-  if (sessionType === 'ARTICLE_REVIEW' && articleId && !quizId && !collectionId) {
-    return { sessionType, articleId, limit: 20 }
-  }
-  if (
-    sessionType === 'COLLECTION_REVIEW' &&
-    collectionId &&
-    !quizId &&
-    !articleId
-  ) {
-    return { sessionType, collectionId, limit: 20 }
-  }
-  if (sessionType === 'QUIZ' && quizId && !articleId && !collectionId) {
-    return { sessionType, quizId, limit: 20 }
-  }
-  return null
+  return reviewGoal ? { reviewGoal, targetDurationMinutes: 10 } : null
 }
 
 const isReviewGoal = (value: string | null): value is ReviewGoal =>
   REVIEW_GOALS.some((goal) => goal === value)
 
 const isDailyReviewModeSelection = (searchParams: URLSearchParams): boolean =>
-  (searchParams.get('sessionType') ?? 'DAILY_REVIEW') === 'DAILY_REVIEW' &&
-  !searchParams.get('quizId') &&
-  !searchParams.get('articleId') &&
-  !searchParams.get('collectionId') &&
   !isReviewGoal(searchParams.get('reviewGoal'))
 
 function ReviewShell({
@@ -375,7 +348,7 @@ function ReviewStarter() {
               <Button
                 key={goal}
                 component={RouterLink}
-                to={`${routePaths.review}?${new URLSearchParams({ sessionType: 'DAILY_REVIEW', reviewGoal: goal }).toString()}`}
+                to={reviewStartPath(goal)}
                 variant="outlined"
                 sx={{ justifyContent: 'flex-start', px: 2, py: 1.5, textAlign: 'left' }}
               >
@@ -780,7 +753,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
       )
       const result = await answerMutation.mutateAsync({
         reviewSessionItemId: displayItem.id,
-        quizQuestionId: question.id,
+        reviewQuestionId: question.id,
         ...(isFillBlank
           ? { userAnswerText: answerText.trim() }
           : selectedOptionId
@@ -827,7 +800,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
     try {
       const result = await skipMutation.mutateAsync({
         reviewSessionItemId: displayItem.id,
-        quizQuestionId: question.id,
+        reviewQuestionId: question.id,
       })
       finishOrAdvance(result)
     } catch (error: unknown) {
@@ -984,12 +957,7 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           </Typography>
           <Typography sx={{ mt: 0.75, overflowWrap: 'anywhere' }}>
             {persistedPlanSummary ||
-              t('plan.summary', {
-                sessionType: t(
-                  `plan.sessionTypes.${sessionQuery.data.session.sessionType}`,
-                ),
-                count: progress.totalQuestions,
-              })}
+              t('plan.summary', { count: progress.totalQuestions })}
           </Typography>
         </Paper>
 

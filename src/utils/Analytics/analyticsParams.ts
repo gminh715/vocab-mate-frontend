@@ -6,13 +6,10 @@ import {
   type AnalyticsGroupBy,
   type AnalyticsOverviewParams,
   type AnalyticsSection,
-  type QuizAnalyticsParams,
   type VocabularyAnalyticsParams,
 } from '@/types/Analytics/analytics'
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/u
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu
 const DAY_MS = 86_400_000
 const MAX_RANGE_DAYS = 366
 
@@ -45,7 +42,6 @@ export const analyticsFiltersFromSearchParams = (
   const rawFrom = searchParams.get('from')
   const rawTo = searchParams.get('to')
   const rawGroupBy = searchParams.get('groupBy')
-  const rawArticleId = searchParams.get('articleId')?.trim() ?? ''
   const rawSection = searchParams.get('section')
 
   return {
@@ -54,7 +50,6 @@ export const analyticsFiltersFromSearchParams = (
     ...(includes(ANALYTICS_GROUP_BY_VALUES, rawGroupBy)
       ? { groupBy: rawGroupBy as AnalyticsGroupBy }
       : {}),
-    ...(UUID_PATTERN.test(rawArticleId) ? { articleId: rawArticleId } : {}),
     ...(includes(ANALYTICS_SECTIONS, rawSection)
       ? { section: rawSection as AnalyticsSection }
       : {}),
@@ -69,7 +64,6 @@ export const analyticsSearchParamsFromFilters = (
   if (filters.from) searchParams.set('from', filters.from)
   if (filters.to) searchParams.set('to', filters.to)
   if (filters.groupBy) searchParams.set('groupBy', filters.groupBy)
-  if (filters.articleId) searchParams.set('articleId', filters.articleId)
   if (filters.section && filters.section !== 'vocabulary') {
     searchParams.set('section', filters.section)
   }
@@ -114,11 +108,4 @@ export const vocabularyAnalyticsRequestParams = (
 ): VocabularyAnalyticsParams => ({
   ...analyticsRequestParams(filters),
   ...(filters.groupBy ? { groupBy: filters.groupBy } : {}),
-})
-
-export const quizAnalyticsRequestParams = (
-  filters: AnalyticsFilters,
-): QuizAnalyticsParams => ({
-  ...analyticsRequestParams(filters),
-  ...(filters.articleId ? { articleId: filters.articleId } : {}),
 })

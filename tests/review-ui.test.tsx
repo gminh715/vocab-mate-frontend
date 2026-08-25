@@ -153,10 +153,6 @@ const sessionState = (
 ): ReviewSessionState => ({
   session: {
     id: "session-1",
-    sessionType: "DAILY_REVIEW",
-    quizId: null,
-    articleId: null,
-    collectionId: null,
     targetDurationMinutes: 10,
     reviewGoal: 'RECALL',
     plannedItemCount: 2,
@@ -331,14 +327,13 @@ describe("ReviewPage", () => {
 
   it('starts a daily review with the selected mode', async () => {
     renderReviewStarter(
-      '/review?sessionType=DAILY_REVIEW&targetDurationMinutes=15&reviewGoal=CONTEXT',
+      '/review?reviewGoal=CONTEXT',
     )
 
     await waitFor(() => {
       expect(startSession).toHaveBeenCalledWith(
         {
           preparationId: expect.any(String),
-          sessionType: 'DAILY_REVIEW',
           reviewGoal: 'CONTEXT',
           targetDurationMinutes: 10,
         },
@@ -348,7 +343,7 @@ describe("ReviewPage", () => {
   })
 
   it('requires a mode before starting a daily review', () => {
-    renderReviewStarter('/review?sessionType=DAILY_REVIEW')
+    renderReviewStarter('/review')
 
     expect(
       screen.getByRole('heading', { name: 'How would you like to review?' }),
@@ -356,7 +351,7 @@ describe("ReviewPage", () => {
     expect(startSession).not.toHaveBeenCalled()
     expect(screen.getByRole('link', { name: /Recall/ })).toHaveAttribute(
       'href',
-      '/review?sessionType=DAILY_REVIEW&reviewGoal=RECALL',
+      '/review?reviewGoal=RECALL',
     )
   })
 
@@ -382,7 +377,7 @@ describe("ReviewPage", () => {
 
     expect(
       screen.getByText(
-        "Daily review · 2 questions selected from your saved vocabulary.",
+        "2 questions selected from your saved vocabulary for today's review.",
       ),
     ).toBeInTheDocument();
   });
@@ -680,7 +675,7 @@ describe("ReviewPage", () => {
     await waitFor(() => expect(submitAnswer).toHaveBeenCalledTimes(1));
     expect(submitAnswer.mock.calls[0]?.[0]).toMatchObject({
       reviewSessionItemId: "item-1",
-      quizQuestionId: "question-2",
+      reviewQuestionId: "question-2",
       userAnswerText: "impact",
       hintsUsed: 1,
     });
@@ -720,7 +715,7 @@ describe("ReviewPage", () => {
     ).toBeInTheDocument();
     expect(skipItem).toHaveBeenCalledWith({
       reviewSessionItemId: "item-1",
-      quizQuestionId: "question-1",
+      reviewQuestionId: "question-1",
     });
   });
 
@@ -841,7 +836,7 @@ const persistedSummary: CompletedReviewResult = {
   },
   answers: [
     {
-      quizQuestionId: "question-1",
+      reviewQuestionId: "question-1",
       questionType: "SELECT_MEANING",
       prompt: "Choose the saved meaning.",
       selectedOption: null,
@@ -895,7 +890,7 @@ const renderSummary = (state?: unknown) =>
   );
 
 const renderReviewStarter = (
-  initialEntry = "/review?sessionType=DAILY_REVIEW&reviewGoal=BALANCED",
+  initialEntry = "/review?reviewGoal=BALANCED",
 ) => {
   const element = () => (
     localized(

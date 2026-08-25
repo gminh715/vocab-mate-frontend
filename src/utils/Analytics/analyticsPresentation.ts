@@ -1,4 +1,4 @@
-import type { QuestionType } from '@/types/Admin/adminQuizzes'
+import type { QuestionType } from '@/types/Review/review'
 import type { CefrLevel } from '@/types/Auth/auth'
 import type { LearningStatus } from '@/types/Vocabulary/vocabulary'
 

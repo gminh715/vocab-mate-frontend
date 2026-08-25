@@ -49,13 +49,7 @@ const positivePage = (value: string | null): number => {
 function HistoryCard({ item }: { item: ReviewHistoryItem }) {
   const { t } = useTranslation('review')
   const { session, aggregates } = item
-  const reviewMode =
-    session.reviewGoal ??
-    (session.sessionType === 'DAILY_REVIEW' ? 'BALANCED' : null)
-  const sourceTitle =
-    item.article?.title ??
-    item.quiz?.title ??
-    t(`plan.sessionTypes.${session.sessionType}`)
+  const reviewMode = session.reviewGoal ?? 'BALANCED'
   const statusColor =
     session.status === 'COMPLETED'
       ? 'success'
@@ -90,7 +84,7 @@ function HistoryCard({ item }: { item: ReviewHistoryItem }) {
               variant="h2"
               sx={{ fontSize: { xs: 23, sm: 27 }, overflowWrap: 'anywhere' }}
             >
-              {sourceTitle}
+              {t('plan.dailyReview')}
             </Typography>
             <Typography
               color="text.secondary"
@@ -302,7 +296,7 @@ export function ReviewHistoryPage() {
                 {t('history.filters.clear')}
               </Button>
             ) : (
-              <Button component={RouterLink} to={reviewStartPath({ sessionType: 'DAILY_REVIEW' })} variant="contained">
+              <Button component={RouterLink} to={reviewStartPath()} variant="contained">
                 {t('history.actions.start')}
               </Button>
             )}

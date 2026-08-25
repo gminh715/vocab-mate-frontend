@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { readingApi } from '@/api'
+import i18n from '@/i18n/i18n'
 import { ReadingHistoryPage } from '@/pages/User/ReadingHistoryPage'
 import { appTheme } from '@/theme'
 import type { ReadingHistoryData } from '@/types/Reading/reading'
@@ -65,7 +66,8 @@ const renderHistory = (initialEntry = '/reading-history') =>
   )
 
 describe('reading history page', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('en')
     vi.spyOn(readingApi, 'history').mockResolvedValue(historyData)
     vi.spyOn(readingApi, 'reset').mockResolvedValue(undefined)
   })
@@ -96,7 +98,7 @@ describe('reading history page', () => {
     })
   })
 
-  it('confirms reset and preserves vocabulary and quiz history', async () => {
+  it('confirms reset and preserves vocabulary and Daily Review history', async () => {
     const user = userEvent.setup()
     renderHistory()
 
@@ -111,7 +113,7 @@ describe('reading history page', () => {
       name: 'Reset Reading Progress?',
     })
     expect(dialog).toHaveTextContent(
-      'Saved vocabulary and quiz history will not be deleted.',
+      'Saved vocabulary and Daily Review history will not be deleted.',
     )
     await user.click(
       within(dialog).getByRole('button', { name: 'Reset Progress' }),

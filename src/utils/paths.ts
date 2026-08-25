@@ -1,6 +1,6 @@
 import type { Location } from 'react-router-dom'
 import type { CurrentUser, UserRole } from '@/types/Auth/auth'
-import type { ReviewGoal, ReviewSessionType } from '@/types/Review/review'
+import type { ReviewGoal } from '@/types/Review/review'
 
 export const routePaths = {
   home: '/',
@@ -29,9 +29,6 @@ export const routePaths = {
   adminArticleEdit: '/admin/articles/:articleId/edit',
   adminArticleContent: '/admin/articles/:articleId/content',
   adminArticlePreview: '/admin/articles/:articleId/preview',
-  adminQuizzes: '/admin/quizzes',
-  adminQuizNew: '/admin/quizzes/new',
-  adminQuizEdit: '/admin/quizzes/:quizId/edit',
   adminAnalytics: '/admin/analytics',
   forbidden: '/forbidden',
 } as const
@@ -60,12 +57,6 @@ export const adminArticlePreviewPath = (articleId: string): string =>
     encodeURIComponent(articleId),
   )
 
-export const adminQuizEditPath = (quizId: string): string =>
-  routePaths.adminQuizEdit.replace(
-    ':quizId',
-    encodeURIComponent(quizId),
-  )
-
 export const articlePath = (slug: string): string => readerPath(slug)
 
 export const readerPath = (slug: string): string =>
@@ -83,26 +74,10 @@ export const reviewSessionPath = (sessionId: string): string =>
 export const reviewSummaryPath = (sessionId: string): string =>
   routePaths.reviewSummary.replace(':sessionId', encodeURIComponent(sessionId))
 
-export const reviewStartPath = ({
-  sessionType,
-  quizId,
-  articleId,
-  collectionId,
-  reviewGoal,
-}: {
-  sessionType: ReviewSessionType
-  quizId?: string
-  articleId?: string
-  collectionId?: string
-  reviewGoal?: ReviewGoal
-}): string => {
-  const params = new URLSearchParams({ sessionType })
-  if (quizId) params.set('quizId', quizId)
-  if (articleId) params.set('articleId', articleId)
-  if (collectionId) params.set('collectionId', collectionId)
-  if (reviewGoal) params.set('reviewGoal', reviewGoal)
-  return `${routePaths.review}?${params.toString()}`
-}
+export const reviewStartPath = (reviewGoal?: ReviewGoal): string =>
+  reviewGoal
+    ? `${routePaths.review}?${new URLSearchParams({ reviewGoal }).toString()}`
+    : routePaths.review
 
 export interface AuthRedirectState {
   from?: string

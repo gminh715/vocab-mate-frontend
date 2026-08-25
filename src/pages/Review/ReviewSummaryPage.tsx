@@ -169,7 +169,7 @@ export function ReviewSummaryPage() {
             <Button component={RouterLink} to={routePaths.home} variant="contained">
               {t('summary.backHome')}
             </Button>
-            <Button component={RouterLink} to={reviewStartPath({ sessionType: 'DAILY_REVIEW' })} variant="outlined">
+            <Button component={RouterLink} to={reviewStartPath()} variant="outlined">
               {t('summary.startAnother')}
             </Button>
             <Button component={RouterLink} to={routePaths.reviewHistory} color="inherit">

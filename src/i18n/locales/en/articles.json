@@ -194,7 +194,7 @@
     },
     "resetDialog": {
       "title": "Reset Reading Progress?",
-      "description": "This article will be removed from reading history. Saved vocabulary and quiz history will not be deleted.",
+      "description": "This article will be removed from reading history. Saved vocabulary and Daily Review history will not be deleted.",
       "confirmLabel": "Reset Progress"
     },
     "pagination": {

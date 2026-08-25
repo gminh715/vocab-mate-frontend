@@ -1,7 +1,6 @@
 {
   "page": {
     "title": "Saved Vocabulary",
-    "reviewCollection": "Review Collection",
     "error": {
       "load": "Failed to load saved vocabulary list. Check your connection and try again.",
       "retry": "Retry"

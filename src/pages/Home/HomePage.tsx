@@ -119,9 +119,9 @@ const metricDefinitions: MetricDefinition[] = [
     icon: (size, color) => <BookOpenIcon size={size} color={color} />,
   },
   {
-    key: 'quizAccuracy',
-    labelKey: 'overview.metrics.quizAccuracy.label',
-    detailKey: 'overview.metrics.quizAccuracy.detail',
+    key: 'reviewAccuracy',
+    labelKey: 'overview.metrics.reviewAccuracy.label',
+    detailKey: 'overview.metrics.reviewAccuracy.detail',
     color: '#e11d48',
     bgColor: '#ffe4e6',
     icon: (size, color) => <TargetIcon size={size} color={color} />,

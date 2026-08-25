@@ -194,7 +194,7 @@
     },
     "resetDialog": {
       "title": "Đặt lại tiến độ đọc?",
-      "description": "Bài viết này sẽ bị xóa khỏi lịch sử đọc. Từ vựng đã lưu và lịch sử bài kiểm tra sẽ không bị xóa.",
+      "description": "Bài viết này sẽ bị xóa khỏi lịch sử đọc. Từ vựng đã lưu và lịch sử Ôn tập hằng ngày sẽ không bị xóa.",
       "confirmLabel": "Đặt lại tiến độ"
     },
     "pagination": {

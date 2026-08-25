@@ -101,7 +101,6 @@ describe('article discovery URL and API mapping', () => {
     clientMocks.get.mockResolvedValue({
       article: { slug: 'science/news' },
       category: { slug: 'science' },
-      quizCount: 2,
     })
 
     await articlesApi.detail('science/news')

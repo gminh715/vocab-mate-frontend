@@ -595,7 +595,7 @@ function LifecycleDialog({
     archive: {
       title: 'Archive article',
       description:
-        'Hide this article while preserving content, progress, vocabulary, quizzes, and history.',
+        'Hide this article while preserving content, progress, vocabulary, and history.',
       confirm: 'Archive',
     },
     restore: {
@@ -925,7 +925,7 @@ export function AdminArticleContentPage() {
     )
   }
 
-  const { article, sentenceCount, termCount, quizCount } = detailQuery.data
+  const { article, sentenceCount, termCount } = detailQuery.data
   const isReadOnly = article.status === 'ARCHIVED'
   const canAnalyze =
     article.status === 'DRAFT' &&
@@ -1077,7 +1077,6 @@ export function AdminArticleContentPage() {
             />
             <SummaryValue label="Sentences" value={sentenceCount} />
             <SummaryValue label="Terms" value={termCount} />
-            <SummaryValue label="Quizzes" value={quizCount} />
           </Box>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}

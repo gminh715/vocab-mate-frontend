@@ -40,8 +40,8 @@
     "cefrDesc": "Scans articles automatically and highlights terms from your current CEFR level through your target level (A1 to C2).",
     "srTitle": "Spaced Repetition Review",
     "srDesc": "Calculates optimal review intervals based on memory decay curves so you review right before you forget.",
-    "quizTitle": "AI Generated Quizzes",
-    "quizDesc": "Automatically builds tailored multiple-choice, fill-in-the-blank, and context quizzes from your personal saved words."
+    "dailyReviewTitle": "AI Daily Review",
+    "dailyReviewDesc": "Builds a focused daily session with tailored multiple-choice, fill-in-the-blank, and context questions from your saved words."
   },
   "steps": {
     "badge": "Simple Workflow",
@@ -51,7 +51,7 @@
     "step2Title": "2. Click & Save Terms",
     "step2Desc": "Tap any unfamiliar word to view instant AI translations and save it directly to your collection.",
     "step3Title": "3. Review 5 Mins Daily",
-    "step3Desc": "Engage in adaptive AI review sessions and complete quizzes to reach Mastered status."
+    "step3Desc": "Complete your adaptive Daily Review sessions to move vocabulary toward Mastered status."
   },
   "faq": {
     "badge": "Got Questions?",
@@ -59,7 +59,7 @@
     "q1": "Is Vocab Mate free to use?",
     "a1": "Yes! You can register a free account and start reading articles, looking up AI terms, and reviewing immediately.",
     "q2": "How does the AI Agent assist my learning?",
-    "a2": "The AI Agent analyzes sentence context, provides natural translations, offers usage examples, and tailors quizzes to your weak words.",
+    "a2": "The AI Agent analyzes sentence context, provides natural translations, offers usage examples, and tailors Daily Review questions to your weak words.",
     "q3": "Can I change my target CEFR level later?",
     "a3": "Absolutely! You can update your target CEFR level (A1 to C2) at any time in your Profile Settings.",
     "q4": "Where do the news articles come from?",

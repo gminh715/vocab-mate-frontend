@@ -106,19 +106,14 @@
   "plan": {
     "eyebrow": "Your Review Plan",
     "title": "A Focused Practice Set",
-    "summary": "{{sessionType}} · {{count}} questions selected from your saved vocabulary.",
+    "summary": "{{count}} questions selected from your saved vocabulary for today's review.",
+    "dailyReview": "Daily review",
     "details": "{{minutes}} minutes · {{count}} words · {{goal}} focus",
     "goals": {
       "BALANCED": "Balanced",
       "RECALL": "Recall",
       "SPELLING": "Spelling",
       "CONTEXT": "Context"
-    },
-    "sessionTypes": {
-      "DAILY_REVIEW": "Daily review",
-      "ARTICLE_REVIEW": "Article review",
-      "COLLECTION_REVIEW": "Collection review",
-      "QUIZ": "Quiz review"
     }
   },
   "feedback": {

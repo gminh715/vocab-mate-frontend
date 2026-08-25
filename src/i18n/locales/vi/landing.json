@@ -40,8 +40,8 @@
     "cefrDesc": "Tự động quét bài báo và tô sáng từ vựng từ trình độ CEFR hiện tại đến trình độ mục tiêu của bạn.",
     "srTitle": "Ôn tập Spaced Repetition",
     "srDesc": "Hệ thống lặp lại ngắt quãng tính toán chính xác 'thời điểm vàng' bạn sắp quên để nhắc nhở ôn tập tối ưu trí nhớ.",
-    "quizTitle": "Quiz AI tự động khởi tạo",
-    "quizDesc": "Tự động sinh bài kiểm tra trắc nghiệm, điền từ, câu hỏi ngữ cảnh dựa trên danh sách từ vựng cá nhân của bạn."
+    "dailyReviewTitle": "Ôn tập hằng ngày với AI",
+    "dailyReviewDesc": "Tạo lượt ôn tập hằng ngày có trọng tâm với câu hỏi trắc nghiệm, điền từ và ngữ cảnh từ các từ bạn đã lưu."
   },
   "steps": {
     "badge": "Quy trình đơn giản",
@@ -51,7 +51,7 @@
     "step2Title": "2. Click tra từ & lưu từ vựng",
     "step2Desc": "Chạm nhẹ vào từ mới để xem giải thích AI chi tiết và lưu trực tiếp vào bộ sưu tập cá nhân.",
     "step3Title": "3. Ôn tập 5 phút mỗi ngày",
-    "step3Desc": "Tham gia các phiên ôn tập AI linh hoạt và hoàn thành quiz để đạt mốc Mastered."
+    "step3Desc": "Hoàn thành các lượt Ôn tập hằng ngày linh hoạt để đưa từ vựng đến mốc Thành thạo."
   },
   "faq": {
     "badge": "Hỏi & Đáp",
@@ -59,7 +59,7 @@
     "q1": "Vocab Mate có miễn phí không?",
     "a1": "Có! Bạn có thể tạo tài khoản miễn phí và trải nghiệm ngay tính năng đọc báo, tra từ vựng AI và ôn tập cơ bản.",
     "q2": "AI Agent trợ giúp học như thế nào?",
-    "a2": "AI Agent phân tích ngữ cảnh câu, đưa ra giải thích từ vựng chính xác, gợi ý câu ví dụ phù hợp và tự tạo quiz theo điểm yếu của bạn.",
+    "a2": "AI Agent phân tích ngữ cảnh câu, đưa ra giải thích từ vựng chính xác, gợi ý ví dụ và điều chỉnh câu hỏi Ôn tập hằng ngày theo điểm yếu của bạn.",
     "q3": "Tôi có thể đổi trình độ CEFR mục tiêu không?",
     "a3": "Hoàn toàn được! Bạn có thể điều chỉnh trình độ mục tiêu từ A1 đến C2 trong trang Cài đặt cá nhân bất kỳ lúc nào.",
     "q4": "Nguồn bài báo lấy từ đâu?",

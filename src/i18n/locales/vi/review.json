@@ -106,19 +106,14 @@
   "plan": {
     "eyebrow": "Kế Hoạch Ôn Tập",
     "title": "Một Lượt Luyện Tập Có Trọng Tâm",
-    "summary": "{{sessionType}} · {{count}} câu hỏi được chọn từ các từ bạn đã lưu.",
+    "summary": "{{count}} câu hỏi được chọn từ các từ bạn đã lưu cho lượt ôn hôm nay.",
+    "dailyReview": "Ôn tập hằng ngày",
     "details": "{{minutes}} phút · {{count}} từ · trọng tâm {{goal}}",
     "goals": {
       "BALANCED": "Cân bằng",
       "RECALL": "Gợi nhớ",
       "SPELLING": "Chính tả",
       "CONTEXT": "Ngữ cảnh"
-    },
-    "sessionTypes": {
-      "DAILY_REVIEW": "Ôn tập hằng ngày",
-      "ARTICLE_REVIEW": "Ôn theo bài đọc",
-      "COLLECTION_REVIEW": "Ôn theo bộ sưu tập",
-      "QUIZ": "Ôn theo bài kiểm tra"
     }
   },
   "feedback": {

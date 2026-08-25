@@ -15,14 +15,12 @@
     "daily": "Theo ngày",
     "weekly": "Theo tuần",
     "monthly": "Theo tháng",
-    "rangeErrorSuffix": "Các yêu cầu phân tích tạm dừng.",
-    "filteredToArticle": "Phân tích bài kiểm tra theo bài đọc:"
+    "rangeErrorSuffix": "Các yêu cầu phân tích tạm dừng."
   },
   "tabs": {
     "ariaLabel": "Các phần phân tích học tập",
     "vocabularyGrowth": "Tăng Trưởng Từ Vựng",
     "readingProgress": "Tiến Độ Đọc",
-    "quizPerformance": "Kết Quả Kiểm Tra",
     "reviewImpact": "Hiệu Quả Ôn Tập"
   },
   "sections": {
@@ -37,12 +35,6 @@
       "title": "Tiến Độ Đọc",
       "refreshingLabel": "Đang làm mới tiến độ đọc",
       "loadingLabel": "Đang tải tiến độ đọc"
-    },
-    "quiz": {
-      "eyebrow": "Kiểm Tra",
-      "title": "Kết Quả Kiểm Tra",
-      "refreshingLabel": "Đang làm mới kết quả kiểm tra",
-      "loadingLabel": "Đang tải kết quả kiểm tra"
     },
     "review": {
       "eyebrow": "Ôn tập thích ứng",
@@ -87,22 +79,6 @@
     "opened": "Đã mở",
     "completed": "Hoàn thành",
     "articles": "Bài đọc",
-    "noTrendActivity": "Không có dữ liệu cho xu hướng này."
-  },
-  "quiz": {
-    "completedSessions": "Phiên hoàn thành",
-    "completedSessionsDetail": "Không tính phiên đang dở và bỏ dở",
-    "accuracy": "Độ chính xác",
-    "accuracyDetail": "Câu đúng ÷ tổng câu",
-    "averageScore": "Điểm trung bình",
-    "averageScoreDetail": "Điểm phiên hoàn thành đã chuẩn hóa",
-    "byQuestionType": "Hiệu suất theo loại câu hỏi",
-    "performanceTrend": "Xu hướng kết quả kiểm tra",
-    "trendPeriod": "Giai đoạn",
-    "trendSessions": "Phiên",
-    "trendAccuracy": "Độ chính xác",
-    "trendAverageScore": "Điểm trung bình",
-    "noDistributionActivity": "Không có dữ liệu cho phân bổ này.",
     "noTrendActivity": "Không có dữ liệu cho xu hướng này."
   },
   "review": {

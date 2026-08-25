@@ -44,7 +44,6 @@ const zeroContent = {
   topArticles: [],
   completionRates: [],
   termSaveCounts: [],
-  quizPerformance: [],
 }
 
 const zeroUsers = {
@@ -60,7 +59,7 @@ const zeroUsers = {
     inactive: 0,
     readingOnly: 0,
     vocabularyOnly: 0,
-    quizOnly: 0,
+    reviewOnly: 0,
     multiActivity: 0,
   },
 }

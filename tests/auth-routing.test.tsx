@@ -287,8 +287,6 @@ describe('Auth routing and forms', () => {
     ['/admin/articles/article-1/edit', 'Edit article'],
     ['/admin/articles/article-1/content', 'Article content'],
     ['/admin/articles/article-1/preview', 'Article preview'],
-    ['/admin/quizzes', 'Quizzes'],
-    ['/admin/quizzes/new', 'Create a quiz draft'],
     ['/admin/analytics', 'Analytics'],
   ])('maps the admin route %s to %s', async (path, heading) => {
     vi.mocked(authApi.restoreSession).mockResolvedValue(adminAccount)
@@ -321,10 +319,10 @@ describe('Auth routing and forms', () => {
     await user.click(
       screen.getByRole('button', { name: 'Open admin navigation' }),
     )
-    await user.click(await screen.findByRole('link', { name: 'Quizzes' }))
+    await user.click(await screen.findByRole('link', { name: 'Analytics' }))
 
-    await screen.findByRole('heading', { name: 'Quizzes' })
-    expect(router.state.location.pathname).toBe('/admin/quizzes')
+    await screen.findByRole('heading', { name: 'Analytics' })
+    expect(router.state.location.pathname).toBe('/admin/analytics')
     expect(
       screen.queryByRole('navigation', { name: 'Admin navigation' }),
     ).not.toBeInTheDocument()

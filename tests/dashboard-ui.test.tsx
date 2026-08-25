@@ -30,15 +30,6 @@ interface DashboardQueryState {
     today: {
       data: {
         dueVocabularyCount: number
-        dailyReviewEstimates: Array<{
-          targetDurationMinutes: 5 | 10 | 15
-          estimatedItemCount: number
-          goalEstimates?: Array<{
-            reviewGoal: 'BALANCED' | 'RECALL' | 'SPELLING' | 'CONTEXT'
-            estimatedItemCount: number
-          }>
-        }>
-        recommendedQuizzes: []
       }
       isPending: boolean
       isError: boolean
@@ -64,7 +55,7 @@ const { queryState } = vi.hoisted<{ queryState: DashboardQueryState }>(() => ({
         dueToday: 3,
         mastered: 4,
         articlesCompleted: 2,
-        quizAccuracy: 0.75,
+        reviewAccuracy: 0.75,
         sessions: 5,
       },
       isPending: false,
@@ -91,18 +82,6 @@ const { queryState } = vi.hoisted<{ queryState: DashboardQueryState }>(() => ({
       today: {
         data: {
           dueVocabularyCount: 3,
-          dailyReviewEstimates: [
-            {
-              targetDurationMinutes: 5,
-              estimatedItemCount: 3,
-              goalEstimates: [
-                { reviewGoal: 'SPELLING', estimatedItemCount: 2 },
-              ],
-            },
-            { targetDurationMinutes: 10, estimatedItemCount: 3 },
-            { targetDurationMinutes: 15, estimatedItemCount: 3 },
-          ],
-          recommendedQuizzes: [],
         },
         isPending: false,
         isError: false,
@@ -129,14 +108,6 @@ vi.mock('@/hooks/Analytics/useAnalytics', () => ({
     refetch: vi.fn(),
   }),
   useReadingAnalyticsQuery: () => ({
-    data: undefined,
-    isPending: false,
-    isFetching: false,
-    isError: false,
-    error: null,
-    refetch: vi.fn(),
-  }),
-  useQuizAnalyticsQuery: () => ({
     data: undefined,
     isPending: false,
     isFetching: false,
@@ -220,7 +191,7 @@ describe('HomePage', () => {
       dueToday: 3,
       mastered: 4,
       articlesCompleted: 2,
-      quizAccuracy: 0.75,
+      reviewAccuracy: 0.75,
       sessions: 5,
     }
     queryState.overview.isPending = false
@@ -241,18 +212,6 @@ describe('HomePage', () => {
     queryState.review.today = {
       data: {
         dueVocabularyCount: 3,
-        dailyReviewEstimates: [
-          {
-            targetDurationMinutes: 5,
-            estimatedItemCount: 3,
-            goalEstimates: [
-              { reviewGoal: 'SPELLING', estimatedItemCount: 2 },
-            ],
-          },
-          { targetDurationMinutes: 10, estimatedItemCount: 3 },
-          { targetDurationMinutes: 15, estimatedItemCount: 3 },
-        ],
-        recommendedQuizzes: [],
       },
       isPending: false,
       isError: false,
@@ -273,7 +232,7 @@ describe('HomePage', () => {
   it('formats the confirmed 0..1 accuracy ratio as a percentage', () => {
     renderDashboard()
 
-    expect(screen.getByLabelText('Quiz accuracy: 75%')).toBeInTheDocument()
+    expect(screen.getByLabelText('Review accuracy: 75%')).toBeInTheDocument()
   })
 
   it('shows guided onboarding without inventing metrics when all values are zero', () => {
@@ -282,7 +241,7 @@ describe('HomePage', () => {
       dueToday: 0,
       mastered: 0,
       articlesCompleted: 0,
-      quizAccuracy: 0,
+      reviewAccuracy: 0,
       sessions: 0,
     }
 
@@ -293,7 +252,7 @@ describe('HomePage', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Read your first article')).toBeInTheDocument()
     expect(screen.getByText('Save useful vocabulary')).toBeInTheDocument()
-    expect(screen.getByText('Complete your first quiz')).toBeInTheDocument()
+    expect(screen.getByText('Complete your first Daily Review')).toBeInTheDocument()
     expect(screen.queryByText('NaN')).not.toBeInTheDocument()
   })
 
@@ -320,7 +279,7 @@ describe('HomePage', () => {
     fireEvent.click(within(card).getByRole('link', { name: 'Start Review' }))
 
     expect(screen.getByLabelText('Current path')).toHaveTextContent(
-      '/review?sessionType=DAILY_REVIEW',
+      '/review',
     )
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
@@ -329,8 +288,6 @@ describe('HomePage', () => {
     queryState.review.today = {
       data: {
         dueVocabularyCount: 0,
-        dailyReviewEstimates: [],
-        recommendedQuizzes: [],
       },
       isPending: false,
       isError: true,
@@ -357,8 +314,6 @@ describe('HomePage', () => {
     queryState.review.today = {
       data: {
         dueVocabularyCount: 0,
-        dailyReviewEstimates: [],
-        recommendedQuizzes: [],
       },
       isPending: false,
       isError: true,

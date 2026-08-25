@@ -848,10 +848,10 @@ export function LandingPage() {
                 <LayersIcon size={26} color="#0284C7" />
               </Box>
               <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
-                {t('features.quizTitle')}
+                {t('features.dailyReviewTitle')}
               </Typography>
               <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
-                {t('features.quizDesc')}
+                {t('features.dailyReviewDesc')}
               </Typography>
             </Paper>
           </Box>

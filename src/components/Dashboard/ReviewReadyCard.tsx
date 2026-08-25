@@ -174,7 +174,7 @@ export function ReviewReadyCard() {
         ) : (
           <Button
             component={RouterLink}
-            to={reviewStartPath({ sessionType: 'DAILY_REVIEW' })}
+            to={reviewStartPath()}
             variant="contained"
             size="large"
             endIcon={<ArrowRightIcon size={18} />}

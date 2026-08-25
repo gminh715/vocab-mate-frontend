@@ -45,9 +45,9 @@
         "label": "Articles completed",
         "detail": "Finished stories"
       },
-      "quizAccuracy": {
-        "label": "Quiz accuracy",
-        "detail": "Average quiz score"
+      "reviewAccuracy": {
+        "label": "Review accuracy",
+        "detail": "Correct answers in Daily Review"
       },
       "sessions": {
         "label": "Completed sessions",
@@ -69,8 +69,8 @@
         "body": "Select prepared terms while reading to build your review list."
       },
       "2": {
-        "title": "Complete your first quiz",
-        "body": "When an article has a published quiz, finish it to start tracking accuracy."
+        "title": "Complete your first Daily Review",
+        "body": "Save useful words, then review them when they become due."
       }
     }
   },

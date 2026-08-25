@@ -33,10 +33,6 @@ const completedHistory: ReviewHistory = {
     {
       session: {
         id: 'session-1',
-        sessionType: 'DAILY_REVIEW',
-        quizId: null,
-        articleId: null,
-        collectionId: null,
         targetDurationMinutes: 10,
         reviewGoal: 'RECALL',
         plannedItemCount: 8,
@@ -45,7 +41,6 @@ const completedHistory: ReviewHistory = {
         startedAt: '2026-08-09T01:00:00.000Z',
         completedAt: '2026-08-09T01:08:00.000Z',
       },
-      quiz: null,
       article: null,
       aggregates: {
         answeredCount: 8,
@@ -112,7 +107,7 @@ describe('ReviewHistoryPage', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Start a Review' })).toHaveAttribute(
       'href',
-      '/review?sessionType=DAILY_REVIEW',
+      '/review',
     )
   })
 

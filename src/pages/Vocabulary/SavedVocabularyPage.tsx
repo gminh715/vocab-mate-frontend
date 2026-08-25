@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link as RouterLink, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -18,21 +18,16 @@ import { DueVocabularyHeader } from '@/components/Vocabulary/DueVocabularyHeader
 import { VocabularyFilterBar } from '@/components/Vocabulary/VocabularyFilterBar'
 import { VocabularyItemCard } from '@/components/Vocabulary/VocabularyItemCard'
 import { VocabularyItemTable } from '@/components/Vocabulary/VocabularyItemTable'
-import { useCollectionsQuery } from '@/hooks/Vocabulary/useCollections'
 import {
   useDeleteVocabularyMutation,
   useDeleteVocabulariesMutation,
   useVocabulariesQuery,
 } from '@/hooks/Vocabulary/useVocabularies'
-import type {
-  CollectionListItem,
-  GetVocabulariesQueryParams,
-} from '@/types/Vocabulary/vocabulary'
+import type { GetVocabulariesQueryParams } from '@/types/Vocabulary/vocabulary'
 import {
   vocabularyParamsFromSearchParams,
   vocabularySearchParamsFromParams,
 } from '@/utils/Vocabulary/vocabularyParams'
-import { reviewStartPath } from '@/utils/paths'
 
 export function SavedVocabularyPage() {
   const { t } = useTranslation('vocabulary')
@@ -50,12 +45,6 @@ export function SavedVocabularyPage() {
     isError,
     refetch,
   } = useVocabulariesQuery(currentParams)
-
-  const { data: collectionsData } = useCollectionsQuery({ limit: 100 })
-  const collections = collectionsData?.items ?? []
-  const activeCollection = collections.find(
-    (c: CollectionListItem) => c.id === currentParams.collectionId,
-  )
 
   const deleteMutation = useDeleteVocabularyMutation()
   const bulkDeleteMutation = useDeleteVocabulariesMutation()
@@ -183,22 +172,6 @@ export function SavedVocabularyPage() {
 
         {/* Right Column: Vocabulary List & Management */}
         <Grid size={{ xs: 12, md: 8.5 }}>
-          {activeCollection ? (
-            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-              <Button
-                component={RouterLink}
-                to={reviewStartPath({
-                  sessionType: 'COLLECTION_REVIEW',
-                  collectionId: activeCollection.id,
-                })}
-                variant="contained"
-                size="small"
-              >
-                {t('page.reviewCollection')}
-              </Button>
-            </Box>
-          ) : null}
-
           <DueVocabularyHeader
             dueOnly={currentParams.dueOnly}
             onToggleDueOnly={handleToggleDueOnly}

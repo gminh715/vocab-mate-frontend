@@ -2,8 +2,6 @@ import { apiClient } from '@/config/apiClient'
 import type {
   AnalyticsOverview,
   AnalyticsOverviewParams,
-  QuizAnalytics,
-  QuizAnalyticsParams,
   ReadingAnalytics,
   ReviewAnalytics,
   VocabularyAnalytics,
@@ -29,9 +27,6 @@ export const analyticsApi = {
     params: AnalyticsOverviewParams,
   ): Promise<ReadingAnalytics> =>
     apiClient.get<ReadingAnalytics>(`${analyticsPath}/reading`, { params }),
-
-  quizzes: (params: QuizAnalyticsParams): Promise<QuizAnalytics> =>
-    apiClient.get<QuizAnalytics>(`${analyticsPath}/quizzes`, { params }),
 
   reviews: (params: AnalyticsOverviewParams): Promise<ReviewAnalytics> =>
     apiClient.get<ReviewAnalytics>(`${analyticsPath}/reviews`, { params }),

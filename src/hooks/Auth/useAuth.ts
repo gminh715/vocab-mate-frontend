@@ -28,7 +28,6 @@ const privateQueryRoots = new Set([
   '/adminArticleContent',
   '/adminArticles',
   '/adminCategories',
-  '/adminQuizzes',
   '/adminUsers',
 ])
 

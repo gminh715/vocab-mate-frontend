@@ -139,7 +139,13 @@ export function ArticleRenderer({
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     const term = delegatedTerm(event.target, event.currentTarget)
-    if (term) activateTerm(term)
+    if (!term) return
+
+    // Guardian content can wrap a marked term in an external link. Lookup
+    // takes precedence while vocabulary mode is active, so the reader stays
+    // on this article instead of following that link.
+    event.preventDefault()
+    activateTerm(term)
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {

@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
+  createEvent,
   fireEvent,
   render,
   screen,
@@ -181,6 +182,25 @@ describe('ArticleRenderer term interaction', () => {
       container.querySelector('[data-sentence-id="sentence-1"]')!,
     )
     expect(onTermSelect).toHaveBeenCalledTimes(1)
+  })
+
+  it('opens a term lookup without following a surrounding Guardian link', () => {
+    const onTermSelect = vi.fn()
+    const { container } = render(
+      <ThemeProvider theme={appTheme}>
+        <ArticleRenderer
+          contentHtml={'<p><a href="https://www.theguardian.com/world"><span data-term-id="term-guardian">Guardian</span></a></p>'}
+          onTermSelect={onTermSelect}
+        />
+      </ThemeProvider>,
+    )
+    const termLink = container.querySelector<HTMLAnchorElement>('a')!
+    const click = createEvent.click(termLink.firstElementChild!)
+
+    fireEvent(termLink.firstElementChild!, click)
+
+    expect(click.defaultPrevented).toBe(true)
+    expect(onTermSelect).toHaveBeenCalledWith('term-guardian')
   })
 
   it('uses one roving tab stop and supports keyboard selection', () => {

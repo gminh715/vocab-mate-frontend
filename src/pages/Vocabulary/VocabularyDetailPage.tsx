@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -21,24 +20,16 @@ import Paper from '@mui/material/Paper'
 import Select from '@mui/material/Select'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useForm } from 'react-hook-form'
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import { AddToCollectionDialog } from '@/components/Vocabulary/AddToCollectionDialog'
 import { isApiError } from '@/config/apiClient'
 import { useRemoveCollectionItemMutation } from '@/hooks/Vocabulary/useCollections'
 import {
   useDeleteVocabularyMutation,
-  useUpdateVocabularyNoteMutation,
   useUpdateVocabularyStatusMutation,
   useVocabularyDetailQuery,
 } from '@/hooks/Vocabulary/useVocabularies'
-import {
-  toUpdatePersonalNoteRequest,
-  updatePersonalNoteFormSchema,
-  type UpdatePersonalNoteFormValues,
-} from '@/schemas/Vocabulary/vocabulary'
 import { LEARNING_STATUSES, type LearningStatus } from '@/types/Vocabulary/vocabulary'
 import { readerPath, routePaths } from '@/utils/paths'
 
@@ -90,18 +81,15 @@ export function VocabularyDetailPage() {
   const { userVocabularyId = '' } = useParams<{ userVocabularyId: string }>()
   const navigate = useNavigate()
 
-  const [isEditingNote, setIsEditingNote] = useState(false)
   const [isAddCollectionOpen, setIsAddCollectionOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [noteError, setNoteError] = useState<string | null>(null)
 
   const { data, isLoading, isError, error, refetch } =
     useVocabularyDetailQuery(userVocabularyId)
 
   const updateStatusMutation = useUpdateVocabularyStatusMutation()
-  const updateNoteMutation = useUpdateVocabularyNoteMutation()
   const deleteMutation = useDeleteVocabularyMutation()
   const removeCollectionMutation = useRemoveCollectionItemMutation()
 
@@ -109,45 +97,12 @@ export function VocabularyDetailPage() {
   const collections = data?.collections ?? []
   const sourceArticle = data?.sourceArticle
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<UpdatePersonalNoteFormValues>({
-    resolver: zodResolver(updatePersonalNoteFormSchema),
-    values: {
-      personalNote: vocabulary?.personalNote ?? '',
-    },
-  })
-
   const handleUpdateStatus = (newStatus: LearningStatus) => {
     if (!userVocabularyId) return
     updateStatusMutation.mutate({
       userVocabularyId,
       learningStatus: newStatus,
     })
-  }
-
-  const handleNoteSubmit = (values: UpdatePersonalNoteFormValues) => {
-    if (!userVocabularyId) return
-    setNoteError(null)
-    const payloadNote = toUpdatePersonalNoteRequest(values)
-
-    updateNoteMutation.mutate(
-      {
-        userVocabularyId,
-        personalNote: payloadNote,
-      },
-      {
-        onSuccess: () => {
-          setIsEditingNote(false)
-        },
-        onError: () => {
-          setNoteError('Failed to save personal note. Please try again.')
-        },
-      },
-    )
   }
 
   const handleRemoveFromCollection = (collectionId: string) => {
@@ -399,84 +354,6 @@ export function VocabularyDetailPage() {
             </Stack>
           </Paper>
 
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3.5,
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Stack spacing={2}>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Typography variant="h6" sx={{ fontWeight: 750 }}>
-                  Personal Note
-                </Typography>
-                {!isEditingNote ? (
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {
-                      reset({ personalNote: vocabulary.personalNote ?? '' })
-                      setIsEditingNote(true)
-                    }}
-                  >
-                    {vocabulary.personalNote ? 'Edit Note' : 'Add Note'}
-                  </Button>
-                ) : null}
-              </Stack>
-
-              {noteError ? <Alert severity="error">{noteError}</Alert> : null}
-
-              {isEditingNote ? (
-                <Box component="form" onSubmit={handleSubmit(handleNoteSubmit)}>
-                  <TextField
-                    {...register('personalNote')}
-                    multiline
-                    rows={3}
-                    placeholder="Add your personal notes, mnemonics, or memory hooks…"
-                    error={Boolean(errors.personalNote)}
-                    helperText={errors.personalNote?.message}
-                    disabled={isSubmitting || updateNoteMutation.isPending}
-                    sx={{ mb: 2 }}
-                  />
-
-                  <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'flex-end' }}>
-                    <Button
-                      onClick={() => setIsEditingNote(false)}
-                      disabled={isSubmitting || updateNoteMutation.isPending}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={isSubmitting || updateNoteMutation.isPending}
-                    >
-                      {updateNoteMutation.isPending ? 'Saving…' : 'Save Note'}
-                    </Button>
-                  </Stack>
-                </Box>
-              ) : vocabulary.personalNote ? (
-                <Typography variant="body1" sx={{ color: 'text.primary', whiteSpace: 'pre-wrap' }}>
-                  {vocabulary.personalNote}
-                </Typography>
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  No personal note added yet. Click &quot;Add Note&quot; to write memory hooks or personal notes.
-                </Typography>
-              )}
-            </Stack>
-          </Paper>
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>

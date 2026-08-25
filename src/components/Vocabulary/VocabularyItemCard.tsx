@@ -140,23 +140,6 @@ export function VocabularyItemCard({
           {item.savedMeaningVi}
         </Typography>
 
-        {item.personalNote ? (
-          <Box
-            sx={{
-              px: 1.5,
-              py: 1,
-              borderRadius: 2,
-              bgcolor: 'background.default',
-              borderLeft: '3px solid',
-              borderColor: 'primary.main',
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              <strong>{t('card.noteLabel')}</strong> {item.personalNote}
-            </Typography>
-          </Box>
-        ) : null}
-
         {item.collections.length > 0 ? (
           <Stack direction="row" spacing={0.75} sx={{ flexWrap: 'wrap' }} useFlexGap>
             {item.collections.map((col) => (

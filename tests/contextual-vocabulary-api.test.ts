@@ -37,28 +37,31 @@ describe('contextual vocabulary API mapping', () => {
     )
   })
 
-  it('sends only the stable term ID and a non-empty optional note', async () => {
+  it('sends only the stable term ID and selected collections', async () => {
     clientMocks.post.mockResolvedValue({
       vocabulary: { id: 'vocabulary-id' },
       collections: [],
     })
     const request = toSaveVocabularyRequest('term-id', {
-      personalNote: 'Remember this context',
+      collectionIds: ['550e8400-e29b-41d4-a716-446655440010'],
     })
 
     await vocabulariesApi.save(request)
 
     expect(clientMocks.post).toHaveBeenCalledWith('/vocabularies', {
       articleSentenceTermId: 'term-id',
-      personalNote: 'Remember this context',
+      collectionIds: ['550e8400-e29b-41d4-a716-446655440010'],
     })
   })
 
-  it('omits the optional note and collections when neither was chosen', () => {
+  it('maps the selected collections without extra fields', () => {
     expect(
-      toSaveVocabularyRequest('term-id', { personalNote: '' }),
+      toSaveVocabularyRequest('term-id', {
+        collectionIds: ['550e8400-e29b-41d4-a716-446655440010'],
+      }),
     ).toEqual({
       articleSentenceTermId: 'term-id',
+      collectionIds: ['550e8400-e29b-41d4-a716-446655440010'],
     })
   })
 })

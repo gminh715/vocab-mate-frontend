@@ -17,14 +17,12 @@ export type VocabularySort = (typeof VOCABULARY_SORTS)[number]
 
 export interface SaveVocabularyRequest {
   articleSentenceTermId: string
-  personalNote?: string
   collectionIds?: string[]
 }
 
 export interface VocabularyCollectionSummary {
   id: string
   name: string
-  description: string | null
   addedAt: string
 }
 
@@ -32,7 +30,6 @@ export interface VocabularySnapshot {
   id: string
   articleSentenceTermId: string
   learningStatus: LearningStatus
-  personalNote: string | null
   savedWordDisplay: string
   savedLemma: string
   savedPartOfSpeech: string
@@ -95,7 +92,6 @@ export interface SaveVocabularyData {
 export interface CollectionListItem {
   id: string
   name: string
-  description: string | null
   createdAt: string
   updatedAt: string
   vocabularyCount: number

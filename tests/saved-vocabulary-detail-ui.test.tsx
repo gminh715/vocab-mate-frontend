@@ -21,7 +21,6 @@ const mockDetailData: VocabularyDetailData = {
     id: userVocabularyId,
     articleSentenceTermId: '550e8400-e29b-41d4-a716-446655440002',
     learningStatus: 'NEW',
-    personalNote: 'Remember negative connotation',
     savedWordDisplay: 'harmful',
     savedLemma: 'harmful',
     savedPartOfSpeech: 'adjective',
@@ -46,7 +45,6 @@ const mockDetailData: VocabularyDetailData = {
     {
       id: collectionId,
       name: 'Environment',
-      description: 'Environment related words',
       addedAt: '2026-07-24T10:00:00.000Z',
     },
   ],
@@ -65,7 +63,6 @@ const mockCollectionsList: CollectionListData = {
     {
       id: collectionId,
       name: 'Environment',
-      description: 'Environment terms',
       createdAt: '2026-07-20T10:00:00.000Z',
       updatedAt: '2026-07-20T10:00:00.000Z',
       vocabularyCount: 5,
@@ -73,7 +70,6 @@ const mockCollectionsList: CollectionListData = {
     {
       id: '550e8400-e29b-41d4-a716-446655440011',
       name: 'Science',
-      description: 'Science words',
       createdAt: '2026-07-21T10:00:00.000Z',
       updatedAt: '2026-07-21T10:00:00.000Z',
       vocabularyCount: 2,
@@ -133,35 +129,6 @@ describe('Saved Vocabulary Detail Page UI', () => {
     expect(screen.getByRole('link', { name: 'Read Article in Reader' })).toHaveAttribute(
       'href',
       '/read/plastic-and-marine-life',
-    )
-  })
-
-  it('allows editing and updating personal note', async () => {
-    const updatedDetail: VocabularyDetailData = {
-      ...mockDetailData,
-      vocabulary: {
-        ...mockDetailData.vocabulary,
-        personalNote: 'Updated memory hook note',
-      },
-    }
-    vi.spyOn(vocabulariesApi, 'updateNote').mockResolvedValue(updatedDetail)
-
-    renderDetailPage()
-
-    const user = userEvent.setup()
-    const editButton = await screen.findByRole('button', { name: 'Edit Note' })
-    await user.click(editButton)
-
-    const noteInput = screen.getByRole('textbox')
-    await user.clear(noteInput)
-    await user.type(noteInput, 'Updated memory hook note')
-
-    const saveButton = screen.getByRole('button', { name: 'Save Note' })
-    await user.click(saveButton)
-
-    expect(vocabulariesApi.updateNote).toHaveBeenCalledWith(
-      userVocabularyId,
-      'Updated memory hook note',
     )
   })
 

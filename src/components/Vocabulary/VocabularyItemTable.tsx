@@ -79,7 +79,8 @@ export function VocabularyItemTable({
         borderRadius: 3,
         border: '1px solid',
         borderColor: 'divider',
-        overflow: 'hidden',
+        overflowX: 'auto',
+        overflowY: 'hidden',
       }}
     >
       {selectedIds.size > 0 ? (
@@ -110,10 +111,13 @@ export function VocabularyItemTable({
         </Stack>
       ) : null}
 
-      <Table aria-label={t('table.ariaLabel')}>
+      <Table
+        aria-label={t('table.ariaLabel')}
+        sx={{ minWidth: 820, tableLayout: 'fixed' }}
+      >
         <TableHead sx={{ bgcolor: '#F8F9FA' }}>
           <TableRow>
-            <TableCell padding="checkbox">
+            <TableCell padding="checkbox" sx={{ width: 56 }}>
               <Checkbox
                 checked={allSelected}
                 indeterminate={!allSelected && someSelected}
@@ -123,19 +127,33 @@ export function VocabularyItemTable({
                 }}
               />
             </TableCell>
-            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell sx={{ width: '17%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colStatus')}
             </TableCell>
-            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell sx={{ width: '20%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colVocabulary')}
             </TableCell>
-            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell sx={{ width: '14%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colPos')}
             </TableCell>
-            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell sx={{ width: '31%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colMeaning')}
             </TableCell>
-            <TableCell align="right" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell
+              align="right"
+              sx={{
+                position: 'sticky',
+                right: 0,
+                zIndex: 2,
+                width: 112,
+                bgcolor: '#F8F9FA',
+                fontWeight: 800,
+                color: 'text.secondary',
+                fontSize: 13,
+                py: 1.75,
+                whiteSpace: 'nowrap',
+              }}
+            >
               {t('table.colActions')}
             </TableCell>
           </TableRow>
@@ -168,7 +186,7 @@ export function VocabularyItemTable({
                   />
                 </TableCell>
 
-                <TableCell sx={{ verticalAlign: 'middle', minWidth: 140 }}>
+                <TableCell sx={{ verticalAlign: 'middle' }}>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                     <Chip
                       label={t(`statusLabels.${item.learningStatus}`)}
@@ -187,7 +205,7 @@ export function VocabularyItemTable({
                   </Stack>
                 </TableCell>
 
-                <TableCell sx={{ verticalAlign: 'middle', minWidth: 150 }}>
+                <TableCell sx={{ verticalAlign: 'middle' }}>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                     <Typography
                       component={RouterLink}
@@ -219,7 +237,7 @@ export function VocabularyItemTable({
                   </Stack>
                 </TableCell>
 
-                <TableCell sx={{ verticalAlign: 'middle', minWidth: 110 }}>
+                <TableCell sx={{ verticalAlign: 'middle' }}>
                   <Stack spacing={0.5}>
                     <Typography variant="body2" color="text.secondary">
                       {item.savedPartOfSpeech || '—'}
@@ -233,20 +251,24 @@ export function VocabularyItemTable({
                   </Stack>
                 </TableCell>
 
-                <TableCell sx={{ verticalAlign: 'middle', minWidth: 240 }}>
+                <TableCell sx={{ verticalAlign: 'middle' }}>
                   <Stack spacing={0.5}>
                     <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.primary' }}>
                       {item.savedMeaningVi}
                     </Typography>
-                    {item.personalNote ? (
-                      <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 260 }}>
-                        {t('table.notePrefix')}{item.personalNote}
-                      </Typography>
-                    ) : null}
                   </Stack>
                 </TableCell>
 
-                <TableCell align="right" sx={{ verticalAlign: 'middle', minWidth: 100 }}>
+                <TableCell
+                  align="right"
+                  sx={{
+                    position: 'sticky',
+                    right: 0,
+                    zIndex: 1,
+                    bgcolor: selectedIds.has(item.id) ? 'action.selected' : 'background.paper',
+                    verticalAlign: 'middle',
+                  }}
+                >
                   <Stack direction="row" spacing={0.5} sx={{ justifyContent: 'flex-end' }}>
                     <Tooltip title={t('table.detailsTooltip')}>
                       <IconButton

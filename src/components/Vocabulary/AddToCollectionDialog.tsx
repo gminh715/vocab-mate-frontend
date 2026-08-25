@@ -143,7 +143,7 @@ export function AddToCollectionDialog({
                       secondary={
                         isAlreadyMember
                           ? 'Already in collection'
-                          : collection.description || null
+                          : null
                       }
                     />
                   </ListItemButton>

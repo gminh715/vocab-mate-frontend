@@ -43,29 +43,6 @@ export const useVocabularyDetailQuery = (userVocabularyId: string) =>
     enabled: Boolean(userVocabularyId),
   })
 
-export const useUpdateVocabularyNoteMutation = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: ({
-      userVocabularyId,
-      personalNote,
-    }: {
-      userVocabularyId: string
-      personalNote: string | null
-    }) => vocabulariesApi.updateNote(userVocabularyId, personalNote),
-    onSuccess: (data) => {
-      queryClient.setQueryData(
-        vocabularyQueryKeys.detail(data.vocabulary.id),
-        data,
-      )
-      void queryClient.invalidateQueries({
-        queryKey: vocabularyQueryKeys.all,
-      })
-    },
-  })
-}
-
 export const useUpdateVocabularyStatusMutation = () => {
   const queryClient = useQueryClient()
 

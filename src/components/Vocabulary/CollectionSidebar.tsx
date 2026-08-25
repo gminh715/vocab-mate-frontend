@@ -13,8 +13,12 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import type { CollectionListItem } from '@/types/Vocabulary/vocabulary'
-import { useCollectionsQuery } from '@/hooks/Vocabulary/useCollections'
+import {
+  useCollectionsQuery,
+  useDeleteCollectionMutation,
+} from '@/hooks/Vocabulary/useCollections'
 import { CreateCollectionDialog } from '@/components/Vocabulary/CreateCollectionDialog'
+import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 
 interface CollectionSidebarProps {
   selectedCollectionId?: string
@@ -29,10 +33,37 @@ export function CollectionSidebar({
 }: CollectionSidebarProps) {
   const { t } = useTranslation('vocabulary')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [collectionToDelete, setCollectionToDelete] =
+    useState<CollectionListItem | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const { data, isLoading } = useCollectionsQuery({ limit: 100 })
+  const deleteCollectionMutation = useDeleteCollectionMutation()
   const collections = data?.items ?? []
 
   const isAllSelected = !selectedCollectionId
+
+  const closeDeleteDialog = () => {
+    if (deleteCollectionMutation.isPending) return
+    setCollectionToDelete(null)
+    setDeleteError(null)
+  }
+
+  const confirmDeleteCollection = () => {
+    if (!collectionToDelete) return
+
+    setDeleteError(null)
+    deleteCollectionMutation.mutate(collectionToDelete.id, {
+      onSuccess: () => {
+        const deletedWasSelected =
+          selectedCollectionId === collectionToDelete.id
+        setCollectionToDelete(null)
+        if (deletedWasSelected) onSelectCollection(undefined)
+      },
+      onError: () => {
+        setDeleteError(t('sidebar.deleteDialog.error'))
+      },
+    })
+  }
 
   return (
     <>
@@ -136,6 +167,7 @@ export function CollectionSidebar({
                     selected={isSelected}
                     onClick={() => onSelectCollection(collection.id)}
                     sx={{
+                      flex: 1,
                       borderRadius: 2,
                       py: 1.2,
                       px: 1.5,
@@ -157,13 +189,6 @@ export function CollectionSidebar({
                           {collection.name}
                         </Typography>
                       }
-                      secondary={
-                        collection.description ? (
-                          <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block', maxWidth: 160 }}>
-                            {collection.description}
-                          </Typography>
-                        ) : null
-                      }
                     />
                     <Chip
                       label={collection.vocabularyCount}
@@ -176,6 +201,32 @@ export function CollectionSidebar({
                       }}
                     />
                   </ListItemButton>
+                  <Tooltip
+                    title={t('sidebar.deleteTooltip', {
+                      name: collection.name,
+                    })}
+                  >
+                    <IconButton
+                      size="small"
+                      aria-label={t('sidebar.deleteTooltip', {
+                        name: collection.name,
+                      })}
+                      onClick={() => {
+                        setDeleteError(null)
+                        setCollectionToDelete(collection)
+                      }}
+                      sx={{
+                        ml: 0.5,
+                        color: 'text.secondary',
+                        '&:hover': {
+                          bgcolor: 'error.light',
+                          color: 'error.dark',
+                        },
+                      }}
+                    >
+                      ×
+                    </IconButton>
+                  </Tooltip>
                 </ListItem>
               )
             })
@@ -188,6 +239,20 @@ export function CollectionSidebar({
       open={isCreateOpen}
       onClose={() => setIsCreateOpen(false)}
       onSuccess={(newId) => onSelectCollection(newId)}
+    />
+    <ConfirmationDialog
+      open={Boolean(collectionToDelete)}
+      title={t('sidebar.deleteDialog.title')}
+      description={t('sidebar.deleteDialog.description', {
+        name: collectionToDelete?.name ?? '',
+      })}
+      cancelLabel={t('sidebar.deleteDialog.cancel')}
+      confirmLabel={t('sidebar.deleteDialog.confirm')}
+      pendingLabel={t('sidebar.deleteDialog.deleting')}
+      isPending={deleteCollectionMutation.isPending}
+      errorMessage={deleteError}
+      onCancel={closeDeleteDialog}
+      onConfirm={confirmDeleteCollection}
     />
   </>
 )

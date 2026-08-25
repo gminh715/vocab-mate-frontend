@@ -19,7 +19,6 @@ const mockVocabularyItem: VocabularyListItem = {
   id: '770e8400-e29b-41d4-a716-446655440000',
   articleSentenceTermId: '550e8400-e29b-41d4-a716-446655440002',
   learningStatus: 'NEW',
-  personalNote: 'Important note for review',
   savedWordDisplay: 'harmful',
   savedLemma: 'harmful',
   savedPartOfSpeech: 'adjective',
@@ -32,7 +31,6 @@ const mockVocabularyItem: VocabularyListItem = {
     {
       id: '550e8400-e29b-41d4-a716-446655440010',
       name: 'Environment',
-      description: 'Environment related terms',
       addedAt: '2026-07-24T10:00:00.000Z',
     },
   ],
@@ -84,7 +82,6 @@ const mockCollectionList: CollectionListData = {
     {
       id: '550e8400-e29b-41d4-a716-446655440010',
       name: 'Environment',
-      description: 'Environment terms',
       createdAt: '2026-07-20T10:00:00.000Z',
       updatedAt: '2026-07-20T10:00:00.000Z',
       vocabularyCount: 5,

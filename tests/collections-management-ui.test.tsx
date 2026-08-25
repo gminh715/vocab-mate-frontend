@@ -1,14 +1,16 @@
 import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { collectionsApi, vocabulariesApi } from '@/api'
 import { AddVocabularyToCollectionDialog } from '@/components/Vocabulary/AddVocabularyToCollectionDialog'
+import { CollectionSidebar } from '@/components/Vocabulary/CollectionSidebar'
 import { CreateCollectionDialog } from '@/components/Vocabulary/CreateCollectionDialog'
 import { collectionQueryKeys } from '@/hooks/Vocabulary/useCollections'
 import { vocabularyQueryKeys } from '@/hooks/Vocabulary/useVocabularies'
+import i18n from '@/i18n/i18n'
 import { appTheme } from '@/theme'
 import type {
   CollectionListData,
@@ -24,7 +26,6 @@ const mockCollectionsList: CollectionListData = {
     {
       id: collectionId1,
       name: 'Environment',
-      description: 'Environment terms',
       createdAt: '2026-07-20T10:00:00.000Z',
       updatedAt: '2026-07-20T10:00:00.000Z',
       vocabularyCount: 5,
@@ -32,7 +33,6 @@ const mockCollectionsList: CollectionListData = {
     {
       id: collectionId2,
       name: 'Science',
-      description: 'Science terms',
       createdAt: '2026-07-21T10:00:00.000Z',
       updatedAt: '2026-07-21T10:00:00.000Z',
       vocabularyCount: 2,
@@ -52,7 +52,6 @@ const mockVocabList: VocabularyListData = {
       id: userVocabularyId,
       articleSentenceTermId: '550e8400-e29b-41d4-a716-446655440002',
       learningStatus: 'NEW',
-      personalNote: null,
       savedWordDisplay: 'harmful',
       savedLemma: 'harmful',
       savedPartOfSpeech: 'adjective',
@@ -65,7 +64,6 @@ const mockVocabList: VocabularyListData = {
         {
           id: collectionId1,
           name: 'Environment',
-          description: null,
           addedAt: '2026-07-24T10:00:00.000Z',
         },
       ],
@@ -80,7 +78,8 @@ const mockVocabList: VocabularyListData = {
 }
 
 describe('Collections Management UI', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('en')
     vi.spyOn(collectionsApi, 'findAll').mockResolvedValue(mockCollectionsList)
     vi.spyOn(vocabulariesApi, 'findAll').mockResolvedValue(mockVocabList)
   })
@@ -94,7 +93,6 @@ describe('Collections Management UI', () => {
       collection: {
         id: '550e8400-e29b-41d4-a716-446655440099',
         name: 'Technology',
-        description: 'Tech terms',
         createdAt: '2026-07-25T10:00:00.000Z',
         updatedAt: '2026-07-25T10:00:00.000Z',
         vocabularyCount: 0,
@@ -127,15 +125,11 @@ describe('Collections Management UI', () => {
     const user = userEvent.setup()
     await user.type(nameInput, 'Technology')
 
-    const descInput = screen.getByLabelText(/Description/i)
-    await user.type(descInput, 'Tech terms')
-
     const submitButton = screen.getByRole('button', { name: 'Create Collection' })
     await user.click(submitButton)
 
     expect(collectionsApi.create).toHaveBeenCalledWith({
       name: 'Technology',
-      description: 'Tech terms',
     })
     expect(handleSuccess).toHaveBeenCalledWith('550e8400-e29b-41d4-a716-446655440099')
   })
@@ -193,5 +187,54 @@ describe('Collections Management UI', () => {
     expect(collectionsApi.addItems).toHaveBeenCalledWith(collectionId2, [
       userVocabularyId,
     ])
+  })
+
+  it('confirms deletion, removes the selected collection, and returns to all vocabulary', async () => {
+    vi.spyOn(collectionsApi, 'remove').mockResolvedValue(undefined)
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+    })
+    queryClient.setQueryData(
+      collectionQueryKeys.list({ limit: 100 }),
+      mockCollectionsList,
+    )
+    const onSelectCollection = vi.fn()
+
+    render(
+      <ThemeProvider theme={appTheme}>
+        <QueryClientProvider client={queryClient}>
+          <CollectionSidebar
+            selectedCollectionId={collectionId2}
+            onSelectCollection={onSelectCollection}
+          />
+        </QueryClientProvider>
+      </ThemeProvider>,
+    )
+
+    const user = userEvent.setup()
+    await user.click(
+      screen.getByRole('button', { name: 'Delete Science' }),
+    )
+
+    expect(
+      screen.getByRole('heading', { name: 'Delete collection?' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        '"Science" and its collection memberships will be deleted. Saved vocabulary and Daily Review history will remain.',
+      ),
+    ).toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Delete collection',
+        exact: true,
+      }),
+    )
+
+    await waitFor(() => {
+      expect(collectionsApi.remove).toHaveBeenCalledWith(collectionId2)
+      expect(onSelectCollection).toHaveBeenCalledWith(undefined)
+    })
   })
 })

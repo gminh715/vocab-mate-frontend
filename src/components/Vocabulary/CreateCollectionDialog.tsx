@@ -23,12 +23,6 @@ const createCollectionSchema = z.object({
     .trim()
     .min(1, 'nameRequired')
     .max(100, 'nameTooLong'),
-  description: z
-    .string()
-    .trim()
-    .max(500, 'descriptionTooLong')
-    .optional()
-    .or(z.literal('')),
 })
 
 type CreateCollectionFormValues = z.input<typeof createCollectionSchema>
@@ -56,7 +50,7 @@ export function CreateCollectionDialog({
     formState: { errors, isSubmitting },
   } = useForm<CreateCollectionFormValues, unknown, CreateCollectionFormOutput>({
     resolver: zodResolver(createCollectionSchema),
-    defaultValues: { name: '', description: '' },
+    defaultValues: { name: '' },
   })
 
   const handleClose = () => {
@@ -67,7 +61,7 @@ export function CreateCollectionDialog({
 
   const resolveError = (key: string | undefined): string | undefined => {
     if (!key) return undefined
-    const knownKeys = ['nameRequired', 'nameTooLong', 'descriptionTooLong'] as const
+    const knownKeys = ['nameRequired', 'nameTooLong'] as const
     type KnownKey = typeof knownKeys[number]
     if ((knownKeys as readonly string[]).includes(key)) {
       return t(`createCollection.${key as KnownKey}`)
@@ -77,12 +71,7 @@ export function CreateCollectionDialog({
 
   const onSubmit = (values: CreateCollectionFormOutput) => {
     setErrorMessage(null)
-    const payload = {
-      name: values.name.trim(),
-      ...(values.description?.trim()
-        ? { description: values.description.trim() }
-        : {}),
-    }
+    const payload = { name: values.name.trim() }
 
     createMutation.mutate(payload, {
       onSuccess: (data: CreateCollectionResponse) => {
@@ -117,18 +106,6 @@ export function CreateCollectionDialog({
               helperText={resolveError(errors.name?.message)}
               slotProps={{ htmlInput: { maxLength: 100 } }}
               {...register('name')}
-            />
-
-            <TextField
-              label={t('createCollection.descriptionLabel')}
-              placeholder={t('createCollection.descriptionPlaceholder')}
-              multiline
-              rows={3}
-              fullWidth
-              error={Boolean(errors.description)}
-              helperText={resolveError(errors.description?.message)}
-              slotProps={{ htmlInput: { maxLength: 500 } }}
-              {...register('description')}
             />
           </Stack>
         </DialogContent>

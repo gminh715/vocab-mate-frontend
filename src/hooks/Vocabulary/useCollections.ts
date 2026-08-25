@@ -33,6 +33,22 @@ export const useCreateCollectionMutation = () => {
   })
 }
 
+export const useDeleteCollectionMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (collectionId: string) => collectionsApi.remove(collectionId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: collectionQueryKeys.all,
+      })
+      void queryClient.invalidateQueries({
+        queryKey: vocabularyQueryKeys.all,
+      })
+    },
+  })
+}
+
 export const useAddCollectionItemsMutation = () => {
   const queryClient = useQueryClient()
 
@@ -76,4 +92,3 @@ export const useRemoveCollectionItemMutation = () => {
     },
   })
 }
-

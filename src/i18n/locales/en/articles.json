@@ -121,15 +121,16 @@
     },
     "save": {
       "alreadySaved": "This term is already saved. Refreshing its saved state…",
-      "noCollections": "You don't have any collections yet. Create a collection before saving vocabulary.",
+      "noCollections": "You don't have any collections yet. Create one to save vocabulary.",
+      "quickCreate": {
+        "action": "Create collection"
+      },
       "collectionsLabel": "Collections (Required)",
       "collectionsHelp": "Select one or more collections to add this word to.",
-      "noteLabel": "Personal note (optional)",
-      "noteHelp": "Add a note for this contextual occurrence.",
       "saving": "Saving…",
       "submit": "Save Vocabulary",
       "additional": {
-        "title": "Add to another collection",
+        "title": "Add your vocab into collection",
         "selectLabel": "Select Collection",
         "adding": "Adding…",
         "add": "Add",
@@ -141,8 +142,7 @@
         "signIn": "Sign in to save vocabulary.",
         "collectionsUnavailable": "One or more selected collections are no longer available. Review your collections and try again.",
         "generic": "Vocabulary could not be saved. Try again.",
-        "collectionRequired": "Please select at least one valid collection.",
-        "noteTooLong": "Personal note must be 2,000 characters or fewer."
+        "collectionRequired": "Please select at least one valid collection."
       }
     }
   },

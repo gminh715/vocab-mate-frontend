@@ -27,15 +27,6 @@ export const vocabulariesApi = {
       `${vocabulariesPath}/${encodeURIComponent(userVocabularyId)}`,
     ),
 
-  updateNote: (
-    userVocabularyId: string,
-    personalNote: string | null,
-  ): Promise<VocabularyDetailData> =>
-    apiClient.patch<VocabularyDetailData>(
-      `${vocabulariesPath}/${encodeURIComponent(userVocabularyId)}`,
-      { personalNote },
-    ),
-
   save: (request: SaveVocabularyRequest): Promise<SaveVocabularyData> =>
     apiClient.post<SaveVocabularyData>(vocabulariesPath, request),
 

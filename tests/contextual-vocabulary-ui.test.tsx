@@ -107,7 +107,6 @@ const savedVocabulary: SaveVocabularyData = {
     id: '770e8400-e29b-41d4-a716-446655440000',
     articleSentenceTermId: termId,
     learningStatus: 'NEW',
-    personalNote: 'Remember this sentence',
     savedWordDisplay: 'harmful',
     savedLemma: 'harmful',
     savedPartOfSpeech: 'adjective',
@@ -180,7 +179,6 @@ describe('contextual vocabulary lookup and save flow', () => {
         {
           id: '550e8400-e29b-41d4-a716-446655440010',
           name: 'Environment',
-          description: null,
           createdAt: '2026-07-20T10:00:00.000Z',
           updatedAt: '2026-07-20T10:00:00.000Z',
           vocabularyCount: 1,
@@ -270,9 +268,6 @@ describe('contextual vocabulary lookup and save flow', () => {
       screen.getByRole('heading', { name: 'Định nghĩa tiếng Anh' }),
     ).toBeInTheDocument()
     expect(
-      screen.getByLabelText('Ghi chú cá nhân (không bắt buộc)'),
-    ).toBeInTheDocument()
-    expect(
       screen.getByRole('button', { name: 'Lưu từ vựng' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Đóng' })).toBeInTheDocument()
@@ -287,17 +282,12 @@ describe('contextual vocabulary lookup and save flow', () => {
     queryClient.setQueryData(vocabularyListKey, { items: [] })
     const user = await openLookup()
 
-    await user.type(
-      await screen.findByLabelText('Personal note (optional)'),
-      '  Remember this sentence  ',
-    )
     await user.click(
       screen.getByRole('button', { name: 'Save Vocabulary' }),
     )
 
     expect(vocabulariesApi.save).toHaveBeenCalledWith({
       articleSentenceTermId: termId,
-      personalNote: 'Remember this sentence',
       collectionIds: ['550e8400-e29b-41d4-a716-446655440010'],
     })
     expect(

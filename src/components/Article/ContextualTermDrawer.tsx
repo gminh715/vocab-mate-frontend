@@ -17,11 +17,11 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import Paper from '@mui/material/Paper'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { normalizeApiError } from '@/config/apiClient'
+import { CreateCollectionDialog } from '@/components/Vocabulary/CreateCollectionDialog'
 import { useAddCollectionItemsMutation, useCollectionsQuery } from '@/hooks/Vocabulary/useCollections'
 import { useContextualTermQuery } from '@/hooks/Reading/useReading'
 import { useSaveVocabularyMutation } from '@/hooks/Vocabulary/useVocabularies'
@@ -62,6 +62,14 @@ const displayExamples = (examples: unknown[]): DisplayExample[] =>
 
 const hasText = (value: string | null): value is string =>
   Boolean(value?.trim())
+
+const savePanelSx = {
+  p: { xs: 2, sm: 2.25 },
+  borderRadius: 2.5,
+  borderLeft: 4,
+  borderLeftColor: 'primary.main',
+  bgcolor: 'rgba(15, 81, 56, 0.035)',
+}
 
 function DetailSection({
   title,
@@ -151,6 +159,7 @@ function SaveVocabularyForm({
 
   const [addCollectionId, setAddCollectionId] = useState<string>('')
   const [addFeedback, setAddFeedback] = useState<string | null>(null)
+  const [isCreateCollectionOpen, setIsCreateCollectionOpen] = useState(false)
 
   const defaultCollectionIds = useMemo(
     () => (collections.length > 0 ? [collections[0].id] : []),
@@ -160,15 +169,15 @@ function SaveVocabularyForm({
   const {
     control,
     formState: { errors },
+    getValues,
     handleSubmit,
-    register,
   } = useForm<
     SaveVocabularyFormValues,
     unknown,
     SaveVocabularyFormOutput
   >({
     resolver: zodResolver(saveVocabularyFormSchema),
-    values: { personalNote: '', collectionIds: defaultCollectionIds },
+    values: { collectionIds: defaultCollectionIds },
     resetOptions: { keepDefaultValues: false },
   })
 
@@ -176,12 +185,12 @@ function SaveVocabularyForm({
     saveMutation.mutate(toSaveVocabularyRequest(data.term.id, values))
   })
 
-  const handleAddToAdditionalCollection = () => {
-    if (!addCollectionId || !data.saveState.userVocabularyId) return
+  const addSavedVocabularyToCollection = (collectionId: string) => {
+    if (!data.saveState.userVocabularyId) return
     setAddFeedback(null)
     addCollectionMutation.mutate(
       {
-        collectionId: addCollectionId,
+        collectionId,
         userVocabularyIds: [data.saveState.userVocabularyId],
       },
       {
@@ -200,14 +209,45 @@ function SaveVocabularyForm({
     )
   }
 
+  const handleAddToAdditionalCollection = () => {
+    if (!addCollectionId) return
+    addSavedVocabularyToCollection(addCollectionId)
+  }
+
+  const handleCollectionCreated = (collectionId: string) => {
+    if (data.saveState.isSaved) {
+      addSavedVocabularyToCollection(collectionId)
+      return
+    }
+
+    saveMutation.mutate(
+      toSaveVocabularyRequest(data.term.id, {
+        ...getValues(),
+        collectionIds: [collectionId],
+      }),
+    )
+  }
+
   if (data.saveState.isSaved) {
     return (
-      <Stack spacing={2}>
-        {data.saveState.userVocabularyId && collections.length > 0 ? (
-          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
-              {t('lookup.save.additional.title')}
-            </Typography>
+      <>
+        {data.saveState.userVocabularyId ? (
+          <Paper variant="outlined" sx={savePanelSx}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1 }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                {t('lookup.save.additional.title')}
+              </Typography>
+              <Button
+                size="small"
+                onClick={() => setIsCreateCollectionOpen(true)}
+              >
+                {t('lookup.save.quickCreate.action')}
+              </Button>
+            </Stack>
 
             {addFeedback ? (
               <Alert severity="info" sx={{ mb: 1.5, py: 0.5 }}>
@@ -215,31 +255,61 @@ function SaveVocabularyForm({
               </Alert>
             ) : null}
 
-            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              <FormControl size="small" fullWidth>
-                <InputLabel id="add-to-collection-select-label">
-                  {t('lookup.save.additional.selectLabel')}
-                </InputLabel>
-                <Select
-                  labelId="add-to-collection-select-label"
-                  value={addCollectionId}
-                  label={t('lookup.save.additional.selectLabel')}
-                  onChange={(e) => setAddCollectionId(e.target.value)}
-                  disabled={addCollectionMutation.isPending}
-                >
-                  {collections.map((col: CollectionListItem) => (
-                    <MenuItem key={col.id} value={col.id}>
-                      {col.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1}
+              sx={{ alignItems: { xs: 'stretch', sm: 'center' } }}
+            >
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                {collections.length === 0 ? (
+                  <Box
+                    role="status"
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      minHeight: 40,
+                      px: 1.5,
+                      border: '1px solid',
+                      borderColor: 'warning.light',
+                      borderRadius: 1,
+                      bgcolor: 'background.paper',
+                    }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      {t('lookup.save.noCollections')}
+                    </Typography>
+                  </Box>
+                ) : (
+                <FormControl size="small" fullWidth>
+                  <InputLabel id="add-to-collection-select-label">
+                    {t('lookup.save.additional.selectLabel')}
+                  </InputLabel>
+                  <Select
+                    labelId="add-to-collection-select-label"
+                    value={addCollectionId}
+                    label={t('lookup.save.additional.selectLabel')}
+                    onChange={(e) => setAddCollectionId(e.target.value)}
+                    disabled={addCollectionMutation.isPending}
+                  >
+                    {collections.map((col: CollectionListItem) => (
+                      <MenuItem key={col.id} value={col.id}>
+                        {col.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                )}
+              </Box>
 
               <Button
                 variant="outlined"
                 onClick={handleAddToAdditionalCollection}
-                disabled={!addCollectionId || addCollectionMutation.isPending}
-                sx={{ whiteSpace: 'nowrap' }}
+                disabled={
+                  collections.length === 0 ||
+                  !addCollectionId ||
+                  addCollectionMutation.isPending
+                }
+                sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
               >
                 {addCollectionMutation.isPending
                   ? t('lookup.save.additional.adding')
@@ -248,7 +318,12 @@ function SaveVocabularyForm({
             </Stack>
           </Paper>
         ) : null}
-      </Stack>
+        <CreateCollectionDialog
+          open={isCreateCollectionOpen}
+          onClose={() => setIsCreateCollectionOpen(false)}
+          onSuccess={handleCollectionCreated}
+        />
+      </>
     )
   }
 
@@ -257,105 +332,151 @@ function SaveVocabularyForm({
     : null
 
   return (
-    <Box
-      component="form"
-      onSubmit={submit}
-      autoComplete="off"
-      noValidate
-    >
-      <Stack spacing={2}>
-        {saveError?.status === 409 ? (
-          <Alert severity="info" aria-live="polite">
-            {t('lookup.save.alreadySaved')}
-          </Alert>
-        ) : saveMutation.error ? (
-          <Alert severity="error">
-            {t(saveErrorKey(saveMutation.error))}
-          </Alert>
-        ) : null}
+    <>
+      <Box
+        component="form"
+        onSubmit={submit}
+        autoComplete="off"
+        noValidate
+      >
+        <Paper variant="outlined" sx={savePanelSx}>
+          <Stack spacing={2.25}>
+            {saveError?.status === 409 ? (
+              <Alert severity="info" aria-live="polite">
+                {t('lookup.save.alreadySaved')}
+              </Alert>
+            ) : saveMutation.error ? (
+              <Alert severity="error">
+                {t(saveErrorKey(saveMutation.error))}
+              </Alert>
+            ) : null}
 
-        {isLoadingCollections ? (
-          <CircularProgress size={24} />
-        ) : collections.length === 0 ? (
-          <Alert severity="warning">
-            {t('lookup.save.noCollections')}
-          </Alert>
-        ) : (
-          <Controller
-            name="collectionIds"
-            control={control}
-            defaultValue={[collections[0]?.id].filter(Boolean)}
-            render={({ field }) => (
-              <FormControl
-                fullWidth
-                error={Boolean(errors.collectionIds)}
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                {t('lookup.save.additional.title')}
+              </Typography>
+              <Button
                 size="small"
+                onClick={() => setIsCreateCollectionOpen(true)}
               >
-                <InputLabel id="select-collections-label">
-                  {t('lookup.save.collectionsLabel')}
-                </InputLabel>
-                <Select
-                  labelId="select-collections-label"
-                  multiple
-                  value={field.value}
-                  onChange={field.onChange}
-                  input={
-                    <OutlinedInput label={t('lookup.save.collectionsLabel')} />
-                  }
-                  renderValue={(selected) =>
-                    collections
-                      .filter((c: CollectionListItem) => selected.includes(c.id))
-                      .map((c: CollectionListItem) => c.name)
-                      .join(', ')
-                  }
-                >
-                  {collections.map((col: CollectionListItem) => (
-                    <MenuItem key={col.id} value={col.id}>
-                      <Checkbox checked={field.value.includes(col.id)} />
-                      <ListItemText primary={col.name} />
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.collectionIds ? (
-                  <FormHelperText>
-                    {t('lookup.save.errors.collectionRequired')}
-                  </FormHelperText>
-                ) : (
-                  <FormHelperText>
-                    {t('lookup.save.collectionsHelp')}
-                  </FormHelperText>
-                )}
-              </FormControl>
-            )}
-          />
-        )}
+                {t('lookup.save.quickCreate.action')}
+              </Button>
+            </Stack>
 
-        <TextField
-          label={t('lookup.save.noteLabel')}
-          multiline
-          minRows={2}
-          error={Boolean(errors.personalNote)}
-          helperText={
-            errors.personalNote
-              ? t('lookup.save.errors.noteTooLong')
-              : t('lookup.save.noteHelp')
-          }
-          slotProps={{ htmlInput: { maxLength: 2_000 } }}
-          {...register('personalNote')}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={saveMutation.isPending || isLoadingCollections || collections.length === 0}
-          fullWidth
-        >
-          {saveMutation.isPending
-            ? t('lookup.save.saving')
-            : t('lookup.save.submit')}
-        </Button>
-      </Stack>
-    </Box>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1}
+              sx={{ alignItems: { xs: 'stretch', sm: 'flex-start' } }}
+            >
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                {isLoadingCollections ? (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      minHeight: 40,
+                    }}
+                  >
+                    <CircularProgress size={24} />
+                  </Box>
+                ) : collections.length > 0 ? (
+                  <Controller
+                    name="collectionIds"
+                    control={control}
+                    defaultValue={[collections[0]?.id].filter(Boolean)}
+                    render={({ field }) => (
+                      <FormControl
+                        fullWidth
+                        error={Boolean(errors.collectionIds)}
+                        size="small"
+                      >
+                        <InputLabel id="select-collections-label">
+                          {t('lookup.save.collectionsLabel')}
+                        </InputLabel>
+                        <Select
+                          labelId="select-collections-label"
+                          multiple
+                          value={field.value}
+                          onChange={field.onChange}
+                          input={
+                            <OutlinedInput label={t('lookup.save.collectionsLabel')} />
+                          }
+                          renderValue={(selected) =>
+                            collections
+                              .filter((c: CollectionListItem) => selected.includes(c.id))
+                              .map((c: CollectionListItem) => c.name)
+                              .join(', ')
+                          }
+                        >
+                          {collections.map((col: CollectionListItem) => (
+                            <MenuItem key={col.id} value={col.id}>
+                              <Checkbox checked={field.value.includes(col.id)} />
+                              <ListItemText primary={col.name} />
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.collectionIds ? (
+                          <FormHelperText>
+                            {t('lookup.save.errors.collectionRequired')}
+                          </FormHelperText>
+                        ) : (
+                          <FormHelperText>
+                            {t('lookup.save.collectionsHelp')}
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    )}
+                  />
+                ) : (
+                  <Box
+                    role="status"
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      minHeight: 40,
+                      px: 1.5,
+                      border: '1px solid',
+                      borderColor: 'warning.light',
+                      borderRadius: 1,
+                      bgcolor: 'background.paper',
+                    }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      {t('lookup.save.noCollections')}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                size="small"
+                disabled={
+                  saveMutation.isPending ||
+                  isLoadingCollections ||
+                  collections.length === 0
+                }
+                sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+              >
+                {saveMutation.isPending
+                  ? t('lookup.save.saving')
+                  : t('lookup.save.submit')}
+              </Button>
+            </Stack>
+          </Stack>
+        </Paper>
+      </Box>
+      <CreateCollectionDialog
+        open={isCreateCollectionOpen}
+        onClose={() => setIsCreateCollectionOpen(false)}
+        onSuccess={handleCollectionCreated}
+      />
+    </>
   )
 }
 

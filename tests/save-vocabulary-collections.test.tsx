@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -27,7 +27,6 @@ const mockCollectionsList: CollectionListData = {
     {
       id: collectionId1,
       name: 'Environment',
-      description: 'Environment terms',
       createdAt: '2026-07-20T10:00:00.000Z',
       updatedAt: '2026-07-20T10:00:00.000Z',
       vocabularyCount: 5,
@@ -35,7 +34,6 @@ const mockCollectionsList: CollectionListData = {
     {
       id: collectionId2,
       name: 'Science',
-      description: 'Science terms',
       createdAt: '2026-07-21T10:00:00.000Z',
       updatedAt: '2026-07-21T10:00:00.000Z',
       vocabularyCount: 2,
@@ -46,6 +44,16 @@ const mockCollectionsList: CollectionListData = {
     limit: 100,
     total: 2,
     totalPages: 1,
+  },
+}
+
+const mockEmptyCollectionsList: CollectionListData = {
+  items: [],
+  meta: {
+    page: 1,
+    limit: 100,
+    total: 0,
+    totalPages: 0,
   },
 }
 
@@ -103,7 +111,6 @@ describe('Save Vocabulary with Collections', () => {
         id: userVocabularyId,
         articleSentenceTermId: termId,
         learningStatus: 'NEW',
-        personalNote: null,
         savedWordDisplay: 'harmful',
         savedLemma: 'harmful',
         savedPartOfSpeech: 'adjective',
@@ -129,13 +136,11 @@ describe('Save Vocabulary with Collections', () => {
 
   it('validates saveVocabularyFormSchema requires at least one collectionId', () => {
     const invalidResult = saveVocabularyFormSchema.safeParse({
-      personalNote: 'Test note',
       collectionIds: [],
     })
     expect(invalidResult.success).toBe(false)
 
     const validResult = saveVocabularyFormSchema.safeParse({
-      personalNote: 'Test note',
       collectionIds: [collectionId1],
     })
     expect(validResult.success).toBe(true)
@@ -143,6 +148,43 @@ describe('Save Vocabulary with Collections', () => {
       const req = toSaveVocabularyRequest(termId, validResult.data)
       expect(req.collectionIds).toEqual([collectionId1])
     }
+  })
+
+  it('shows the empty collection message in the collection selection area', async () => {
+    vi.spyOn(readingApi, 'term').mockResolvedValue(mockUnsavedLookup)
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+    })
+    queryClient.setQueryData(
+      readingQueryKeys.term(articleId, termId),
+      mockUnsavedLookup,
+    )
+    queryClient.setQueryData(
+      collectionQueryKeys.list({ limit: 100 }),
+      mockEmptyCollectionsList,
+    )
+
+    render(
+      <ThemeProvider theme={appTheme}>
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter>
+            <ContextualTermDrawer
+              open={true}
+              articleId={articleId}
+              termId={termId}
+              onClose={() => {}}
+            />
+          </MemoryRouter>
+        </QueryClientProvider>
+      </ThemeProvider>,
+    )
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      "You don't have any collections yet. Create one to save vocabulary.",
+    )
+    expect(screen.getByRole('button', { name: 'Create collection' })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Save Vocabulary' })).toBeDisabled()
   })
 
   it('renders collection selection and saves vocabulary with collectionIds', async () => {
@@ -221,7 +263,7 @@ describe('Save Vocabulary with Collections', () => {
       </ThemeProvider>,
     )
 
-    expect(await screen.findByText('Add to another Collection')).toBeInTheDocument()
+    expect(await screen.findByText('Add your vocab into collection')).toBeInTheDocument()
 
     const selectCombobox = screen.getByRole('combobox')
     const user = userEvent.setup()
@@ -237,5 +279,103 @@ describe('Save Vocabulary with Collections', () => {
       userVocabularyId,
     ])
     expect(await screen.findByText('Added to collection successfully!')).toBeInTheDocument()
+  })
+
+  it('creates a collection from lookup and saves an unsaved word into it', async () => {
+    vi.spyOn(readingApi, 'term').mockResolvedValue(mockUnsavedLookup)
+    vi.spyOn(collectionsApi, 'create').mockResolvedValue({
+      collection: {
+        id: '550e8400-e29b-41d4-a716-446655440012',
+        name: 'Travel',
+        createdAt: '2026-08-25T10:00:00.000Z',
+        updatedAt: '2026-08-25T10:00:00.000Z',
+        vocabularyCount: 0,
+      },
+    })
+
+    render(
+      <ThemeProvider theme={appTheme}>
+        <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+          <MemoryRouter>
+            <ContextualTermDrawer
+              open={true}
+              articleId={articleId}
+              termId={termId}
+              onClose={() => {}}
+            />
+          </MemoryRouter>
+        </QueryClientProvider>
+      </ThemeProvider>,
+    )
+
+    const user = userEvent.setup()
+    await user.click(
+      await screen.findByRole('button', { name: 'Create collection' }),
+    )
+    await user.type(
+      await screen.findByLabelText('Collection Name'),
+      'Travel',
+    )
+    await user.click(
+      screen.getByRole('button', { name: 'Create Collection', exact: true }),
+    )
+
+    await waitFor(() => {
+      expect(vocabulariesApi.save).toHaveBeenCalledWith({
+        articleSentenceTermId: termId,
+        collectionIds: ['550e8400-e29b-41d4-a716-446655440012'],
+      })
+    })
+  })
+
+  it('creates a collection from lookup and adds an already saved word into it', async () => {
+    vi.spyOn(readingApi, 'term').mockResolvedValue(mockSavedLookup)
+    vi.spyOn(collectionsApi, 'create').mockResolvedValue({
+      collection: {
+        id: '550e8400-e29b-41d4-a716-446655440012',
+        name: 'Travel',
+        createdAt: '2026-08-25T10:00:00.000Z',
+        updatedAt: '2026-08-25T10:00:00.000Z',
+        vocabularyCount: 0,
+      },
+    })
+    vi.spyOn(collectionsApi, 'addItems').mockResolvedValue({
+      addedCount: 1,
+      skippedCount: 0,
+    })
+
+    render(
+      <ThemeProvider theme={appTheme}>
+        <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+          <MemoryRouter>
+            <ContextualTermDrawer
+              open={true}
+              articleId={articleId}
+              termId={termId}
+              onClose={() => {}}
+            />
+          </MemoryRouter>
+        </QueryClientProvider>
+      </ThemeProvider>,
+    )
+
+    const user = userEvent.setup()
+    await user.click(
+      await screen.findByRole('button', { name: 'Create collection' }),
+    )
+    await user.type(
+      await screen.findByLabelText('Collection Name'),
+      'Travel',
+    )
+    await user.click(
+      screen.getByRole('button', { name: 'Create Collection', exact: true }),
+    )
+
+    await waitFor(() => {
+      expect(collectionsApi.addItems).toHaveBeenCalledWith(
+        '550e8400-e29b-41d4-a716-446655440012',
+        [userVocabularyId],
+      )
+    })
   })
 })

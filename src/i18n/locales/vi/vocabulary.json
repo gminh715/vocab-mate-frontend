@@ -16,10 +16,19 @@
   "sidebar": {
     "title": "Bộ Sưu Tập",
     "createTooltip": "Tạo bộ sưu tập mới",
-    "allVocabulary": "Tất Cả Từ Vựng"
+    "allVocabulary": "Tất Cả Từ Vựng",
+    "deleteTooltip": "Xóa {{name}}",
+    "deleteDialog": {
+      "title": "Xóa bộ sưu tập?",
+      "description": "\"{{name}}\" và các từ trong bộ sưu tập này sẽ bị gỡ liên kết. Từ vựng đã lưu và lịch sử Ôn tập hằng ngày vẫn được giữ lại.",
+      "cancel": "Hủy",
+      "confirm": "Xóa bộ sưu tập",
+      "deleting": "Đang xóa…",
+      "error": "Không thể xóa bộ sưu tập này. Vui lòng thử lại."
+    }
   },
   "filterBar": {
-    "searchPlaceholder": "Tìm từ, dạng gốc, ghi chú hoặc nghĩa…",
+    "searchPlaceholder": "Tìm từ, dạng gốc hoặc nghĩa…",
     "filtersButton": "Bộ lọc",
     "clearAll": "Xóa tất cả",
     "popoverTitle": "Bộ lọc",
@@ -43,7 +52,6 @@
     "viewDueItems": "Xem Từ Đến Hạn"
   },
   "card": {
-    "noteLabel": "Ghi chú:",
     "dueChip": "Đến hạn",
     "detailsButton": "Chi tiết",
     "deleteTooltip": "Xóa từ đã lưu",
@@ -62,7 +70,6 @@
     "colPos": "Từ loại / Cấp độ",
     "colMeaning": "Nghĩa & Ví dụ",
     "colActions": "Hành động",
-    "notePrefix": "Ghi chú: ",
     "listenTooltip": "Nghe phát âm",
     "listenAriaLabel": "Nghe phát âm {{word}}",
     "detailsTooltip": "Xem chi tiết / Chỉnh sửa",
@@ -102,9 +109,6 @@
     "namePlaceholder": "Ví dụ: Công nghệ, Kinh doanh, Tiếng lóng hàng ngày…",
     "nameRequired": "Tên bộ sưu tập là bắt buộc.",
     "nameTooLong": "Tên không được vượt quá 100 ký tự.",
-    "descriptionLabel": "Mô tả (tùy chọn)",
-    "descriptionPlaceholder": "Ghi chú ngắn về các từ thuộc bộ sưu tập này…",
-    "descriptionTooLong": "Mô tả không được vượt quá 500 ký tự.",
     "cancel": "Hủy",
     "creating": "Đang tạo…",
     "submit": "Tạo Bộ Sưu Tập",

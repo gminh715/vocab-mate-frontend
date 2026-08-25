@@ -10,6 +10,7 @@ interface ConfirmationDialogProps {
   open: boolean
   title: string
   description: string
+  cancelLabel?: string
   confirmLabel: string
   pendingLabel?: string
   isPending?: boolean
@@ -22,6 +23,7 @@ export function ConfirmationDialog({
   open,
   title,
   description,
+  cancelLabel = 'Cancel',
   confirmLabel,
   pendingLabel = 'Saving…',
   isPending = false,
@@ -54,7 +56,7 @@ export function ConfirmationDialog({
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2.5 }}>
         <Button onClick={onCancel} color="inherit" disabled={isPending}>
-          Cancel
+          {cancelLabel}
         </Button>
         <Button
           onClick={onConfirm}

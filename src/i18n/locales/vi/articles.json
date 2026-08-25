@@ -121,15 +121,16 @@
     },
     "save": {
       "alreadySaved": "Từ này đã được lưu. Đang cập nhật trạng thái…",
-      "noCollections": "Bạn chưa có bộ sưu tập nào. Hãy tạo một bộ sưu tập trước khi lưu từ.",
+      "noCollections": "Bạn chưa có bộ sưu tập nào. Hãy tạo một bộ sưu tập để lưu từ.",
+      "quickCreate": {
+        "action": "Tạo bộ sưu tập"
+      },
       "collectionsLabel": "Bộ sưu tập (bắt buộc)",
       "collectionsHelp": "Chọn một hoặc nhiều bộ sưu tập để thêm từ này.",
-      "noteLabel": "Ghi chú cá nhân (không bắt buộc)",
-      "noteHelp": "Thêm ghi chú cho lần xuất hiện của từ trong ngữ cảnh này.",
       "saving": "Đang lưu…",
       "submit": "Lưu từ vựng",
       "additional": {
-        "title": "Thêm vào bộ sưu tập khác",
+        "title": "Thêm từ vựng vào bộ sưu tập",
         "selectLabel": "Chọn bộ sưu tập",
         "adding": "Đang thêm…",
         "add": "Thêm",
@@ -141,8 +142,7 @@
         "signIn": "Hãy đăng nhập để lưu từ vựng.",
         "collectionsUnavailable": "Một hoặc nhiều bộ sưu tập đã chọn không còn khả dụng. Hãy kiểm tra và thử lại.",
         "generic": "Không thể lưu từ vựng. Vui lòng thử lại.",
-        "collectionRequired": "Hãy chọn ít nhất một bộ sưu tập hợp lệ.",
-        "noteTooLong": "Ghi chú cá nhân không được vượt quá 2.000 ký tự."
+        "collectionRequired": "Hãy chọn ít nhất một bộ sưu tập hợp lệ."
       }
     }
   },

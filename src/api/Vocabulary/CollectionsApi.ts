@@ -9,7 +9,6 @@ const collectionsPath = '/collections'
 
 export interface CreateCollectionRequest {
   name: string
-  description?: string
 }
 
 export interface CreateCollectionResponse {
@@ -32,6 +31,11 @@ export const collectionsApi = {
   ): Promise<CreateCollectionResponse> =>
     apiClient.post<CreateCollectionResponse>(collectionsPath, request),
 
+  remove: (collectionId: string): Promise<void> =>
+    apiClient.deleteNoContent(
+      `${collectionsPath}/${encodeURIComponent(collectionId)}`,
+    ),
+
   addItems: (
     collectionId: string,
     userVocabularyIds: string[],
@@ -49,4 +53,3 @@ export const collectionsApi = {
       `${collectionsPath}/${encodeURIComponent(collectionId)}/items/${encodeURIComponent(userVocabularyId)}`,
     ),
 }
-

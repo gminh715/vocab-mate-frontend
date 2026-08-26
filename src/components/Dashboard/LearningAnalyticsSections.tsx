@@ -115,9 +115,9 @@ function AnalyticsFiltersPanel({
       component="section"
       aria-labelledby="analytics-filter-title"
       variant="outlined"
-      sx={{ p: { xs: 2, md: 2.25 }, borderRadius: 3 }}
+      sx={{ px: { xs: 2, md: 2.25 }, py: 1.5, borderRadius: 3 }}
     >
-      <Stack spacing={2}>
+      <Stack spacing={showCustom ? 1.5 : 0}>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           spacing={1.5}
@@ -267,7 +267,6 @@ function AnalyticsFiltersPanel({
 
 function SectionShell({
   id,
-  eyebrow,
   title,
   refreshingLabel,
   loadingLabel,
@@ -281,7 +280,6 @@ function SectionShell({
   children,
 }: {
   id: string
-  eyebrow: string
   title: string
   description?: string
   refreshingLabel: string
@@ -314,22 +312,10 @@ function SectionShell({
       <Stack spacing={2.5} sx={{ p: { xs: 2.25, md: 3 } }}>
         <Box>
           <Typography
-            sx={{
-              color: 'primary.main',
-              fontSize: 11,
-              fontWeight: 850,
-              letterSpacing: '0.13em',
-              textTransform: 'uppercase',
-            }}
-          >
-            {eyebrow}
-          </Typography>
-          <Typography
             id={`${id}-title`}
             component="h2"
             variant="h2"
             sx={{
-              mt: 0.5,
               scrollMarginTop: 16,
               fontSize: { xs: 28, md: 34 },
               textWrap: 'balance',
@@ -383,7 +369,7 @@ function SectionShell({
 function MetricStrip({
   items,
 }: {
-  items: Array<{ label: string; value: string; detail: string }>
+  items: Array<{ label: string; value: string; detail?: string }>
 }) {
   return (
     <Box
@@ -426,9 +412,11 @@ function MetricStrip({
           >
             {item.value}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.75 }}>
-            {item.detail}
-          </Typography>
+          {item.detail ? (
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.75 }}>
+              {item.detail}
+            </Typography>
+          ) : null}
         </Box>
       ))}
     </Box>
@@ -443,6 +431,110 @@ interface DistributionItem {
   supportingLabel?: string
 }
 
+const distributionColors = ['#176B4B', '#B66A2C', '#4B6B9C', '#8A5A98', '#B48A1E'] as const
+
+const pointOnCircle = (center: number, radius: number, angle: number) => ({
+  x: center + radius * Math.cos(angle),
+  y: center + radius * Math.sin(angle),
+})
+
+const pieSlicePath = (
+  center: number,
+  radius: number,
+  startAngle: number,
+  endAngle: number,
+) => {
+  const start = pointOnCircle(center, radius, startAngle)
+  const end = pointOnCircle(center, radius, endAngle)
+  const largeArc = endAngle - startAngle > Math.PI ? 1 : 0
+
+  return [
+    `M ${center} ${center}`,
+    `L ${start.x.toFixed(2)} ${start.y.toFixed(2)}`,
+    `A ${radius} ${radius} 0 ${largeArc} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`,
+    'Z',
+  ].join(' ')
+}
+
+function PieDistribution({ items, title }: { items: DistributionItem[]; title: string }) {
+  const coloredItems = items.map((item, index) => ({
+    ...item,
+    color: distributionColors[index % distributionColors.length],
+  }))
+  const visibleItems = coloredItems.filter((item) => item.value > 0)
+  const total = visibleItems.reduce((sum, item) => sum + item.value, 0)
+
+  return (
+    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 2, alignItems: 'center' }}>
+      <Box
+        component="svg"
+        role="img"
+        aria-label={title}
+        viewBox="0 0 180 180"
+        sx={{ width: 180, height: 180, flex: '0 0 auto' }}
+      >
+        {visibleItems.map((item, index) => {
+          const sliceAngle = (item.value / total) * Math.PI * 2
+          const precedingValue = visibleItems
+            .slice(0, index)
+            .reduce((sum, precedingItem) => sum + precedingItem.value, 0)
+          const startAngle = -Math.PI / 2 + (precedingValue / total) * Math.PI * 2
+          const endAngle = startAngle + sliceAngle
+
+          return sliceAngle === Math.PI * 2 ? (
+            <circle key={item.key} cx="90" cy="90" r="82" fill={item.color}>
+              <title>{`${item.label}: ${item.valueLabel}`}</title>
+            </circle>
+          ) : (
+            <path
+              key={item.key}
+              d={pieSlicePath(90, 82, startAngle, endAngle)}
+              fill={item.color}
+            >
+              <title>{`${item.label}: ${item.valueLabel}`}</title>
+            </path>
+          )
+        })}
+      </Box>
+      <Stack
+        component="ul"
+        aria-label={`${title} legend`}
+        spacing={1}
+        sx={{ m: 0, p: 0, width: '100%', listStyle: 'none' }}
+      >
+        {coloredItems.map((item) => (
+          <Stack
+            component="li"
+            key={item.key}
+            direction="row"
+            spacing={1}
+            sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', minWidth: 0 }}>
+              <Box
+                aria-hidden="true"
+                sx={{
+                  width: 10,
+                  height: 10,
+                  flex: '0 0 auto',
+                  borderRadius: '50%',
+                  bgcolor: item.color,
+                }}
+              />
+              <Typography variant="body2" noWrap sx={{ fontWeight: 750 }}>
+                {item.label}
+              </Typography>
+            </Stack>
+            <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+              {item.valueLabel}
+            </Typography>
+          </Stack>
+        ))}
+      </Stack>
+    </Stack>
+  )
+}
+
 function DistributionPanel({
   title,
   summary,
@@ -450,6 +542,7 @@ function DistributionPanel({
   scaleMaximum,
   empty,
   emptyMessage,
+  variant = 'bars',
 }: {
   title: string
   summary?: string
@@ -457,6 +550,7 @@ function DistributionPanel({
   scaleMaximum?: number
   empty?: boolean
   emptyMessage?: string
+  variant?: 'bars' | 'pie'
 }) {
   const { t } = useTranslation('analytics')
   const dataMaximum = items.reduce(
@@ -479,6 +573,8 @@ function DistributionPanel({
         <Typography color="text.secondary" sx={{ mt: 2 }}>
           {emptyMessage ?? t('vocabulary.noDistributionActivity')}
         </Typography>
+      ) : variant === 'pie' ? (
+        <PieDistribution items={items} title={title} />
       ) : (
         <Stack component="ul" spacing={1.5} sx={{ m: 0, mt: 2, p: 0, listStyle: 'none' }}>
           {items.map((item) => (
@@ -617,10 +713,8 @@ const niceCountMaximum = (value: number): number => {
 
 function VocabularyTrendChart({
   items,
-  summary,
 }: {
   items: VocabularyTrendBucket[]
-  summary?: string
 }) {
   const chart = useMemo(() => {
     const width = 720
@@ -691,11 +785,6 @@ function VocabularyTrendChart({
         >
           {t('vocabulary.savedTrend')}
         </Typography>
-        {summary ? (
-          <Typography id="vocabulary-trend-summary" variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            {summary}
-          </Typography>
-        ) : null}
       </Box>
       {hasActivity ? (
         <>
@@ -722,7 +811,7 @@ function VocabularyTrendChart({
             <Box
               component="svg"
               role="img"
-              aria-labelledby="vocabulary-trend-title vocabulary-trend-summary"
+              aria-labelledby="vocabulary-trend-title"
               viewBox={`0 0 ${chart.width} ${chart.height}`}
               preserveAspectRatio="xMidYMid meet"
               sx={{
@@ -892,11 +981,6 @@ function ReadingTrendChart({
         <Typography id="reading-trend-title" component="h3" sx={{ fontWeight: 850 }}>
           {t('reading.readingActivityTrend')}
         </Typography>
-        {summary ? (
-          <Typography id="reading-trend-summary" variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            {summary}
-          </Typography>
-        ) : null}
       </Box>
       {hasActivity ? (
         <>
@@ -935,7 +1019,12 @@ function ReadingTrendChart({
             <Box
               component="svg"
               role="img"
-              aria-labelledby="reading-trend-title reading-trend-summary"
+              aria-label={
+                summary
+                  ? `${t('reading.readingActivityTrend')} ${summary}`
+                  : undefined
+              }
+              aria-labelledby={summary ? undefined : 'reading-trend-title'}
               viewBox={`0 0 ${chart.width} ${chart.height}`}
               preserveAspectRatio="xMidYMid meet"
               sx={{
@@ -1058,17 +1147,6 @@ function VocabularyAnalyticsContent({
   data: VocabularyAnalytics
 }) {
   const { t } = useTranslation('analytics')
-  const statusSummary = data.byStatus
-    .map((item) => `${learningStatusLabel(item.status)} ${integerFormatter.format(item.count)}`)
-    .join(', ')
-  const cefrSummary = data.byCefr
-    .map((item) => `${cefrLevelLabel(item.cefrLevel)} ${integerFormatter.format(item.count)}`)
-    .join(', ')
-  const trendTotal = data.savedTrend.reduce(
-    (total, item) => total + item.count,
-    0,
-  )
-
   return (
     <Stack spacing={2}>
       <MetricStrip
@@ -1099,8 +1177,8 @@ function VocabularyAnalyticsContent({
       >
         <DistributionPanel
           title={t('vocabulary.learningStatus')}
-          summary={`Status totals: ${statusSummary}.`}
           emptyMessage={t('vocabulary.noDistributionActivity')}
+          variant="pie"
           items={data.byStatus.map((item) => ({
             key: item.status,
             label: learningStatusLabel(item.status),
@@ -1110,8 +1188,8 @@ function VocabularyAnalyticsContent({
         />
         <DistributionPanel
           title={t('vocabulary.cefrDistribution')}
-          summary={`Saved vocabulary by level: ${cefrSummary}.`}
           emptyMessage={t('vocabulary.noDistributionActivity')}
+          variant="pie"
           items={data.byCefr.map((item) => ({
             key: item.cefrLevel,
             label: cefrLevelLabel(item.cefrLevel),
@@ -1122,7 +1200,6 @@ function VocabularyAnalyticsContent({
       </Box>
       <VocabularyTrendChart
         items={data.savedTrend}
-        summary={`${integerFormatter.format(trendTotal)} vocabulary saves across ${integerFormatter.format(data.savedTrend.length)} time buckets. Backend bucket order is preserved.`}
       />
     </Stack>
   )
@@ -1130,12 +1207,6 @@ function VocabularyAnalyticsContent({
 
 function ReadingAnalyticsContent({ data }: { data: ReadingAnalytics }) {
   const { t } = useTranslation('analytics')
-  const categorySummary = data.byCategory
-    .map(
-      (item) =>
-        `${item.categoryName}: ${integerFormatter.format(item.completed)} of ${integerFormatter.format(item.opened)} completed`,
-    )
-    .join('; ')
   return (
     <Stack spacing={2}>
       <MetricStrip
@@ -1143,27 +1214,19 @@ function ReadingAnalyticsContent({ data }: { data: ReadingAnalytics }) {
           {
             label: t('reading.articlesOpened'),
             value: integerFormatter.format(data.opened),
-            detail: t('reading.articlesOpenedDetail'),
           },
           {
             label: t('reading.articlesCompleted'),
             value: integerFormatter.format(data.completed),
-            detail: t('reading.articlesCompletedDetail'),
           },
           {
             label: t('reading.completionRate'),
             value: formatAnalyticsRatio(data.completionRate),
-            detail: data.opened === 0 ? t('reading.completionRateDetailEmpty') : t('reading.completionRateDetail'),
           },
         ]}
       />
       <DistributionPanel
         title={t('reading.byCategory')}
-        summary={
-          categorySummary
-            ? `Category summary: ${categorySummary}. Archived article history remains included.`
-            : 'No category activity was returned. Archived article history remains eligible.'
-        }
         emptyMessage={t('reading.noTrendActivity')}
         items={data.byCategory.map((item) => ({
           key: item.categoryId,
@@ -1417,12 +1480,12 @@ export function LearningAnalyticsSections() {
           onChange={(_, newValue: number) =>
             updateFilters({ section: ANALYTICS_SECTIONS[newValue] })
           }
-          variant="scrollable"
-          scrollButtons="auto"
-          allowScrollButtonsMobile
+          variant="fullWidth"
           sx={{
             minHeight: 48,
             '& .MuiTab-root': {
+              flex: 1,
+              minWidth: 0,
               fontWeight: 700,
               fontSize: 14,
               textTransform: 'none',
@@ -1460,7 +1523,6 @@ export function LearningAnalyticsSections() {
           id="vocabulary-analytics"
           tabPanelId="analytics-tabpanel-0"
           tabLabelledBy="analytics-tab-0"
-          eyebrow={t('sections.vocabulary.eyebrow')}
           title={t('sections.vocabulary.title')}
           refreshingLabel={t('sections.vocabulary.refreshingLabel')}
           loadingLabel={t('sections.vocabulary.loadingLabel')}
@@ -1481,7 +1543,6 @@ export function LearningAnalyticsSections() {
           id="reading-analytics"
           tabPanelId="analytics-tabpanel-1"
           tabLabelledBy="analytics-tab-1"
-          eyebrow={t('sections.reading.eyebrow')}
           title={t('sections.reading.title')}
           refreshingLabel={t('sections.reading.refreshingLabel')}
           loadingLabel={t('sections.reading.loadingLabel')}
@@ -1502,7 +1563,6 @@ export function LearningAnalyticsSections() {
           id="review-analytics"
           tabPanelId="analytics-tabpanel-2"
           tabLabelledBy="analytics-tab-2"
-          eyebrow={t('sections.review.eyebrow')}
           title={t('sections.review.title')}
           refreshingLabel={t('sections.review.refreshingLabel')}
           loadingLabel={t('sections.review.loadingLabel')}

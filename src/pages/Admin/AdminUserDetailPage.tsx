@@ -312,17 +312,6 @@ export function AdminUserDetailPage() {
           {displayName.charAt(0).toUpperCase()}
         </Avatar>
         <Stack spacing={0.5}>
-          <Typography
-            sx={{
-              color: 'primary.main',
-              fontSize: 12,
-              fontWeight: 800,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}
-          >
-            User details
-          </Typography>
           <Typography variant="h1" sx={{ fontSize: { xs: 36, md: 48 } }}>
             {displayName}
           </Typography>

@@ -13,7 +13,11 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import type { LearningStatus, VocabularyListItem } from '@/types/Vocabulary/vocabulary'
+import type {
+  LearningStatus,
+  VocabularyCollectionSummary,
+  VocabularySnapshot,
+} from '@/types/Vocabulary/vocabulary'
 import { vocabularyDetailPath } from '@/utils/paths'
 
 const statusColorMap: Record<
@@ -37,7 +41,9 @@ const cefrColorMap: Record<string, string> = {
 }
 
 interface VocabularyItemCardProps {
-  item: VocabularyListItem
+  item: VocabularySnapshot & {
+    collections?: VocabularyCollectionSummary[]
+  }
   onDelete: (id: string) => void
   isDeleting?: boolean
 }
@@ -140,7 +146,7 @@ export function VocabularyItemCard({
           {item.savedMeaningVi}
         </Typography>
 
-        {item.collections.length > 0 ? (
+        {item.collections && item.collections.length > 0 ? (
           <Stack direction="row" spacing={0.75} sx={{ flexWrap: 'wrap' }} useFlexGap>
             {item.collections.map((col) => (
               <Chip

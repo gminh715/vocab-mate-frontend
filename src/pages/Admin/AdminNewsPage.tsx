@@ -227,20 +227,9 @@ export function AdminNewsPage() {
       >
         <Box>
           <Typography
-            sx={{
-              color: 'primary.main',
-              fontSize: 12,
-              fontWeight: 800,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Guardian intake
-          </Typography>
-          <Typography
             component="h1"
             variant="h1"
-            sx={{ mt: 0.75, fontSize: { xs: 34, md: 46 } }}
+            sx={{ fontSize: { xs: 34, md: 46 } }}
           >
             Find source articles
           </Typography>

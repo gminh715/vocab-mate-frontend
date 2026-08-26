@@ -1,5 +1,7 @@
 import { createTheme } from '@mui/material/styles'
 
+const componentBorderRadius = 21
+
 export const appTheme = createTheme({
   palette: {
     mode: 'light',
@@ -72,7 +74,49 @@ export const appTheme = createTheme({
       styleOverrides: {
         root: {
           minHeight: 44,
-          borderRadius: 12,
+          borderRadius: componentBorderRadius,
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: componentBorderRadius,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: componentBorderRadius,
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: componentBorderRadius,
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          borderRadius: componentBorderRadius,
+        },
+      },
+    },
+    MuiPopover: {
+      styleOverrides: {
+        paper: {
+          borderRadius: componentBorderRadius,
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: componentBorderRadius,
         },
       },
     },
@@ -97,6 +141,7 @@ export const appTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#FFFFFF',
+          borderRadius: componentBorderRadius,
         },
       },
     },

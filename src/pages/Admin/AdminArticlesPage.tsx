@@ -144,17 +144,6 @@ export function AdminArticlesPage() {
         }}
       >
         <Stack spacing={1} sx={{ maxWidth: 760 }}>
-          <Typography
-            sx={{
-              color: 'primary.main',
-              fontSize: 12,
-              fontWeight: 800,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Editorial desk
-          </Typography>
           <Typography variant="h1" sx={{ fontSize: { xs: 36, md: 48 } }}>
             Articles
           </Typography>

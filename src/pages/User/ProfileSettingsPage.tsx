@@ -195,9 +195,9 @@ export function ProfileSettingsPage() {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: { xs: 'column', md: 'row' },
-        gap: { xs: 3, md: 4 },
-        alignItems: 'flex-start',
+        flexDirection: 'column',
+        gap: 3,
+        alignItems: 'stretch',
       }}
     >
       <SettingsNavigation />

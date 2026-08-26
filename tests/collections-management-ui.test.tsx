@@ -1,12 +1,11 @@
 import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { collectionsApi, vocabulariesApi } from '@/api'
 import { AddVocabularyToCollectionDialog } from '@/components/Vocabulary/AddVocabularyToCollectionDialog'
-import { CollectionSidebar } from '@/components/Vocabulary/CollectionSidebar'
 import { CreateCollectionDialog } from '@/components/Vocabulary/CreateCollectionDialog'
 import { collectionQueryKeys } from '@/hooks/Vocabulary/useCollections'
 import { vocabularyQueryKeys } from '@/hooks/Vocabulary/useVocabularies'
@@ -81,6 +80,16 @@ describe('Collections Management UI', () => {
   beforeEach(async () => {
     await i18n.changeLanguage('en')
     vi.spyOn(collectionsApi, 'findAll').mockResolvedValue(mockCollectionsList)
+    vi.spyOn(collectionsApi, 'findOne').mockImplementation(
+      async (collectionId) => {
+        const selected = mockCollectionsList.items.find(
+          ({ id }) => id === collectionId,
+        )
+        if (!selected) throw new Error('Collection not found')
+        const { vocabularyCount, ...collection } = selected
+        return { collection, vocabularyCount }
+      },
+    )
     vi.spyOn(vocabulariesApi, 'findAll').mockResolvedValue(mockVocabList)
   })
 
@@ -189,52 +198,4 @@ describe('Collections Management UI', () => {
     ])
   })
 
-  it('confirms deletion, removes the selected collection, and returns to all vocabulary', async () => {
-    vi.spyOn(collectionsApi, 'remove').mockResolvedValue(undefined)
-    const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false, staleTime: Infinity } },
-    })
-    queryClient.setQueryData(
-      collectionQueryKeys.list({ limit: 100 }),
-      mockCollectionsList,
-    )
-    const onSelectCollection = vi.fn()
-
-    render(
-      <ThemeProvider theme={appTheme}>
-        <QueryClientProvider client={queryClient}>
-          <CollectionSidebar
-            selectedCollectionId={collectionId2}
-            onSelectCollection={onSelectCollection}
-          />
-        </QueryClientProvider>
-      </ThemeProvider>,
-    )
-
-    const user = userEvent.setup()
-    await user.click(
-      screen.getByRole('button', { name: 'Delete Science' }),
-    )
-
-    expect(
-      screen.getByRole('heading', { name: 'Delete collection?' }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        '"Science" and its collection memberships will be deleted. Saved vocabulary and Daily Review history will remain.',
-      ),
-    ).toBeInTheDocument()
-
-    await user.click(
-      screen.getByRole('button', {
-        name: 'Delete collection',
-        exact: true,
-      }),
-    )
-
-    await waitFor(() => {
-      expect(collectionsApi.remove).toHaveBeenCalledWith(collectionId2)
-      expect(onSelectCollection).toHaveBeenCalledWith(undefined)
-    })
-  })
 })

@@ -1,33 +1,48 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
 import Pagination from '@mui/material/Pagination'
 import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Tooltip from '@mui/material/Tooltip'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTheme } from '@mui/material/styles'
 import { useTranslation } from 'react-i18next'
 import { CollectionSidebar } from '@/components/Vocabulary/CollectionSidebar'
-import { DueVocabularyHeader } from '@/components/Vocabulary/DueVocabularyHeader'
+import { AddVocabularyToCollectionDialog } from '@/components/Vocabulary/AddVocabularyToCollectionDialog'
+import { BookOpenIcon } from '@/components/Dashboard/DashboardIcons'
 import { VocabularyFilterBar } from '@/components/Vocabulary/VocabularyFilterBar'
 import { VocabularyItemCard } from '@/components/Vocabulary/VocabularyItemCard'
 import { VocabularyItemTable } from '@/components/Vocabulary/VocabularyItemTable'
 import {
   useDeleteVocabularyMutation,
   useDeleteVocabulariesMutation,
-  useVocabulariesQuery,
 } from '@/hooks/Vocabulary/useVocabularies'
-import type { GetVocabulariesQueryParams } from '@/types/Vocabulary/vocabulary'
 import {
+  useCollectionDetailQuery,
+  useCollectionItemsQuery,
+  useCollectionsQuery,
+  useDeleteCollectionMutation,
+} from '@/hooks/Vocabulary/useCollections'
+import { RenameCollectionDialog } from '@/components/Vocabulary/RenameCollectionDialog'
+import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
+import type {
+  CollectionListItem,
+  GetVocabulariesQueryParams,
+} from '@/types/Vocabulary/vocabulary'
+import {
+  collectionItemsParamsFromVocabularyParams,
   vocabularyParamsFromSearchParams,
   vocabularySearchParamsFromParams,
 } from '@/utils/Vocabulary/vocabularyParams'
+import { reviewStartPath } from '@/utils/paths'
 
 export function SavedVocabularyPage() {
   const { t } = useTranslation('vocabulary')
@@ -36,18 +51,37 @@ export function SavedVocabularyPage() {
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'))
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const [bulkDeleteError, setBulkDeleteError] = useState(false)
+  const [collectionToRename, setCollectionToRename] =
+    useState<CollectionListItem | null>(null)
+  const [collectionToDelete, setCollectionToDelete] =
+    useState<CollectionListItem | null>(null)
+  const [deleteCollectionError, setDeleteCollectionError] = useState<string | null>(null)
+  const [isAddVocabularyOpen, setIsAddVocabularyOpen] = useState(false)
 
   const currentParams = vocabularyParamsFromSearchParams(searchParams)
-
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-  } = useVocabulariesQuery(currentParams)
+  const collectionsQuery = useCollectionsQuery({ limit: 100 })
+  const selectedCollectionId =
+    currentParams.collectionId ?? collectionsQuery.data?.items[0]?.id ?? ''
+  const collectionItemsParams =
+    collectionItemsParamsFromVocabularyParams(currentParams)
+  const collectionItemsQuery = useCollectionItemsQuery(
+    selectedCollectionId,
+    collectionItemsParams,
+  )
+  const collectionDetailQuery = useCollectionDetailQuery(selectedCollectionId)
+  const selectedCollection: CollectionListItem | undefined = collectionDetailQuery.data
+    ? {
+        ...collectionDetailQuery.data.collection,
+        vocabularyCount: collectionDetailQuery.data.vocabularyCount,
+      }
+    : collectionsQuery.data?.items.find(({ id }) => id === selectedCollectionId)
+  const data = collectionItemsQuery.data
+  const isLoading = collectionsQuery.isLoading || collectionItemsQuery.isLoading
+  const isError = collectionsQuery.isError || collectionItemsQuery.isError
 
   const deleteMutation = useDeleteVocabularyMutation()
   const bulkDeleteMutation = useDeleteVocabulariesMutation()
+  const deleteCollectionMutation = useDeleteCollectionMutation()
 
   const handleFilterChange = (updates: Partial<GetVocabulariesQueryParams>) => {
     setSelectedIds(new Set())
@@ -61,7 +95,10 @@ export function SavedVocabularyPage() {
   }
 
   const handleSelectCollection = (collectionId?: string) => {
-    handleFilterChange({ collectionId })
+    handleFilterChange({
+      collectionId,
+      ...(collectionId ? { cefrLevel: undefined, dueOnly: undefined } : {}),
+    })
   }
 
   const handlePageChange = (_event: unknown, newPage: number) => {
@@ -78,12 +115,33 @@ export function SavedVocabularyPage() {
       page: 1,
       limit: currentParams.limit,
       sort: 'newest',
+      ...(selectedCollectionId ? { collectionId: selectedCollectionId } : {}),
     }
     setSearchParams(vocabularySearchParamsFromParams(defaultParams))
   }
 
-  const handleToggleDueOnly = (dueOnly: boolean) => {
-    handleFilterChange({ dueOnly: dueOnly ? true : undefined })
+  const closeDeleteCollectionDialog = () => {
+    if (deleteCollectionMutation.isPending) return
+    setCollectionToDelete(null)
+    setDeleteCollectionError(null)
+  }
+
+  const confirmDeleteCollection = () => {
+    if (!collectionToDelete) return
+
+    setDeleteCollectionError(null)
+    deleteCollectionMutation.mutate(collectionToDelete.id, {
+      onSuccess: () => {
+        const nextCollectionId = collectionsQuery.data?.items.find(
+          ({ id }) => id !== collectionToDelete.id,
+        )?.id
+        setCollectionToDelete(null)
+        handleSelectCollection(nextCollectionId)
+      },
+      onError: () => {
+        setDeleteCollectionError(t('sidebar.deleteDialog.error'))
+      },
+    })
   }
 
   const handleDelete = (id: string) => {
@@ -102,6 +160,7 @@ export function SavedVocabularyPage() {
   const meta = data?.meta
   const total = meta?.total ?? 0
   const totalPages = meta?.totalPages ?? 1
+  const isTableFullBleed = isDesktop && !isError && total > 0
 
   const handleToggleSelected = (id: string) => {
     setSelectedIds((current) => {
@@ -132,11 +191,13 @@ export function SavedVocabularyPage() {
 
   const hasActiveFilters = Boolean(
     currentParams.q ||
-      currentParams.learningStatus ||
-      currentParams.cefrLevel ||
-      currentParams.collectionId ||
-      currentParams.dueOnly,
+      currentParams.learningStatus,
   )
+
+  const handleRetry = () => {
+    void collectionsQuery.refetch()
+    if (selectedCollectionId) void collectionItemsQuery.refetch()
+  }
 
   return (
     <Container maxWidth="lg" disableGutters sx={{ py: 1 }}>
@@ -164,42 +225,111 @@ export function SavedVocabularyPage() {
         {/* Left Column: Collections Sidebar */}
         <Grid size={{ xs: 12, md: 3.5 }}>
           <CollectionSidebar
-            selectedCollectionId={currentParams.collectionId}
-            totalVocabularyCount={!hasActiveFilters ? total : undefined}
+            selectedCollectionId={selectedCollectionId}
             onSelectCollection={handleSelectCollection}
           />
         </Grid>
 
         {/* Right Column: Vocabulary List & Management */}
         <Grid size={{ xs: 12, md: 8.5 }}>
-          <DueVocabularyHeader
-            dueOnly={currentParams.dueOnly}
-            onToggleDueOnly={handleToggleDueOnly}
-          />
-
           <Paper
             elevation={0}
             sx={{
               overflow: 'hidden',
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
+              borderRadius: 1.5,
               bgcolor: 'background.paper',
             }}
           >
-            <VocabularyFilterBar
-              params={currentParams}
-              onFilterChange={handleFilterChange}
-              onClearFilters={handleClearFilters}
-            />
+          {selectedCollection ? (
+            <Stack
+              direction={{ xs: 'column', md: 'row' }}
+              spacing={2}
+              sx={{
+                alignItems: { md: 'center' },
+                justifyContent: 'space-between',
+                p: { xs: 1.5, sm: 2 },
+                borderBottom: 1,
+                borderColor: 'divider',
+              }}
+            >
+              <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center', minWidth: 0 }}>
+                <Box sx={{ minWidth: 0, mr: 0.5 }}>
+                  <Typography
+                    variant="h5"
+                    noWrap
+                    sx={{ fontWeight: 850, letterSpacing: '-0.02em' }}
+                  >
+                    {selectedCollection.name}
+                  </Typography>
+                </Box>
+                <Tooltip title={t('sidebar.renameTooltip', { name: selectedCollection.name })}>
+                  <IconButton
+                    size="small"
+                    aria-label={t('sidebar.renameTooltip', { name: selectedCollection.name })}
+                    onClick={() => setCollectionToRename(selectedCollection)}
+                    sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
+                  >
+                    &#9998;
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={t('sidebar.deleteTooltip', { name: selectedCollection.name })}>
+                  <IconButton
+                    size="small"
+                    aria-label={t('sidebar.deleteTooltip', { name: selectedCollection.name })}
+                    onClick={() => {
+                      setDeleteCollectionError(null)
+                      setCollectionToDelete(selectedCollection)
+                    }}
+                    sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}
+                  >
+                    &#128465;
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                <Button
+                  component={RouterLink}
+                  to={reviewStartPath('RECALL')}
+                  variant="contained"
+                  color="error"
+                  startIcon={<BookOpenIcon size={19} />}
+                  sx={{ whiteSpace: 'nowrap' }}
+                >
+                  {t('collectionActions.studyFlashcards')}
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => setIsAddVocabularyOpen(true)}
+                  startIcon={
+                    <Box component="span" aria-hidden="true" sx={{ fontSize: 22, lineHeight: 0.75 }}>
+                      +
+                    </Box>
+                  }
+                  sx={{ whiteSpace: 'nowrap' }}
+                >
+                  {t('collectionActions.addVocabulary')}
+                </Button>
+              </Stack>
+            </Stack>
+          ) : null}
 
-            <Box sx={{ p: { xs: 2, sm: 2.5 } }}>
+          <VocabularyFilterBar
+            params={currentParams}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+            selectedCount={selectedIds.size}
+            isBulkDeleting={bulkDeleteMutation.isPending}
+            onBulkDelete={() => handleBulkDelete([...selectedIds])}
+          />
+
+            <Box sx={{ p: isTableFullBleed ? 0 : { xs: 2, sm: 2.5 } }}>
               {isError ? (
                 <Alert
                   severity="error"
                   sx={{ mb: 3, borderRadius: 2.5 }}
                   action={
-                    <Button color="inherit" size="small" onClick={() => void refetch()}>
+                    <Button color="inherit" size="small" onClick={handleRetry}>
                       {t('page.error.retry')}
                     </Button>
                   }
@@ -232,7 +362,16 @@ export function SavedVocabularyPage() {
                     textAlign: 'center',
                   }}
                 >
-                  {hasActiveFilters ? (
+                  {!selectedCollectionId ? (
+                    <Stack spacing={2} sx={{ alignItems: 'center' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                        {t('page.empty.noCollectionsTitle')}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 480 }}>
+                        {t('page.empty.noCollectionsSubtitle')}
+                      </Typography>
+                    </Stack>
+                  ) : hasActiveFilters ? (
                     <Stack spacing={2} sx={{ alignItems: 'center' }}>
                       <Typography variant="h6" sx={{ fontWeight: 700 }}>
                         {t('page.empty.withFiltersTitle')}
@@ -256,7 +395,7 @@ export function SavedVocabularyPage() {
                   )}
                 </Box>
               ) : !isError ? (
-                <Stack spacing={3}>
+                <Stack spacing={isTableFullBleed ? 0 : 3}>
                   {isDesktop ? (
                     <VocabularyItemTable
                       items={items}
@@ -264,7 +403,6 @@ export function SavedVocabularyPage() {
                       onToggleSelected={handleToggleSelected}
                       onToggleAll={handleToggleAll}
                       onDelete={handleDelete}
-                      onBulkDelete={handleBulkDelete}
                       deletingId={
                         deleteMutation.isPending ? deleteMutation.variables : null
                       }
@@ -305,6 +443,35 @@ export function SavedVocabularyPage() {
           </Paper>
         </Grid>
       </Grid>
+
+      {collectionToRename ? (
+        <RenameCollectionDialog
+          key={collectionToRename.id}
+          collection={collectionToRename}
+          onClose={() => setCollectionToRename(null)}
+        />
+      ) : null}
+      <ConfirmationDialog
+        open={Boolean(collectionToDelete)}
+        title={t('sidebar.deleteDialog.title')}
+        description={t('sidebar.deleteDialog.description', {
+          name: collectionToDelete?.name ?? '',
+        })}
+        cancelLabel={t('sidebar.deleteDialog.cancel')}
+        confirmLabel={t('sidebar.deleteDialog.confirm')}
+        pendingLabel={t('sidebar.deleteDialog.deleting')}
+        isPending={deleteCollectionMutation.isPending}
+        errorMessage={deleteCollectionError}
+        onCancel={closeDeleteCollectionDialog}
+        onConfirm={confirmDeleteCollection}
+      />
+      {isAddVocabularyOpen ? (
+        <AddVocabularyToCollectionDialog
+          open
+          onClose={() => setIsAddVocabularyOpen(false)}
+          defaultCollectionId={selectedCollectionId || undefined}
+        />
+      ) : null}
     </Container>
   )
 }

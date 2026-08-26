@@ -132,10 +132,7 @@ export function ReviewSummaryPage() {
           </Alert>
         ) : null}
         <Paper variant="outlined" sx={{ p: { xs: 3, sm: 5 }, textAlign: 'center', borderTop: 6, borderTopColor: 'primary.main' }}>
-          <Typography sx={{ color: 'primary.main', fontSize: 12, fontWeight: 850, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-            {t('summary.eyebrow')}
-          </Typography>
-          <Typography component="h1" variant="h1" sx={{ mt: 1, fontSize: { xs: 38, sm: 52 } }}>
+          <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 38, sm: 52 } }}>
             {t('summary.title')}
           </Typography>
           <Typography color="text.secondary" sx={{ mt: 1.25 }}>

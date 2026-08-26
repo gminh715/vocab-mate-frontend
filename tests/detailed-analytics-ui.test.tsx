@@ -210,19 +210,20 @@ describe('detailed learning analytics', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: 'Reading Progress' }))
     expect(screen.getByLabelText('Completion rate: 0%')).toBeInTheDocument()
-    expect(screen.getByText('No opened articles')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('tab', { name: 'Review Impact' }))
     expect(screen.getByLabelText('Completed sessions: 3')).toBeInTheDocument()
   })
 
-  it('provides visible textual summaries and an accessible vocabulary chart', () => {
+  it('renders accessible pie charts and a subtitle-free vocabulary trend', () => {
     renderAnalytics()
 
-    expect(screen.getByText(/Status totals: New 2/i)).toBeInTheDocument()
-    expect(screen.getByText(/Saved vocabulary by level: CEFR A1 1/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Status totals: New 2/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Saved vocabulary by level: CEFR A1 1/i)).not.toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Learning status' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'CEFR distribution' })).toBeInTheDocument()
     expect(
       screen.getByRole('img', {
-        name: /Saved vocabulary trend 3 vocabulary saves/i,
+        name: 'Saved vocabulary trend',
       }),
     ).toBeInTheDocument()
     expect(
@@ -235,6 +236,27 @@ describe('detailed learning analytics', () => {
     expect(
       screen.getByRole('table', { name: 'Practice signals over time' }),
     ).toBeInTheDocument()
+  })
+
+  it('keeps zero-value vocabulary categories in pie chart legends', () => {
+    const ignoredStatus = vocabularyData.byStatus.find(({ status }) => status === 'IGNORED')
+    const c2Level = vocabularyData.byCefr.find(({ cefrLevel }) => cefrLevel === 'C2')
+    if (!ignoredStatus || !c2Level) throw new Error('Missing analytics test category')
+
+    const ignoredCount = ignoredStatus.count
+    const c2Count = c2Level.count
+    ignoredStatus.count = 0
+    c2Level.count = 0
+
+    try {
+      renderAnalytics()
+
+      expect(screen.getByLabelText('Learning status legend')).toHaveTextContent('Ignored0')
+      expect(screen.getByLabelText('CEFR distribution legend')).toHaveTextContent('CEFR C20')
+    } finally {
+      ignoredStatus.count = ignoredCount
+      c2Level.count = c2Count
+    }
   })
 
   it('renders reading activity as an accessible line chart', () => {

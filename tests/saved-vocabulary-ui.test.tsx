@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -10,6 +10,8 @@ import i18n from '@/i18n/i18n'
 import { SavedVocabularyPage } from '@/pages/Vocabulary/SavedVocabularyPage'
 import { appTheme } from '@/theme'
 import type {
+  CollectionDetailData,
+  CollectionItemsListData,
   CollectionListData,
   VocabularyListData,
   VocabularyListItem,
@@ -57,26 +59,6 @@ const mockVocabularyList: VocabularyListData = {
   },
 }
 
-const mockDueVocabularyList: VocabularyListData = {
-  items: [mockVocabularyItem],
-  meta: {
-    page: 1,
-    limit: 1,
-    total: 1,
-    totalPages: 1,
-  },
-}
-
-const mockEmptyList: VocabularyListData = {
-  items: [],
-  meta: {
-    page: 1,
-    limit: 20,
-    total: 0,
-    totalPages: 0,
-  },
-}
-
 const mockCollectionList: CollectionListData = {
   items: [
     {
@@ -92,6 +74,34 @@ const mockCollectionList: CollectionListData = {
     limit: 100,
     total: 1,
     totalPages: 1,
+  },
+}
+
+const mockCollectionDetail: CollectionDetailData = {
+  collection: {
+    id: mockCollectionList.items[0].id,
+    name: mockCollectionList.items[0].name,
+    createdAt: mockCollectionList.items[0].createdAt,
+    updatedAt: mockCollectionList.items[0].updatedAt,
+  },
+  vocabularyCount: 2,
+}
+
+const mockCollectionItems: CollectionItemsListData = {
+  items: mockVocabularyList.items.map(({ collections, ...item }) => ({
+    ...item,
+    addedAt: collections[0]?.addedAt ?? item.savedAt,
+  })),
+  meta: mockVocabularyList.meta,
+}
+
+const mockEmptyCollectionItems: CollectionItemsListData = {
+  items: [],
+  meta: {
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 0,
   },
 }
 
@@ -134,9 +144,10 @@ describe('Saved Vocabulary Page UI', () => {
         dispatchEvent: vi.fn(),
       })),
     )
-    vi.spyOn(vocabulariesApi, 'findAll').mockResolvedValue(mockVocabularyList)
-    vi.spyOn(vocabulariesApi, 'getDue').mockResolvedValue(mockDueVocabularyList)
     vi.spyOn(collectionsApi, 'findAll').mockResolvedValue(mockCollectionList)
+    vi.spyOn(collectionsApi, 'findOne').mockResolvedValue(mockCollectionDetail)
+    vi.spyOn(collectionsApi, 'findItems').mockResolvedValue(mockCollectionItems)
+    vi.spyOn(vocabulariesApi, 'findAll').mockResolvedValue(mockVocabularyList)
   })
 
   afterEach(() => {
@@ -144,16 +155,40 @@ describe('Saved Vocabulary Page UI', () => {
     vi.unstubAllGlobals()
   })
 
-  it('renders heading, due banner, filter bar, and vocabulary items table', async () => {
+  it('defaults to the first collection and renders its vocabulary items', async () => {
     renderPage()
 
     expect(await screen.findByRole('heading', { name: 'Saved Vocabulary' })).toBeInTheDocument()
-    expect(await screen.findByText(/due for review today/i)).toBeInTheDocument()
-    expect(screen.getByText('harmful')).toBeInTheDocument()
+    expect(await screen.findByText('harmful')).toBeInTheDocument()
     expect(screen.getByText('có hại')).toBeInTheDocument()
     expect(screen.getAllByText('Environment').length).toBeGreaterThan(0)
+    expect(screen.queryByText('All Vocabulary')).not.toBeInTheDocument()
+    expect(vocabulariesApi.findAll).not.toHaveBeenCalled()
     expect(screen.queryByText('Phonetic / IPA')).not.toBeInTheDocument()
     expect(document.querySelector('[id^="table-status-select-"]')).toBeNull()
+  })
+
+  it('loads a selected collection through the collection items API', async () => {
+    renderPage([
+      `/vocabularies?collectionId=${mockCollectionDetail.collection.id}&cefrLevel=B2&dueOnly=true`,
+    ])
+
+    expect(await screen.findByText('harmful')).toBeInTheDocument()
+    expect(collectionsApi.findOne).toHaveBeenCalledWith(
+      mockCollectionDetail.collection.id,
+    )
+    expect(collectionsApi.findItems).toHaveBeenCalledWith(
+      mockCollectionDetail.collection.id,
+      {
+        page: 1,
+        limit: 20,
+        sort: 'newest',
+      },
+    )
+    expect(vocabulariesApi.findAll).not.toHaveBeenCalled()
+    expect(
+      screen.queryByRole('button', { name: 'View Due Items' }),
+    ).not.toBeInTheDocument()
   })
 
   it('selects the current page and deletes the selected vocabulary in bulk', async () => {
@@ -167,7 +202,6 @@ describe('Saved Vocabulary Page UI', () => {
       }),
     )
 
-    expect(screen.getByText('2 words selected')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Delete selected' }))
     expect(
       await screen.findByRole('heading', { name: 'Remove 2 selected words?' }),
@@ -181,8 +215,7 @@ describe('Saved Vocabulary Page UI', () => {
   })
 
   it('renders empty state when user has no saved vocabulary', async () => {
-    vi.spyOn(vocabulariesApi, 'findAll').mockResolvedValue(mockEmptyList)
-    vi.spyOn(vocabulariesApi, 'getDue').mockResolvedValue(mockEmptyList)
+    vi.spyOn(collectionsApi, 'findItems').mockResolvedValue(mockEmptyCollectionItems)
     renderPage()
 
     expect(await screen.findByText('No Saved Vocabulary Yet')).toBeInTheDocument()
@@ -194,7 +227,7 @@ describe('Saved Vocabulary Page UI', () => {
   })
 
   it('renders no-results state with clear filters button when filters match no items', async () => {
-    vi.spyOn(vocabulariesApi, 'findAll').mockResolvedValue(mockEmptyList)
+    vi.spyOn(collectionsApi, 'findItems').mockResolvedValue(mockEmptyCollectionItems)
     renderPage(['/vocabularies?q=nonexistent'])
 
     expect(await screen.findByText('No Vocabulary Found')).toBeInTheDocument()
@@ -204,15 +237,14 @@ describe('Saved Vocabulary Page UI', () => {
     const user = userEvent.setup()
     await user.click(clearButton)
 
-    expect(vocabulariesApi.findAll).toHaveBeenCalledWith(
-      expect.objectContaining({
-        page: 1,
-      }),
+    expect(collectionsApi.findItems).toHaveBeenLastCalledWith(
+      mockCollectionDetail.collection.id,
+      { page: 1, limit: 20, sort: 'newest' },
     )
   })
 
   it('shows error state with retry button on API failure', async () => {
-    vi.spyOn(vocabulariesApi, 'findAll').mockRejectedValue(
+    vi.spyOn(collectionsApi, 'findItems').mockRejectedValue(
       new ApiError({
         status: 500,
         code: 'INTERNAL_ERROR',
@@ -232,16 +264,55 @@ describe('Saved Vocabulary Page UI', () => {
     expect(retryButton).toBeInTheDocument()
   })
 
-  it('triggers due-only toggle when clicking View Due Items', async () => {
+  it('keeps collection actions in the right column instead of beside collection names', async () => {
     renderPage()
 
-    const viewDueButton = await screen.findByRole('button', { name: 'View Due Items' })
+    expect(
+      await screen.findByRole('button', { name: 'Rename Environment' }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Delete Environment' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Study with Flashcards' }),
+    ).toHaveAttribute('href', '/review?reviewGoal=RECALL')
+    expect(screen.getByRole('button', { name: 'Add vocabulary' })).toBeInTheDocument()
+    expect(screen.queryByText('All Vocabulary')).not.toBeInTheDocument()
+  })
+
+  it('opens the add-vocabulary dialog for the selected collection', async () => {
+    renderPage()
+
     const user = userEvent.setup()
-    await user.click(viewDueButton)
+    await user.click(
+      await screen.findByRole('button', { name: 'Add vocabulary' }),
+    )
 
     expect(
-      await screen.findByText('Showing Due Items Only'),
+      screen.getByRole('heading', { name: 'Add Saved Vocabulary to Collection' }),
     ).toBeInTheDocument()
+  })
+
+  it('renames the selected collection from the right column', async () => {
+    vi.spyOn(collectionsApi, 'update').mockResolvedValue({
+      collection: {
+        ...mockCollectionDetail.collection,
+        name: 'Nature',
+      },
+    })
+    renderPage()
+
+    const user = userEvent.setup()
+    await user.click(await screen.findByRole('button', { name: 'Rename Environment' }))
+    const nameInput = screen.getByLabelText('Collection name')
+    await user.clear(nameInput)
+    await user.type(nameInput, 'Nature')
+    await user.click(screen.getByRole('button', { name: 'Save changes' }))
+
+    await waitFor(() => {
+      expect(collectionsApi.update).toHaveBeenCalledWith(
+        mockCollectionDetail.collection.id,
+        { name: 'Nature' },
+      )
+    })
   })
 
   it('triggers delete confirmation dialog and calls delete mutation', async () => {

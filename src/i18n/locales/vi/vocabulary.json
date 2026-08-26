@@ -10,22 +10,39 @@
       "withFiltersSubtitle": "Không có từ vựng nào khớp với bộ lọc đã chọn. Hãy thử điều chỉnh tiêu chí hoặc xóa bộ lọc.",
       "clearAllFilters": "Xóa Tất Cả Bộ Lọc",
       "noVocabTitle": "Chưa Có Từ Vựng Nào",
-      "noVocabSubtitle": "Bạn chưa lưu từ vựng nào. Hãy đọc bài và nhấp vào từ được tô sáng để lưu vào bộ sưu tập!"
+      "noVocabSubtitle": "Bạn chưa lưu từ vựng nào. Hãy đọc bài và nhấp vào từ được tô sáng để lưu vào bộ sưu tập!",
+      "noCollectionsTitle": "Chưa Có Bộ Sưu Tập Nào",
+      "noCollectionsSubtitle": "Hãy tạo bộ sưu tập để bắt đầu sắp xếp từ vựng đã lưu."
     }
   },
   "sidebar": {
     "title": "Bộ Sưu Tập",
     "createTooltip": "Tạo bộ sưu tập mới",
     "allVocabulary": "Tất Cả Từ Vựng",
+    "renameTooltip": "Đổi tên {{name}}",
     "deleteTooltip": "Xóa {{name}}",
     "deleteDialog": {
       "title": "Xóa bộ sưu tập?",
-      "description": "\"{{name}}\" và các từ trong bộ sưu tập này sẽ bị gỡ liên kết. Từ vựng đã lưu và lịch sử Ôn tập hằng ngày vẫn được giữ lại.",
+      "description": "\"{{name}}\" và các từ chỉ thuộc bộ sưu tập này sẽ bị xóa khỏi Từ vựng đã lưu. Từ có trong bộ sưu tập khác và lịch sử Ôn tập hằng ngày vẫn được giữ lại.",
       "cancel": "Hủy",
       "confirm": "Xóa bộ sưu tập",
       "deleting": "Đang xóa…",
       "error": "Không thể xóa bộ sưu tập này. Vui lòng thử lại."
     }
+  },
+  "renameCollection": {
+    "dialogTitle": "Đổi tên bộ sưu tập",
+    "nameLabel": "Tên bộ sưu tập",
+    "nameRequired": "Tên bộ sưu tập là bắt buộc.",
+    "nameTooLong": "Tên không được vượt quá 100 ký tự.",
+    "cancel": "Hủy",
+    "saving": "Đang lưu…",
+    "save": "Lưu thay đổi",
+    "errorUpdate": "Không thể đổi tên bộ sưu tập. Tên này có thể đã tồn tại."
+  },
+  "collectionActions": {
+    "studyFlashcards": "Học với Flashcards",
+    "addVocabulary": "Thêm từ vựng"
   },
   "filterBar": {
     "searchPlaceholder": "Tìm từ, dạng gốc hoặc nghĩa…",
@@ -68,7 +85,7 @@
     "colStatus": "Trạng thái",
     "colVocabulary": "Từ vựng",
     "colPos": "Từ loại / Cấp độ",
-    "colMeaning": "Nghĩa & Ví dụ",
+    "colMeaning": "Nghĩa",
     "colActions": "Hành động",
     "listenTooltip": "Nghe phát âm",
     "listenAriaLabel": "Nghe phát âm {{word}}",

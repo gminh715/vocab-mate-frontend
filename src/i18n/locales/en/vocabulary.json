@@ -10,22 +10,39 @@
       "withFiltersSubtitle": "No saved vocabulary matches your selected search filters. Try modifying your criteria or clearing filters.",
       "clearAllFilters": "Clear All Filters",
       "noVocabTitle": "No Saved Vocabulary Yet",
-      "noVocabSubtitle": "You haven't saved any vocabulary terms yet. Read articles and click on highlighted words to save vocabulary to your collection!"
+      "noVocabSubtitle": "You haven't saved any vocabulary terms yet. Read articles and click on highlighted words to save vocabulary to your collection!",
+      "noCollectionsTitle": "No Collections Yet",
+      "noCollectionsSubtitle": "Create a collection to start organizing your saved vocabulary."
     }
   },
   "sidebar": {
     "title": "My Collections",
     "createTooltip": "Create new collection",
     "allVocabulary": "All Vocabulary",
+    "renameTooltip": "Rename {{name}}",
     "deleteTooltip": "Delete {{name}}",
     "deleteDialog": {
       "title": "Delete collection?",
-      "description": "\"{{name}}\" and its collection memberships will be deleted. Saved vocabulary and Daily Review history will remain.",
+      "description": "\"{{name}}\" and words saved only in this collection will be deleted from Saved Vocabulary. Words in another collection and Daily Review history will remain.",
       "cancel": "Cancel",
       "confirm": "Delete collection",
       "deleting": "Deleting…",
       "error": "This collection could not be deleted. Try again."
     }
+  },
+  "renameCollection": {
+    "dialogTitle": "Rename collection",
+    "nameLabel": "Collection name",
+    "nameRequired": "Collection name is required.",
+    "nameTooLong": "Name must be 100 characters or fewer.",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "save": "Save changes",
+    "errorUpdate": "This collection could not be renamed. The name may already exist."
+  },
+  "collectionActions": {
+    "studyFlashcards": "Study with Flashcards",
+    "addVocabulary": "Add vocabulary"
   },
   "filterBar": {
     "searchPlaceholder": "Search saved word, lemma, or meaning…",
@@ -68,7 +85,7 @@
     "colStatus": "Status",
     "colVocabulary": "Vocabulary",
     "colPos": "POS / Level",
-    "colMeaning": "Meaning & Examples",
+    "colMeaning": "Meaning",
     "colActions": "Actions",
     "listenTooltip": "Listen pronunciation",
     "listenAriaLabel": "Listen to {{word}}",

@@ -21,10 +21,16 @@ export const vocabularyQueryKeys = {
     [...vocabularyQueryKeys.details(), userVocabularyId] as const,
 }
 
-export const useVocabulariesQuery = (params: GetVocabulariesQueryParams) =>
+const collectionQueryRoot = ['collections'] as const
+
+export const useVocabulariesQuery = (
+  params: GetVocabulariesQueryParams,
+  enabled = true,
+) =>
   useQuery({
     queryKey: vocabularyQueryKeys.list(params),
     queryFn: () => vocabulariesApi.findAll(params),
+    enabled,
   })
 
 export const useDueVocabulariesQuery = (params?: {
@@ -58,6 +64,7 @@ export const useUpdateVocabularyStatusMutation = () => {
       void queryClient.invalidateQueries({
         queryKey: vocabularyQueryKeys.all,
       })
+      void queryClient.invalidateQueries({ queryKey: collectionQueryRoot })
     },
   })
 }
@@ -72,6 +79,7 @@ export const useDeleteVocabularyMutation = () => {
       void queryClient.invalidateQueries({
         queryKey: vocabularyQueryKeys.all,
       })
+      void queryClient.invalidateQueries({ queryKey: collectionQueryRoot })
     },
   })
 }
@@ -94,6 +102,7 @@ export const useDeleteVocabulariesMutation = () => {
       void queryClient.invalidateQueries({
         queryKey: vocabularyQueryKeys.all,
       })
+      void queryClient.invalidateQueries({ queryKey: collectionQueryRoot })
     },
     retry: false,
   })
@@ -127,6 +136,7 @@ export const useSaveVocabularyMutation = (
       void queryClient.invalidateQueries({
         queryKey: vocabularyQueryKeys.all,
       })
+      void queryClient.invalidateQueries({ queryKey: collectionQueryRoot })
     },
     onError: (error) => {
       if (normalizeApiError(error).status !== 409) return
@@ -138,6 +148,7 @@ export const useSaveVocabularyMutation = (
       void queryClient.invalidateQueries({
         queryKey: vocabularyQueryKeys.all,
       })
+      void queryClient.invalidateQueries({ queryKey: collectionQueryRoot })
     },
     retry: false,
   })

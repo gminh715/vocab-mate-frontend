@@ -218,9 +218,6 @@ export function ReviewHistoryPage() {
         }}
       >
         <Stack spacing={1} sx={{ maxWidth: 720 }}>
-          <Typography color="primary.main" sx={{ fontSize: 12, fontWeight: 850, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-            {t('history.eyebrow')}
-          </Typography>
           <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 40, sm: 52 } }}>
             {t('history.title')}
           </Typography>

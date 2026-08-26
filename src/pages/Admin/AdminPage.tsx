@@ -9,17 +9,6 @@ export function AdminPage() {
   return (
     <Stack spacing={{ xs: 4, md: 5 }}>
       <Stack spacing={1.25} sx={{ maxWidth: 760 }}>
-        <Typography
-          sx={{
-            color: 'primary.main',
-            fontSize: 12,
-            fontWeight: 800,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Admin workspace
-        </Typography>
         <Typography variant="h1" sx={{ fontSize: { xs: 38, md: 52 } }}>
           Admin Area
         </Typography>

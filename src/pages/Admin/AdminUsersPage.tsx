@@ -97,17 +97,6 @@ export function AdminUsersPage() {
   return (
     <Stack spacing={3.5}>
       <Stack spacing={1} sx={{ maxWidth: 760 }}>
-        <Typography
-          sx={{
-            color: 'primary.main',
-            fontSize: 12,
-            fontWeight: 800,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Account directory
-        </Typography>
         <Typography variant="h1" sx={{ fontSize: { xs: 36, md: 48 } }}>
           Users
         </Typography>

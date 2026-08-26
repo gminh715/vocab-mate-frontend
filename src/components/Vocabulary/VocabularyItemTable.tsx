@@ -20,7 +20,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import type { LearningStatus, VocabularyListItem } from '@/types/Vocabulary/vocabulary'
+import type { LearningStatus, VocabularySnapshot } from '@/types/Vocabulary/vocabulary'
 import { vocabularyDetailPath } from '@/utils/paths'
 
 const statusColorMap: Record<
@@ -34,13 +34,17 @@ const statusColorMap: Record<
   IGNORED: 'default',
 }
 
+const TABLE_HEADER_HEIGHT = 56
+const TABLE_ROW_HEIGHT = 76
+const TABLE_VISIBLE_ROWS = 6
+const TABLE_VIEWPORT_HEIGHT = TABLE_HEADER_HEIGHT + TABLE_ROW_HEIGHT * TABLE_VISIBLE_ROWS
+
 interface VocabularyItemTableProps {
-  items: VocabularyListItem[]
+  items: VocabularySnapshot[]
   selectedIds: ReadonlySet<string>
   onToggleSelected: (id: string) => void
   onToggleAll: () => void
   onDelete: (id: string) => void
-  onBulkDelete: (ids: string[]) => void
   deletingId?: string | null
   isBulkDeleting?: boolean
 }
@@ -51,13 +55,11 @@ export function VocabularyItemTable({
   onToggleSelected,
   onToggleAll,
   onDelete,
-  onBulkDelete,
   deletingId,
   isBulkDeleting = false,
 }: VocabularyItemTableProps) {
   const { t } = useTranslation('vocabulary')
-  const [deleteTargetItem, setDeleteTargetItem] = useState<VocabularyListItem | null>(null)
-  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false)
+  const [deleteTargetItem, setDeleteTargetItem] = useState<VocabularySnapshot | null>(null)
   const allSelected = items.length > 0 && items.every((item) => selectedIds.has(item.id))
   const someSelected = items.some((item) => selectedIds.has(item.id))
 
@@ -76,47 +78,21 @@ export function VocabularyItemTable({
       component={Paper}
       elevation={0}
       sx={{
-        borderRadius: 3,
-        border: '1px solid',
-        borderColor: 'divider',
+        borderRadius: 0,
+        border: 0,
         overflowX: 'auto',
-        overflowY: 'hidden',
+        overflowY: 'auto',
+        maxHeight: TABLE_VIEWPORT_HEIGHT,
+        overscrollBehavior: 'contain',
       }}
     >
-      {selectedIds.size > 0 ? (
-        <Stack
-          direction="row"
-          sx={{
-            px: 2,
-            py: 1.25,
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            bgcolor: 'rgba(229, 57, 53, 0.06)',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <Typography variant="body2" sx={{ fontWeight: 800 }}>
-            {t('table.bulk.selected', { count: selectedIds.size })}
-          </Typography>
-          <Button
-            color="error"
-            size="small"
-            variant="contained"
-            disabled={isBulkDeleting}
-            onClick={() => setBulkDeleteDialogOpen(true)}
-          >
-            {t('table.bulk.deleteSelected')}
-          </Button>
-        </Stack>
-      ) : null}
-
       <Table
         aria-label={t('table.ariaLabel')}
+        stickyHeader
         sx={{ minWidth: 820, tableLayout: 'fixed' }}
       >
-        <TableHead sx={{ bgcolor: '#F8F9FA' }}>
-          <TableRow>
+        <TableHead sx={{ '& .MuiTableCell-head': { bgcolor: '#F8F9FA' } }}>
+          <TableRow sx={{ height: TABLE_HEADER_HEIGHT }}>
             <TableCell padding="checkbox" sx={{ width: 56 }}>
               <Checkbox
                 checked={allSelected}
@@ -127,16 +103,16 @@ export function VocabularyItemTable({
                 }}
               />
             </TableCell>
-            <TableCell sx={{ width: '17%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell sx={{ width: '15%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colStatus')}
             </TableCell>
-            <TableCell sx={{ width: '20%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell sx={{ width: '28%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colVocabulary')}
             </TableCell>
-            <TableCell sx={{ width: '14%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell sx={{ width: '13%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colPos')}
             </TableCell>
-            <TableCell sx={{ width: '31%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell sx={{ width: '26%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colMeaning')}
             </TableCell>
             <TableCell
@@ -170,7 +146,10 @@ export function VocabularyItemTable({
                 key={item.id}
                 hover
                 selected={selectedIds.has(item.id)}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                sx={{
+                  height: TABLE_ROW_HEIGHT,
+                  '&:last-child td, &:last-child th': { border: 0 },
+                }}
               >
                 <TableCell padding="checkbox">
                   <Checkbox
@@ -206,12 +185,14 @@ export function VocabularyItemTable({
                 </TableCell>
 
                 <TableCell sx={{ verticalAlign: 'middle' }}>
-                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center', minWidth: 0 }}>
                     <Typography
                       component={RouterLink}
                       to={vocabularyDetailPath(item.id)}
                       variant="subtitle1"
+                      noWrap
                       sx={{
+                        minWidth: 0,
                         color: 'text.primary',
                         fontWeight: 800,
                         textDecoration: 'none',
@@ -328,34 +309,6 @@ export function VocabularyItemTable({
         </DialogActions>
       </Dialog>
 
-      <Dialog
-        open={bulkDeleteDialogOpen}
-        onClose={() => setBulkDeleteDialogOpen(false)}
-        aria-labelledby="bulk-delete-dialog-title"
-      >
-        <DialogTitle id="bulk-delete-dialog-title">
-          {t('table.bulk.dialog.title', { count: selectedIds.size })}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {t('table.bulk.dialog.description', { count: selectedIds.size })}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setBulkDeleteDialogOpen(false)}>{t('table.dialog.cancel')}</Button>
-          <Button
-            color="error"
-            variant="contained"
-            disabled={isBulkDeleting}
-            onClick={() => {
-              onBulkDelete([...selectedIds])
-              setBulkDeleteDialogOpen(false)
-            }}
-          >
-            {t('table.bulk.dialog.confirm', { count: selectedIds.size })}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </TableContainer>
   )
 }

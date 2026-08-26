@@ -63,17 +63,6 @@ export function AdminHeader({
 
         <Box sx={{ minWidth: 0 }}>
           <Typography
-            sx={{
-              color: 'text.secondary',
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Content operations
-          </Typography>
-          <Typography
             component={RouterLink}
             to={routePaths.admin}
             aria-label="Admin"

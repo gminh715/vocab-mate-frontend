@@ -40,21 +40,10 @@ export function AgentFeedbackCard({ feedback }: AgentFeedbackCardProps) {
       }}
     >
       <Typography
-        sx={{
-          color: 'secondary.dark',
-          fontSize: 12,
-          fontWeight: 850,
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
-        }}
-      >
-        {t('feedback.eyebrow')}
-      </Typography>
-      <Typography
         id="review-feedback-heading"
         component="h3"
         variant="h6"
-        sx={{ mt: 0.5, fontWeight: 850, textWrap: 'balance' }}
+        sx={{ fontWeight: 850, textWrap: 'balance' }}
       >
         {t('feedback.title')}
       </Typography>

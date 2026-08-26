@@ -2,6 +2,7 @@ import { CEFR_LEVELS, type CefrLevel } from '@/types/Auth/auth'
 import {
   LEARNING_STATUSES,
   VOCABULARY_SORTS,
+  type GetCollectionItemsQueryParams,
   type GetVocabulariesQueryParams,
   type LearningStatus,
   type VocabularySort,
@@ -67,12 +68,24 @@ export const vocabularyParamsFromSearchParams = (
     limit: limitFromValue(searchParams.get('limit')),
     ...(q ? { q } : {}),
     ...(learningStatus ? { learningStatus } : {}),
-    ...(cefrLevel ? { cefrLevel } : {}),
+    ...(!collectionId && cefrLevel ? { cefrLevel } : {}),
     ...(collectionId ? { collectionId } : {}),
-    ...(dueOnly !== undefined ? { dueOnly } : {}),
+    ...(!collectionId && dueOnly !== undefined ? { dueOnly } : {}),
     sort,
   }
 }
+
+export const collectionItemsParamsFromVocabularyParams = (
+  params: GetVocabulariesQueryParams,
+): GetCollectionItemsQueryParams => ({
+  page: params.page,
+  limit: params.limit,
+  ...(params.q ? { q: params.q } : {}),
+  ...(params.learningStatus
+    ? { learningStatus: params.learningStatus }
+    : {}),
+  sort: params.sort,
+})
 
 export const vocabularySearchParamsFromParams = (
   params: GetVocabulariesQueryParams,

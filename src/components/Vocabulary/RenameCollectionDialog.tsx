@@ -11,88 +11,72 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import {
-  useCreateCollectionMutation,
-} from '@/hooks/Vocabulary/useCollections'
-import type { CreateCollectionResponse } from '@/api/Vocabulary/CollectionsApi'
+import { useUpdateCollectionMutation } from '@/hooks/Vocabulary/useCollections'
 import {
   collectionNameSchema,
   type CollectionNameFormOutput,
   type CollectionNameFormValues,
 } from '@/schemas/Vocabulary/vocabulary'
+import type { VocabularyCollection } from '@/types/Vocabulary/vocabulary'
 
-interface CreateCollectionDialogProps {
-  open: boolean
+interface RenameCollectionDialogProps {
+  collection: VocabularyCollection
   onClose: () => void
-  onSuccess?: (newCollectionId: string) => void
 }
 
-export function CreateCollectionDialog({
-  open,
+export function RenameCollectionDialog({
+  collection,
   onClose,
-  onSuccess,
-}: CreateCollectionDialogProps) {
+}: RenameCollectionDialogProps) {
   const { t } = useTranslation('vocabulary')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const createMutation = useCreateCollectionMutation()
-
+  const updateMutation = useUpdateCollectionMutation(collection.id)
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<CollectionNameFormValues, unknown, CollectionNameFormOutput>({
     resolver: zodResolver(collectionNameSchema),
-    defaultValues: { name: '' },
+    defaultValues: { name: collection.name },
   })
 
-  const handleClose = () => {
-    reset()
-    setErrorMessage(null)
-    onClose()
-  }
+  const isPending = isSubmitting || updateMutation.isPending
 
   const resolveError = (key: string | undefined): string | undefined => {
-    if (!key) return undefined
-    const knownKeys = ['nameRequired', 'nameTooLong'] as const
-    type KnownKey = typeof knownKeys[number]
-    if ((knownKeys as readonly string[]).includes(key)) {
-      return t(`createCollection.${key as KnownKey}`)
+    if (key === 'nameRequired' || key === 'nameTooLong') {
+      return t(`renameCollection.${key}`)
     }
     return key
   }
 
+  const handleClose = () => {
+    if (isPending) return
+    onClose()
+  }
+
   const onSubmit = (values: CollectionNameFormOutput) => {
     setErrorMessage(null)
-    const payload = { name: values.name.trim() }
-
-    createMutation.mutate(payload, {
-      onSuccess: (data: CreateCollectionResponse) => {
-        handleClose()
-        if (onSuccess) {
-          onSuccess(data.collection.id)
-        }
+    updateMutation.mutate(
+      { name: values.name },
+      {
+        onSuccess: onClose,
+        onError: () => setErrorMessage(t('renameCollection.errorUpdate')),
       },
-      onError: () => {
-        setErrorMessage(t('createCollection.errorCreate'))
-      },
-    })
+    )
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
-      <DialogTitle id="create-collection-dialog-title">
-        {t('createCollection.dialogTitle')}
+    <Dialog open onClose={handleClose} fullWidth maxWidth="xs">
+      <DialogTitle id="rename-collection-dialog-title">
+        {t('renameCollection.dialogTitle')}
       </DialogTitle>
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogContent dividers>
           <Stack spacing={2.5}>
             {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
-
             <TextField
-              label={t('createCollection.nameLabel')}
-              placeholder={t('createCollection.namePlaceholder')}
+              label={t('renameCollection.nameLabel')}
               fullWidth
               autoFocus
               error={Boolean(errors.name)}
@@ -104,16 +88,13 @@ export function CreateCollectionDialog({
         </DialogContent>
 
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleClose} disabled={isSubmitting || createMutation.isPending}>
-            {t('createCollection.cancel')}
+          <Button onClick={handleClose} disabled={isPending}>
+            {t('renameCollection.cancel')}
           </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={isSubmitting || createMutation.isPending}
-          >
-            {createMutation.isPending ? t('createCollection.creating') : t('createCollection.submit')}
+          <Button type="submit" variant="contained" disabled={isPending}>
+            {isPending
+              ? t('renameCollection.saving')
+              : t('renameCollection.save')}
           </Button>
         </DialogActions>
       </Box>

@@ -130,7 +130,7 @@ export function AuthenticatedLayout() {
       </Link>
 
       <AppBar
-        position="sticky"
+        position="fixed"
         color="transparent"
         elevation={0}
         sx={{
@@ -290,6 +290,8 @@ export function AuthenticatedLayout() {
           </Toolbar>
         </Container>
       </AppBar>
+
+      <Box aria-hidden="true" sx={{ height: { xs: 128, sm: 72 } }} />
 
       <Container
         id="main-content"

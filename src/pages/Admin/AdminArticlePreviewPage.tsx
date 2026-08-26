@@ -47,17 +47,6 @@ export function AdminArticlePreviewPage() {
   const heading = (
     <Stack spacing={1}>
       <Typography
-        sx={{
-          color: 'primary.main',
-          fontSize: 12,
-          fontWeight: 800,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-        }}
-      >
-        Isolated render
-      </Typography>
-      <Typography
         variant="h1"
         sx={{ fontSize: { xs: 34, md: 46 }, textWrap: 'balance' }}
       >

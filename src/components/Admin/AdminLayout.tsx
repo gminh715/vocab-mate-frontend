@@ -79,17 +79,6 @@ function AdminNavigation({ onNavigate }: AdminNavigationProps) {
           >
             Vocab Mate
           </Typography>
-          <Typography
-            sx={{
-              color: 'text.secondary',
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: '0.13em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Admin workspace
-          </Typography>
         </Box>
         <Box sx={{ flex: 1 }} />
         {onNavigate ? (

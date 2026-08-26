@@ -290,17 +290,6 @@ export function AdminCategoriesPage() {
         }}
       >
         <Stack spacing={1} sx={{ maxWidth: 720 }}>
-          <Typography
-            sx={{
-              color: 'primary.main',
-              fontSize: 12,
-              fontWeight: 800,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Content taxonomy
-          </Typography>
           <Typography variant="h1" sx={{ fontSize: { xs: 36, md: 48 } }}>
             Categories
           </Typography>

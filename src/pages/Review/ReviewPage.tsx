@@ -334,10 +334,7 @@ function ReviewStarter() {
           variant="outlined"
           sx={{ maxWidth: 680, mx: 'auto', mt: { xs: 3, sm: 7 }, p: { xs: 2.5, sm: 4 } }}
         >
-          <Typography color="primary.main" sx={{ fontSize: 12, fontWeight: 850, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-            {t('starter.modeEyebrow')}
-          </Typography>
-          <Typography component="h1" variant="h1" sx={{ mt: 0.75, fontSize: { xs: 30, sm: 38 } }}>
+          <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 30, sm: 38 } }}>
             {t('starter.modeTitle')}
           </Typography>
           <Typography color="text.secondary" sx={{ mt: 1 }}>
@@ -437,21 +434,10 @@ function ReviewStarter() {
             'linear-gradient(145deg, rgba(255,255,255,0.98), rgba(236,247,241,0.9))',
         }}
       >
-        <Typography
-          sx={{
-            color: 'primary.dark',
-            fontSize: 12,
-            fontWeight: 800,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-          }}
-        >
-          {t('preparation.eyebrow')}
-        </Typography>
         <Stack
           direction="row"
           spacing={2}
-          sx={{ mt: 1.25, alignItems: 'baseline', justifyContent: 'space-between' }}
+          sx={{ alignItems: 'baseline', justifyContent: 'space-between' }}
         >
           <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 30, sm: 38 } }}>
             {t('preparation.title')}
@@ -937,21 +923,10 @@ function ReviewSessionExperience({ sessionId }: { sessionId: string }) {
           }}
         >
           <Typography
-            sx={{
-              color: 'primary.dark',
-              fontSize: 12,
-              fontWeight: 850,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-            }}
-          >
-            {t('plan.eyebrow')}
-          </Typography>
-          <Typography
             id="review-plan-heading"
             component="h1"
             variant="h5"
-            sx={{ mt: 0.5, fontWeight: 850, textWrap: 'balance' }}
+            sx={{ fontWeight: 850, textWrap: 'balance' }}
           >
             {t('plan.title')}
           </Typography>

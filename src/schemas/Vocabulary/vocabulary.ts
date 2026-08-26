@@ -1,6 +1,17 @@
 import { z } from 'zod'
 import type { SaveVocabularyRequest } from '@/types/Vocabulary/vocabulary'
 
+export const collectionNameSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, 'nameRequired')
+    .max(100, 'nameTooLong'),
+})
+
+export type CollectionNameFormValues = z.input<typeof collectionNameSchema>
+export type CollectionNameFormOutput = z.output<typeof collectionNameSchema>
+
 export const saveVocabularyFormSchema = z.object({
   collectionIds: z
     .array(z.string().uuid('Invalid collection identifier.'))

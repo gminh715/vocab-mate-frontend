@@ -59,27 +59,14 @@ interface NavigationState {
 }
 
 function PageHeading({
-  eyebrow,
   title,
   description,
 }: {
-  eyebrow: string
   title: string
   description: string
 }) {
   return (
     <Stack spacing={1} sx={{ maxWidth: 820 }}>
-      <Typography
-        sx={{
-          color: 'primary.main',
-          fontSize: 12,
-          fontWeight: 800,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-        }}
-      >
-        {eyebrow}
-      </Typography>
       <Typography
         variant="h1"
         sx={{ fontSize: { xs: 34, md: 46 }, textWrap: 'balance' }}
@@ -133,7 +120,6 @@ export function AdminArticleCreatePage() {
         sx={{ justifyContent: 'space-between', alignItems: { sm: 'flex-end' } }}
       >
         <PageHeading
-          eyebrow="New draft"
           title="New article"
           description="Add the source metadata and HTML. Sentence parsing and term management happen in the next content workflow."
         />
@@ -261,7 +247,6 @@ export function AdminArticleEditPage() {
     return (
       <Stack spacing={3.5}>
         <PageHeading
-          eyebrow="Article editor"
           title="Edit article"
           description="Loading article metadata and content."
         />
@@ -282,7 +267,6 @@ export function AdminArticleEditPage() {
     return (
       <Stack spacing={3.5}>
         <PageHeading
-          eyebrow="Article editor"
           title="Edit article"
           description="Update article metadata and source HTML."
         />
@@ -311,7 +295,6 @@ export function AdminArticleEditPage() {
     return (
       <Stack spacing={3.5}>
         <PageHeading
-          eyebrow="Article editor"
           title="Edit article"
           description="Update article metadata and source HTML."
         />
@@ -330,7 +313,6 @@ export function AdminArticleEditPage() {
     return (
       <Stack spacing={2.5}>
         <PageHeading
-          eyebrow="Archived article"
           title="Edit article"
           description={`${article.title} is archived and cannot be edited. Restore the article to draft in the lifecycle workflow before changing it.`}
         />
@@ -367,7 +349,6 @@ export function AdminArticleEditPage() {
         sx={{ justifyContent: 'space-between', alignItems: { lg: 'flex-end' } }}
       >
         <PageHeading
-          eyebrow="Article editor"
           title="Edit article"
           description={`Update metadata and source HTML for “${article.title}” without changing backend-owned sentence or term markers.`}
         />

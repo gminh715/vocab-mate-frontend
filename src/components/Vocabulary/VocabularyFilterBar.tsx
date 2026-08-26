@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
-import Divider from '@mui/material/Divider'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -15,36 +17,38 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
-import { CEFR_LEVELS, type CefrLevel } from '@/types/Auth/auth'
 import {
   LEARNING_STATUSES,
   VOCABULARY_SORTS,
-  type CollectionListItem,
   type GetVocabulariesQueryParams,
   type LearningStatus,
   type VocabularySort,
 } from '@/types/Vocabulary/vocabulary'
-import { useCollectionsQuery } from '@/hooks/Vocabulary/useCollections'
 
 interface VocabularyFilterBarProps {
   params: GetVocabulariesQueryParams
   onFilterChange: (updates: Partial<GetVocabulariesQueryParams>) => void
   onClearFilters: () => void
+  selectedCount?: number
+  isBulkDeleting?: boolean
+  onBulkDelete?: () => void
 }
 
 export function VocabularyFilterBar({
   params,
   onFilterChange,
   onClearFilters,
+  selectedCount = 0,
+  isBulkDeleting = false,
+  onBulkDelete,
 }: VocabularyFilterBarProps) {
   const { t } = useTranslation('vocabulary')
   const targetQ = params.q ?? ''
   const [prevQ, setPrevQ] = useState(targetQ)
   const [searchInput, setSearchInput] = useState(targetQ)
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false)
   const filterButtonRef = useRef<HTMLButtonElement>(null)
-  const { data: collectionsData } = useCollectionsQuery({ limit: 100 })
-  const collections = collectionsData?.items ?? []
 
   // Keep local search input synced with external params when params.q changes (e.g. clear filters)
   if (targetQ !== prevQ) {
@@ -67,17 +71,11 @@ export function VocabularyFilterBar({
 
   const activeFilterCount = [
     params.learningStatus,
-    params.cefrLevel,
-    params.collectionId,
-    params.dueOnly,
   ].filter(Boolean).length
 
   const hasActiveFilters = Boolean(
     params.q ||
-      params.learningStatus ||
-      params.cefrLevel ||
-      params.collectionId ||
-      params.dueOnly,
+      params.learningStatus,
   )
 
   const open = Boolean(anchorEl)
@@ -108,7 +106,7 @@ export function VocabularyFilterBar({
       <Stack
         direction="row"
         spacing={1.5}
-        sx={{ alignItems: 'center' }}
+        sx={{ alignItems: 'center', width: '100%' }}
       >
         <TextField
           size="small"
@@ -126,7 +124,7 @@ export function VocabularyFilterBar({
               ),
             },
           }}
-          sx={{ flexGrow: 1 }}
+          sx={{ flexGrow: 1, minWidth: 0 }}
         />
 
         <Badge
@@ -148,6 +146,21 @@ export function VocabularyFilterBar({
             {t('filterBar.filtersButton')}
           </Button>
         </Badge>
+
+        {selectedCount > 0 && onBulkDelete ? (
+          <Badge badgeContent={selectedCount} color="error" overlap="circular">
+            <Button
+              color="error"
+              variant="contained"
+              size="small"
+              disabled={isBulkDeleting}
+              onClick={() => setBulkDeleteDialogOpen(true)}
+              sx={{ whiteSpace: 'nowrap' }}
+            >
+              {t('table.bulk.deleteSelected')}
+            </Button>
+          </Badge>
+        ) : null}
 
         {hasActiveFilters ? (
           <Button
@@ -211,50 +224,6 @@ export function VocabularyFilterBar({
           </FormControl>
 
           <FormControl size="small" fullWidth>
-            <InputLabel id="cefr-level-label">{t('filterBar.cefrLevel')}</InputLabel>
-            <Select
-              labelId="cefr-level-label"
-              id="cefr-level-select"
-              value={params.cefrLevel ?? ''}
-              label={t('filterBar.cefrLevel')}
-              onChange={(e) =>
-                onFilterChange({
-                  cefrLevel: (e.target.value as CefrLevel) || undefined,
-                })
-              }
-            >
-              <MenuItem value="">{t('filterBar.allLevels')}</MenuItem>
-              {CEFR_LEVELS.map((level) => (
-                <MenuItem key={level} value={level}>
-                  {level}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" fullWidth>
-            <InputLabel id="collection-label">{t('filterBar.collection')}</InputLabel>
-            <Select
-              labelId="collection-label"
-              id="collection-select"
-              value={params.collectionId ?? ''}
-              label={t('filterBar.collection')}
-              onChange={(e) =>
-                onFilterChange({
-                  collectionId: e.target.value || undefined,
-                })
-              }
-            >
-              <MenuItem value="">{t('filterBar.allCollections')}</MenuItem>
-              {collections.map((col: CollectionListItem) => (
-                <MenuItem key={col.id} value={col.id}>
-                  {col.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" fullWidth>
             <InputLabel id="sort-label">{t('filterBar.sortBy')}</InputLabel>
             <Select
               labelId="sort-label"
@@ -275,25 +244,39 @@ export function VocabularyFilterBar({
             </Select>
           </FormControl>
 
-          <Divider />
-
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={Boolean(params.dueOnly)}
-                onChange={(e) =>
-                  onFilterChange({
-                    dueOnly: e.target.checked ? true : undefined,
-                  })
-                }
-                color="primary"
-                size="small"
-              />
-            }
-            label={t('filterBar.dueOnly')}
-          />
         </Stack>
       </Popover>
+
+      <Dialog
+        open={bulkDeleteDialogOpen}
+        onClose={() => setBulkDeleteDialogOpen(false)}
+        aria-labelledby="bulk-delete-dialog-title"
+      >
+        <DialogTitle id="bulk-delete-dialog-title">
+          {t('table.bulk.dialog.title', { count: selectedCount })}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t('table.bulk.dialog.description', { count: selectedCount })}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBulkDeleteDialogOpen(false)}>
+            {t('table.dialog.cancel')}
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={isBulkDeleting}
+            onClick={() => {
+              onBulkDelete?.()
+              setBulkDeleteDialogOpen(false)
+            }}
+          >
+            {t('table.bulk.dialog.confirm', { count: selectedCount })}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

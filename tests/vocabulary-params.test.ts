@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  collectionItemsParamsFromVocabularyParams,
   normalizeVocabularySearchParams,
   vocabularyParamsFromSearchParams,
   vocabularySearchParamsFromParams,
@@ -16,9 +17,28 @@ describe('vocabulary search params mapping', () => {
       limit: 50,
       q: 'harmful',
       learningStatus: 'LEARNING',
-      cefrLevel: 'B2',
       collectionId: '550e8400-e29b-41d4-a716-446655440010',
-      dueOnly: true,
+      sort: 'oldest',
+    })
+  })
+
+  it('maps collection views to the filters supported by collection items', () => {
+    expect(
+      collectionItemsParamsFromVocabularyParams({
+        page: 2,
+        limit: 50,
+        q: 'harmful',
+        learningStatus: 'LEARNING',
+        cefrLevel: 'B2',
+        collectionId: '550e8400-e29b-41d4-a716-446655440010',
+        dueOnly: true,
+        sort: 'oldest',
+      }),
+    ).toEqual({
+      page: 2,
+      limit: 50,
+      q: 'harmful',
+      learningStatus: 'LEARNING',
       sort: 'oldest',
     })
   })

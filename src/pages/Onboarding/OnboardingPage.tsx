@@ -126,13 +126,7 @@ function PlacementExperience({
       {phase === 'INTRO' ? (
         <Stack spacing={3}>
           <Box>
-            <Typography
-              color="primary.main"
-              sx={{ fontWeight: 850, letterSpacing: '0.12em', textTransform: 'uppercase', fontSize: 12 }}
-            >
-              {t('eyebrow')}
-            </Typography>
-            <Typography component="h1" variant="h1" sx={{ mt: 1, fontSize: { xs: 38, sm: 52 } }}>
+            <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 38, sm: 52 } }}>
               {t('title')}
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 2, maxWidth: 620, fontSize: 17 }}>
@@ -216,10 +210,7 @@ function PlacementExperience({
       {phase === 'PLAN' && scores ? (
         <Stack spacing={3}>
           <Box>
-            <Typography color="primary.main" sx={{ fontWeight: 850, letterSpacing: '0.12em', textTransform: 'uppercase', fontSize: 12 }}>
-              {t('resultEyebrow')}
-            </Typography>
-            <Typography component="h1" variant="h1" sx={{ mt: 1, fontSize: { xs: 34, sm: 48 } }}>
+            <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 34, sm: 48 } }}>
               {t('resultTitle', { level: resultLevel })}
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1.5 }}>{t('resultBody')}</Typography>

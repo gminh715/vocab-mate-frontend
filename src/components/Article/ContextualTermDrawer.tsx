@@ -747,22 +747,10 @@ export function ContextualTermDrawer({
         >
           <Box sx={{ minWidth: 0 }}>
             <Typography
-              sx={{
-                color: 'secondary.dark',
-                fontSize: 11,
-                fontWeight: 850,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {t('lookup.eyebrow')}
-            </Typography>
-            <Typography
               id="contextual-term-drawer-title"
               component="h2"
               variant="h1"
               sx={{
-                mt: 0.5,
                 fontSize: { xs: 30, sm: 36 },
                 overflowWrap: 'anywhere',
                 textWrap: 'balance',

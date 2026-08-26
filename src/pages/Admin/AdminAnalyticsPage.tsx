@@ -326,17 +326,6 @@ export function AdminAnalyticsPage() {
   return (
     <Stack spacing={4.5}>
       <Stack spacing={1} sx={{ maxWidth: 860 }}>
-        <Typography
-          sx={{
-            color: 'primary.main',
-            fontSize: 12,
-            fontWeight: 800,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Operations ledger
-        </Typography>
         <Typography variant="h1" sx={{ fontSize: { xs: 36, md: 48 } }}>
           Analytics
         </Typography>

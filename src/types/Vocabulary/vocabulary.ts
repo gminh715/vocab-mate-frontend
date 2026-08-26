@@ -89,11 +89,14 @@ export interface SaveVocabularyData {
   collections: VocabularyCollectionSummary[]
 }
 
-export interface CollectionListItem {
+export interface VocabularyCollection {
   id: string
   name: string
   createdAt: string
   updatedAt: string
+}
+
+export interface CollectionListItem extends VocabularyCollection {
   vocabularyCount: number
 }
 
@@ -106,5 +109,27 @@ export interface GetCollectionsQueryParams {
   page?: number
   limit?: number
   q?: string
+}
+
+export interface CollectionDetailData {
+  collection: VocabularyCollection
+  vocabularyCount: number
+}
+
+export interface GetCollectionItemsQueryParams {
+  page: number
+  limit: number
+  q?: string
+  learningStatus?: LearningStatus
+  sort: VocabularySort
+}
+
+export interface CollectionVocabularyItem extends VocabularySnapshot {
+  addedAt: string
+}
+
+export interface CollectionItemsListData {
+  items: CollectionVocabularyItem[]
+  meta: PaginationMeta
 }
 

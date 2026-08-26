@@ -1252,10 +1252,6 @@ function ReviewAnalyticsContent({ data }: { data: ReviewAnalytics }) {
       : t('review.seconds', {
           count: Math.round((milliseconds / 1000) * 10) / 10,
         })
-  const trendAnswers = data.trend.reduce(
-    (total, item) => total + item.answers,
-    0,
-  )
 
   return (
     <Stack spacing={2}>
@@ -1350,33 +1346,6 @@ function ReviewAnalyticsContent({ data }: { data: ReviewAnalytics }) {
           }))}
         />
       </Box>
-
-      <TrendPanel
-        title={t('review.practiceTrend')}
-        summary={t('review.practiceTrendSummary', {
-          answers: trendAnswers,
-          buckets: data.trend.length,
-        })}
-        headers={[
-          t('review.trendPeriod'),
-          t('review.trendAnswers'),
-          t('review.trendAccuracy'),
-          t('review.trendResponseTime'),
-          t('review.trendHints'),
-        ]}
-        rows={data.trend.map((item) => ({
-          key: item.bucket,
-          cells: [
-            formatBucket(item.bucket),
-            integerFormatter.format(item.answers),
-            formatAnalyticsRatio(item.accuracy),
-            formatResponseTime(item.averageResponseTimeMs),
-            integerFormatter.format(item.hintsUsed),
-          ],
-        }))}
-        empty={trendAnswers === 0}
-        emptyMessage={t('review.noTrendEvidence')}
-      />
 
       <TrendPanel
         title={t('review.retentionTitle')}

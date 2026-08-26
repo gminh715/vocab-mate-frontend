@@ -234,7 +234,7 @@ describe('detailed learning analytics', () => {
     ).toHaveTextContent('Vocabulary saved')
     fireEvent.click(screen.getByRole('tab', { name: 'Review Impact' }))
     expect(
-      screen.getByRole('table', { name: 'Practice signals over time' }),
+      screen.getByRole('table', { name: 'Recall after coaching' }),
     ).toBeInTheDocument()
   })
 
@@ -294,8 +294,7 @@ describe('detailed learning analytics', () => {
     expect(screen.getByLabelText('Recall accuracy: 60%')).toBeInTheDocument()
     expect(screen.getByText('Completion by plan length')).toBeInTheDocument()
     expect(screen.getByText('Coaching retest outcomes')).toBeInTheDocument()
-    expect(screen.getByRole('table', { name: 'Practice signals over time' })).toBeInTheDocument()
-    expect(screen.getByText('3.5 sec')).toBeInTheDocument()
+    expect(screen.getByText('3.2 sec')).toBeInTheDocument()
     expect(screen.getByRole('table', { name: 'Recall after coaching' })).toBeInTheDocument()
   })
 })

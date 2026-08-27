@@ -1252,6 +1252,12 @@ function ReviewAnalyticsContent({ data }: { data: ReviewAnalytics }) {
       : t('review.seconds', {
           count: Math.round((milliseconds / 1000) * 10) / 10,
         })
+  const interventionCount = data.byDecisionSource.reduce(
+    (total, item) => total + item.interventions,
+    0,
+  )
+  const retentionFollowUps =
+    data.retention.nextDay.followUps + data.retention.sevenDay.followUps
 
   return (
     <Stack spacing={2}>
@@ -1334,21 +1340,40 @@ function ReviewAnalyticsContent({ data }: { data: ReviewAnalytics }) {
         />
         <DistributionPanel
           title={t('review.interventionOutcomes')}
+          summary={
+            interventionCount === 0
+              ? t('review.noInterventionEvidence')
+              : t('review.interventionEvidence', {
+                  count: interventionCount,
+                })
+          }
           scaleMaximum={1}
-          empty={data.byDecisionSource.every((item) => item.interventions === 0)}
-          emptyMessage={t('review.noInterventionEvidence')}
+          empty={false}
           items={data.byDecisionSource.map((item) => ({
             key: item.source,
             label: t(`review.sources.${item.source}`),
             value: item.retestSuccessRate,
             valueLabel: `${integerFormatter.format(item.successfulRetests)} / ${integerFormatter.format(item.retestAttempts)}`,
-            supportingLabel: formatAnalyticsRatio(item.retestSuccessRate),
+            supportingLabel: t('review.interventionSourceEvidence', {
+              count: item.interventions,
+              rate:
+                item.retestAttempts === 0
+                  ? '—'
+                  : formatAnalyticsRatio(item.retestSuccessRate),
+            }),
           }))}
         />
       </Box>
 
       <TrendPanel
         title={t('review.retentionTitle')}
+        summary={
+          retentionFollowUps === 0
+            ? t('review.noRetentionEvidence')
+            : t('review.retentionEvidence', {
+                count: retentionFollowUps,
+              })
+        }
         headers={[
           t('review.retentionWindow'),
           t('review.followUps'),
@@ -1364,11 +1389,12 @@ function ReviewAnalyticsContent({ data }: { data: ReviewAnalytics }) {
             item.label,
             integerFormatter.format(item.value.followUps),
             integerFormatter.format(item.value.correct),
-            formatAnalyticsRatio(item.value.accuracy),
+            item.value.followUps === 0
+              ? '—'
+              : formatAnalyticsRatio(item.value.accuracy),
           ],
         }))}
-        empty={data.retention.nextDay.followUps + data.retention.sevenDay.followUps === 0}
-        emptyMessage={t('review.noRetentionEvidence')}
+        empty={false}
       />
     </Stack>
   )

@@ -97,6 +97,8 @@
     "byDuration": "Completion by plan length",
     "durationLabel": "{{count}} minutes",
     "interventionOutcomes": "Coaching retest outcomes",
+    "interventionEvidence": "{{count}} coaching interventions were recorded in this period.",
+    "interventionSourceEvidence": "{{count}} interventions · {{rate}}",
     "practiceTrend": "Practice signals over time",
     "practiceTrendSummary": "{{answers}} answers across {{buckets}} time buckets.",
     "trendPeriod": "Period",
@@ -105,10 +107,10 @@
     "trendResponseTime": "Avg. response",
     "trendHints": "Hints",
     "sources": {
-      "AI": "Adaptive coaching",
-      "RULE": "Built-in coaching"
+      "AI": "Adaptive coaching"
     },
     "retentionTitle": "Recall after coaching",
+    "retentionEvidence": "{{count}} mature follow-ups were recorded across these windows.",
     "retentionWindow": "Follow-up window",
     "followUps": "Follow-ups",
     "correctFollowUps": "Correct",

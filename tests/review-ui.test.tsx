@@ -416,7 +416,6 @@ describe("ReviewPage", () => {
       screen.queryByText(/inferred|again, hard|easy/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText("AI", { exact: true })).not.toBeInTheDocument();
-    expect(screen.queryByText("RULE", { exact: true })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
 
@@ -505,25 +504,6 @@ describe("ReviewPage", () => {
     expect(announcement).toHaveTextContent("Impact means a strong effect");
     expect(announcement).toHaveAttribute("aria-live", "polite");
     expect(screen.queryByText("AI", { exact: true })).not.toBeInTheDocument();
-  });
-
-  it("renders RULE coaching with the same learner-facing presentation", () => {
-    queryState.data = {
-      ...sessionState(),
-      agentFeedback: { ...coachingFeedback, source: "RULE" },
-    };
-    renderReview();
-
-    const announcement = screen.getByRole("status", {
-      name: "What to Notice",
-    });
-    expect(announcement).toHaveTextContent("Focus: Meaning in context");
-    expect(announcement).toHaveTextContent(
-      "Pattern: A similar word caused confusion",
-    );
-    expect(announcement).toHaveTextContent("Impact means a strong effect");
-    expect(screen.queryByText("AI", { exact: true })).not.toBeInTheDocument();
-    expect(screen.queryByText("RULE", { exact: true })).not.toBeInTheDocument();
   });
 
   it("provides a keyboard-focusable skip link to the review content", () => {
@@ -852,12 +832,6 @@ const persistedSummary: CompletedReviewResult = {
   skillBreakdown: [
     { skillDimension: 'RECALL', attempts: 2, correct: 1, accuracy: 0.5 },
   ],
-  coachSummary: {
-    strengths: [],
-    focusNext: ['RECALL'],
-    message: 'Focus next on recall in a short follow-up review.',
-    source: 'RULE',
-  },
   wordsToRevisit: [
     {
       userVocabularyId: 'vocabulary-1',

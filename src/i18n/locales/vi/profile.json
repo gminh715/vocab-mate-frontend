@@ -21,7 +21,40 @@
     },
     "cefrCard": {
       "title": "Trình độ học tập hiện tại",
-      "hint": "Lưu một trong hai trình độ CEFR sẽ làm mới các từ được tô sáng trong bài đọc."
+      "hint": "Lưu một trong hai trình độ CEFR sẽ làm mới các từ được tô sáng trong bài đọc.",
+      "vocabSize": "Vốn từ: {{count}}",
+      "levels": {
+        "A1": {
+          "title": "Căn bản",
+          "vocab": "~500 – 1.000 từ",
+          "description": "Hiểu và sử dụng các câu đơn giản, từ ngữ quen thuộc hàng ngày để giao tiếp cơ bản."
+        },
+        "A2": {
+          "title": "Sơ cấp",
+          "vocab": "~1.000 – 2.000 từ",
+          "description": "Giao tiếp về các chủ đề quen thuộc thường ngày như bản thân, gia đình, mua sắm và công việc."
+        },
+        "B1": {
+          "title": "Trung cấp",
+          "vocab": "~2.000 – 4.000 từ",
+          "description": "Hiểu ý chính các bài đọc thực tế, diễn đạt suy nghĩ và tự tin xử lý hầu hết tình huống thường gặp."
+        },
+        "B2": {
+          "title": "Trung cấp cao",
+          "vocab": "~4.000 – 6.500 từ",
+          "description": "Đọc hiểu văn bản phức tạp, nắm bắt bài viết chuyên sâu và thảo luận lưu loát nhiều chủ đề."
+        },
+        "C1": {
+          "title": "Cao cấp",
+          "vocab": "~6.500 – 10.000 từ",
+          "description": "Sử dụng tiếng Anh linh hoạt, đọc hiểu sâu rộng và diễn đạt trôi chảy trong học thuật, công việc."
+        },
+        "C2": {
+          "title": "Thành thạo",
+          "vocab": "> 10.000 từ",
+          "description": "Làm chủ tiếng Anh gần như người bản xứ, đọc hiểu tinh tế và sử dụng từ ngữ tự nhiên, chuẩn xác."
+        }
+      }
     },
     "form": {
       "title": "Hồ sơ học tập",

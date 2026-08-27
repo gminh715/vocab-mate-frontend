@@ -3,7 +3,6 @@ import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import Pagination from '@mui/material/Pagination'
@@ -200,25 +199,30 @@ export function SavedVocabularyPage() {
   }
 
   return (
-    <Container maxWidth="lg" disableGutters sx={{ py: 1 }}>
+    <Stack spacing={{ xs: 3, md: 4 }}>
       <Box
         sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) auto' },
+          gap: 2,
+          alignItems: 'end',
           borderBottom: 1,
           borderColor: 'divider',
           pb: { xs: 3, md: 4 },
-          mb: { xs: 3, md: 4 },
         }}
       >
-        <Typography
-          component="h1"
-          variant="h1"
-          sx={{
-            fontSize: { xs: 40, sm: 50, md: 58 },
-            textWrap: 'balance',
-          }}
-        >
-          {t('page.title', 'Saved Vocabulary')}
-        </Typography>
+        <Box sx={{ maxWidth: 720 }}>
+          <Typography
+            component="h1"
+            variant="h1"
+            sx={{
+              fontSize: { xs: 40, sm: 52 },
+              textWrap: 'balance',
+            }}
+          >
+            {t('page.title', 'Saved Vocabulary')}
+          </Typography>
+        </Box>
       </Box>
 
       <Grid container spacing={3}>
@@ -472,6 +476,6 @@ export function SavedVocabularyPage() {
           defaultCollectionId={selectedCollectionId || undefined}
         />
       ) : null}
-    </Container>
+    </Stack>
   )
 }

@@ -77,7 +77,6 @@ const reviewData = {
   ],
   byDecisionSource: [
     { source: 'AI', interventions: 2, retestAttempts: 2, successfulRetests: 1, retestSuccessRate: 0.5 },
-    { source: 'RULE', interventions: 0, retestAttempts: 0, successfulRetests: 0, retestSuccessRate: 0 },
   ],
   retention: {
     nextDay: { followUps: 2, correct: 1, accuracy: 0.5 },
@@ -296,5 +295,40 @@ describe('detailed learning analytics', () => {
     expect(screen.getByText('Coaching retest outcomes')).toBeInTheDocument()
     expect(screen.getByText('3.2 sec')).toBeInTheDocument()
     expect(screen.getByRole('table', { name: 'Recall after coaching' })).toBeInTheDocument()
+  })
+
+  it('keeps zero coaching and retention evidence visible without implying zero accuracy', () => {
+    const originalDecisionSources = reviewData.byDecisionSource
+    const originalRetention = reviewData.retention
+    reviewData.byDecisionSource = originalDecisionSources.map((item) => ({
+      ...item,
+      interventions: 0,
+      retestAttempts: 0,
+      successfulRetests: 0,
+      retestSuccessRate: 0,
+    }))
+    reviewData.retention = {
+      nextDay: { followUps: 0, correct: 0, accuracy: 0 },
+      sevenDay: { followUps: 0, correct: 0, accuracy: 0 },
+    }
+
+    try {
+      renderAnalytics()
+      fireEvent.click(screen.getByRole('tab', { name: 'Review Impact' }))
+
+      expect(
+        screen.getByText('No coaching interventions were recorded in this period.'),
+      ).toBeInTheDocument()
+      expect(screen.getByText('Adaptive coaching')).toBeInTheDocument()
+      expect(
+        screen.getByRole('row', { name: 'Next day 0 0 —' }),
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('row', { name: 'Seven days 0 0 —' }),
+      ).toBeInTheDocument()
+    } finally {
+      reviewData.byDecisionSource = originalDecisionSources
+      reviewData.retention = originalRetention
+    }
   })
 })

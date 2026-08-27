@@ -25,7 +25,7 @@ export type ReviewPreparationStage =
   | 'PLANNING_SESSION'
   | 'READY'
   | 'FAILED'
-export type ReviewDecisionSource = 'AI' | 'RULE'
+export type ReviewDecisionSource = 'AI'
 export type ReviewAgentAction =
   | 'CONTINUE'
   | 'REQUEUE_WITH_NEW_TYPE'
@@ -211,13 +211,6 @@ export interface ReviewSkillBreakdownItem {
   accuracy: number
 }
 
-export interface ReviewCoachSummary {
-  strengths: ReviewSkillDimension[]
-  focusNext: ReviewSkillDimension[]
-  message: string
-  source: ReviewDecisionSource
-}
-
 export interface ReviewWordToRevisit {
   userVocabularyId: string | null
   wordOrPhrase: string
@@ -232,7 +225,6 @@ export interface CompletedReviewResult {
   result: ReviewResult
   answers: CompletedReviewAnswer[]
   skillBreakdown: ReviewSkillBreakdownItem[]
-  coachSummary: ReviewCoachSummary
   wordsToRevisit: ReviewWordToRevisit[]
 }
 

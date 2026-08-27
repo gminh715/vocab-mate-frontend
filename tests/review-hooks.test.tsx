@@ -249,7 +249,7 @@ describe('review mutations', () => {
 
   it('persists answer coaching in both review caches', async () => {
     const agentFeedback = {
-      source: 'RULE' as const,
+      source: 'AI' as const,
       action: 'REQUEUE_WITH_NEW_TYPE' as const,
       skillDimension: 'RECALL' as const,
       errorType: 'LOW_RECALL' as const,

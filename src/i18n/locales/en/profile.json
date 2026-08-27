@@ -21,7 +21,40 @@
     },
     "cefrCard": {
       "title": "Current learning level",
-      "hint": "Saving either CEFR level refreshes personalized article highlights."
+      "hint": "Saving either CEFR level refreshes personalized article highlights.",
+      "vocabSize": "Vocabulary: {{count}}",
+      "levels": {
+        "A1": {
+          "title": "Beginner",
+          "vocab": "~500 – 1,000 words",
+          "description": "Understand and use simple everyday expressions and basic phrases for fundamental communication."
+        },
+        "A2": {
+          "title": "Elementary",
+          "vocab": "~1,000 – 2,000 words",
+          "description": "Communicate in routine tasks and familiar everyday topics such as family, shopping, and work."
+        },
+        "B1": {
+          "title": "Intermediate",
+          "vocab": "~2,000 – 4,000 words",
+          "description": "Understand main points of authentic texts, express opinions, and handle most common situations."
+        },
+        "B2": {
+          "title": "Upper Intermediate",
+          "vocab": "~4,000 – 6,500 words",
+          "description": "Read complex texts, grasp nuanced arguments, and discuss technical topics fluently."
+        },
+        "C1": {
+          "title": "Advanced",
+          "vocab": "~6,500 – 10,000 words",
+          "description": "Use language flexibly and effectively for demanding academic, professional, and social purposes."
+        },
+        "C2": {
+          "title": "Mastery",
+          "vocab": "> 10,000 words",
+          "description": "Understand virtually everything with ease and express spontaneously, precisely, and idiomatically."
+        }
+      }
     },
     "form": {
       "title": "Learning profile",

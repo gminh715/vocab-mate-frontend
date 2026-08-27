@@ -66,7 +66,6 @@ export function ReviewSummaryPage() {
   const result = summaryQuery.data?.result ?? navigationResult
   const incorrectAnswers = summaryQuery.data?.answers.filter((answer) => !answer.isCorrect) ?? []
   const skillBreakdown = summaryQuery.data?.skillBreakdown ?? []
-  const coachSummary = summaryQuery.data?.coachSummary
   const wordsToRevisit = summaryQuery.data?.wordsToRevisit ?? []
 
   if (!result && summaryQuery.isPending) {
@@ -175,7 +174,7 @@ export function ReviewSummaryPage() {
           </Stack>
         </Paper>
 
-        {skillBreakdown.length > 0 || coachSummary ? (
+        {skillBreakdown.length > 0 ? (
           <Paper
             component="section"
             aria-labelledby="skill-breakdown-title"
@@ -185,14 +184,7 @@ export function ReviewSummaryPage() {
             <Typography id="skill-breakdown-title" component="h2" variant="h2" sx={{ fontSize: 27 }}>
               {t('summary.skillsTitle')}
             </Typography>
-            {coachSummary ? (
-              <Typography color="text.secondary" sx={{ mt: 1, mb: skillBreakdown.length > 0 ? 2.5 : 0, overflowWrap: 'anywhere' }}>
-                {coachSummary.message}
-              </Typography>
-            ) : null}
-            {skillBreakdown.length > 0 ? (
-              <SkillBreakdown items={skillBreakdown} labelledBy="skill-breakdown-title" />
-            ) : null}
+            <SkillBreakdown items={skillBreakdown} labelledBy="skill-breakdown-title" />
           </Paper>
         ) : null}
 

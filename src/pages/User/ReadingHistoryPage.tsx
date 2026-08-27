@@ -247,18 +247,18 @@ export function ReadingHistoryPage() {
           pb: { xs: 3, md: 4 },
         }}
       >
-        <Stack spacing={1.25} sx={{ maxWidth: 720 }}>
+        <Box sx={{ maxWidth: 720 }}>
           <Typography
             component="h1"
             variant="h1"
             sx={{
-              fontSize: { xs: 40, sm: 50, md: 58 },
+              fontSize: { xs: 40, sm: 52 },
               textWrap: 'balance',
             }}
           >
             {t('history.title')}
           </Typography>
-        </Stack>
+        </Box>
         {listData ? (
           <Typography
             color="text.secondary"

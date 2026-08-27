@@ -17,6 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { articlesApi, categoriesApi } from '@/api'
 import { ApiError } from '@/config/apiClient'
 import { ArticlesPage } from '@/pages/Article/ArticlesPage'
+import i18n from '@/i18n/i18n'
 import { appTheme } from '@/theme'
 import type { ArticleListData } from '@/types/Article/articles'
 
@@ -72,7 +73,8 @@ const renderPage = (initialEntry = '/articles') => {
 }
 
 describe('Article Discovery interactions', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('en')
     vi.spyOn(articlesApi, 'list').mockResolvedValue(articleList)
     vi.spyOn(categoriesApi, 'list').mockResolvedValue({
       items: [article.category],

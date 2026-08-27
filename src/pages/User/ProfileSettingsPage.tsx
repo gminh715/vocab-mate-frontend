@@ -13,7 +13,6 @@ import Typography from '@mui/material/Typography'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { UserAvatar } from '@/components/Shared/UserAvatar'
 import { SettingsNavigation } from '@/components/User/SettingsNavigation'
 import { normalizeApiError } from '@/config/apiClient'
 import { useAuth } from '@/contexts/AuthContext'
@@ -22,7 +21,6 @@ import {
   profileFormSchema,
   profileToFormValues,
   toUpdateMyProfileRequest,
-  validAvatarPreviewUrl,
   type ProfileFormOutput,
   type ProfileFormValues,
 } from '@/schemas/User/profile'
@@ -124,15 +122,10 @@ export function ProfileSettingsPage() {
     return () => window.removeEventListener('beforeunload', warnBeforeUnload)
   }, [isDirty, updateMutation.isPending])
 
-  const displayName = useWatch({ control, name: 'displayName' })
-  const avatarUrl = useWatch({ control, name: 'avatarUrl' })
   const currentCefrLevel = useWatch({
     control,
     name: 'currentCefrLevel',
   })
-  const previewUrl = validAvatarPreviewUrl(
-    typeof avatarUrl === 'string' ? avatarUrl : '',
-  )
 
   if (!currentUser) return null
 
@@ -222,27 +215,18 @@ export function ProfileSettingsPage() {
             },
           }}
         >
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2.5}
-            sx={{ alignItems: { sm: 'center' } }}
-          >
-            <UserAvatar
-              displayName={displayName || currentUser.profile.displayName}
-              avatarUrl={previewUrl}
-              alt={t('profile.avatarAlt')}
-              size={76}
-            />
-            <Box>
-              <Typography
-                component="h1"
-                variant="h1"
-                sx={{ fontSize: { xs: 38, md: 50 } }}
-              >
-                {t('profile.title', 'Profile settings')}
-              </Typography>
-            </Box>
-          </Stack>
+          <Box>
+            <Typography
+              component="h1"
+              variant="h1"
+              sx={{
+                fontSize: { xs: 38, md: 50 },
+                textWrap: 'balance',
+              }}
+            >
+              {t('profile.title', 'Profile settings')}
+            </Typography>
+          </Box>
 
           {successMessage ? (
             <Alert
@@ -302,22 +286,61 @@ export function ProfileSettingsPage() {
                   p: { xs: 2.5, sm: 3 },
                   bgcolor: 'primary.dark',
                   color: 'primary.contrastText',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1.5,
+                  borderRadius: 2,
                 }}
               >
-                <Typography
-                  aria-live="polite"
-                  sx={{
-                    mt: 1,
-                    fontFamily: '"Merriweather", serif',
-                    fontSize: 44,
-                    fontWeight: 700,
-                    lineHeight: 1,
-                  }}
+                <Stack
+                  direction="row"
+                  spacing={1.5}
+                  sx={{ alignItems: 'baseline', flexWrap: 'wrap' }}
                 >
-                  {currentCefrLevel}
-                </Typography>
-                <Typography sx={{ mt: 1.25, opacity: 0.82, fontSize: 14 }}>
-                  {t('profile.cefrCard.hint')}
+                  <Typography
+                    aria-live="polite"
+                    sx={{
+                      fontFamily: '"Merriweather", serif',
+                      fontSize: 44,
+                      fontWeight: 700,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {currentCefrLevel || currentUser.profile.currentCefrLevel}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: 16,
+                      fontWeight: 700,
+                      opacity: 0.95,
+                    }}
+                  >
+                    {t(
+                      `profile.cefrCard.levels.${currentCefrLevel || currentUser.profile.currentCefrLevel}.title`,
+                    )}
+                  </Typography>
+                </Stack>
+
+                <Chip
+                  size="small"
+                  label={t('profile.cefrCard.vocabSize', {
+                    count: t(
+                      `profile.cefrCard.levels.${currentCefrLevel || currentUser.profile.currentCefrLevel}.vocab`,
+                    ),
+                  })}
+                  sx={{
+                    alignSelf: 'flex-start',
+                    bgcolor: 'rgba(255, 255, 255, 0.15)',
+                    color: 'inherit',
+                    fontWeight: 650,
+                    fontSize: 12.5,
+                  }}
+                />
+
+                <Typography sx={{ opacity: 0.88, fontSize: 13.5, lineHeight: 1.55 }}>
+                  {t(
+                    `profile.cefrCard.levels.${currentCefrLevel || currentUser.profile.currentCefrLevel}.description`,
+                  )}
                 </Typography>
               </Paper>
             </Stack>
@@ -338,10 +361,7 @@ export function ProfileSettingsPage() {
                   type="url"
                   autoComplete="url"
                   error={Boolean(errors.avatarUrl)}
-                  helperText={
-                    errors.avatarUrl?.message ??
-                    t('profile.form.avatarUrlHint')
-                  }
+                  helperText={errors.avatarUrl?.message}
                   slotProps={{
                     htmlInput: {
                       inputMode: 'url',
@@ -367,10 +387,7 @@ export function ProfileSettingsPage() {
                         label={t('profile.form.cefrLevel')}
                         autoComplete="off"
                         error={Boolean(errors.currentCefrLevel)}
-                        helperText={
-                          errors.currentCefrLevel?.message ??
-                          t('profile.form.cefrLevelHint')
-                        }
+                        helperText={errors.currentCefrLevel?.message}
                         {...field}
                       >
                         {CEFR_LEVELS.map((level) => (
@@ -391,10 +408,7 @@ export function ProfileSettingsPage() {
                         label={t('profile.form.learningGoal')}
                         autoComplete="off"
                         error={Boolean(errors.learningGoal)}
-                        helperText={
-                          errors.learningGoal?.message ??
-                          t('profile.form.learningGoalHint')
-                        }
+                        helperText={errors.learningGoal?.message}
                         {...field}
                       >
                         <MenuItem value="">{t('profile.form.learningGoalNotSet')}</MenuItem>
@@ -415,10 +429,7 @@ export function ProfileSettingsPage() {
                         select
                         label={t('profile.form.dailyStudyMinutes')}
                         error={Boolean(errors.dailyStudyMinutes)}
-                        helperText={
-                          errors.dailyStudyMinutes?.message ??
-                          t('profile.form.dailyStudyMinutesHint')
-                        }
+                        helperText={errors.dailyStudyMinutes?.message}
                         {...field}
                       >
                         {[5, 10, 15].map((minutes) => (

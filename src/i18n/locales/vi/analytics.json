@@ -97,6 +97,8 @@
     "byDuration": "Hoàn thành theo thời lượng",
     "durationLabel": "{{count}} phút",
     "interventionOutcomes": "Kết quả kiểm tra lại sau hướng dẫn",
+    "interventionEvidence": "Đã ghi nhận {{count}} lần hướng dẫn trong giai đoạn này.",
+    "interventionSourceEvidence": "{{count}} lần hướng dẫn · {{rate}}",
     "practiceTrend": "Tín hiệu luyện tập theo thời gian",
     "practiceTrendSummary": "{{answers}} câu trả lời trong {{buckets}} khoảng thời gian.",
     "trendPeriod": "Thời gian",
@@ -105,10 +107,10 @@
     "trendResponseTime": "Phản hồi TB",
     "trendHints": "Gợi ý",
     "sources": {
-      "AI": "Hướng dẫn thích ứng",
-      "RULE": "Hướng dẫn tích hợp"
+      "AI": "Hướng dẫn thích ứng"
     },
     "retentionTitle": "Gợi nhớ sau hướng dẫn",
+    "retentionEvidence": "Đã ghi nhận {{count}} lượt theo dõi đủ thời gian ở các mốc này.",
     "retentionWindow": "Mốc kiểm tra",
     "followUps": "Lượt theo dõi",
     "correctFollowUps": "Câu đúng",

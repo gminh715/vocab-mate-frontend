@@ -4,7 +4,6 @@ import { normalizeApiError } from '@/config/apiClient'
 import type { ContextualTermLookupData } from '@/types/Reading/reading'
 import type {
   GetVocabulariesQueryParams,
-  LearningStatus,
   SaveVocabularyRequest,
 } from '@/types/Vocabulary/vocabulary'
 import { readingQueryKeys } from '@/hooks/Reading/useReading'
@@ -14,8 +13,6 @@ export const vocabularyQueryKeys = {
   lists: () => [...vocabularyQueryKeys.all, 'list'] as const,
   list: (params: GetVocabulariesQueryParams) =>
     [...vocabularyQueryKeys.lists(), params] as const,
-  due: (params?: { limit?: number; collectionId?: string }) =>
-    [...vocabularyQueryKeys.all, 'due', params ?? {}] as const,
   details: () => [...vocabularyQueryKeys.all, 'detail'] as const,
   detail: (userVocabularyId: string) =>
     [...vocabularyQueryKeys.details(), userVocabularyId] as const,
@@ -33,41 +30,12 @@ export const useVocabulariesQuery = (
     enabled,
   })
 
-export const useDueVocabulariesQuery = (params?: {
-  limit?: number
-  collectionId?: string
-}) =>
-  useQuery({
-    queryKey: vocabularyQueryKeys.due(params),
-    queryFn: () => vocabulariesApi.getDue(params),
-  })
-
 export const useVocabularyDetailQuery = (userVocabularyId: string) =>
   useQuery({
     queryKey: vocabularyQueryKeys.detail(userVocabularyId),
     queryFn: () => vocabulariesApi.findOne(userVocabularyId),
     enabled: Boolean(userVocabularyId),
   })
-
-export const useUpdateVocabularyStatusMutation = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: ({
-      userVocabularyId,
-      learningStatus,
-    }: {
-      userVocabularyId: string
-      learningStatus: LearningStatus
-    }) => vocabulariesApi.updateStatus(userVocabularyId, learningStatus),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: vocabularyQueryKeys.all,
-      })
-      void queryClient.invalidateQueries({ queryKey: collectionQueryRoot })
-    },
-  })
-}
 
 export const useDeleteVocabularyMutation = () => {
   const queryClient = useQueryClient()
@@ -128,7 +96,6 @@ export const useSaveVocabularyMutation = (
                 saveState: {
                   isSaved: true,
                   userVocabularyId: data.vocabulary.id,
-                  learningStatus: data.vocabulary.learningStatus,
                 },
               }
             : current,

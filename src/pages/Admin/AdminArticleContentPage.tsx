@@ -61,7 +61,6 @@ import type {
   UpdateArticleSentenceRequest,
   UpdateArticleTermRequest,
 } from '@/types/Admin/adminArticleContent'
-import { LEXICAL_UNIT_TYPES } from '@/types/Admin/adminArticleContent'
 import {
   TERM_ORIGINS,
   TERM_REVIEW_STATUSES,
@@ -313,7 +312,7 @@ function SentenceTerms({
                     sx={{ flexWrap: 'wrap', gap: 0.75 }}
                   >
                     <Typography sx={{ fontWeight: 750 }}>
-                      {term.wordDisplay ?? term.value}
+                      {term.value}
                     </Typography>
                     <Chip
                       label={term.cefrLevel ?? 'CEFR pending'}
@@ -506,7 +505,7 @@ function TermDeleteDialog({
       <DialogContent>
         <DialogContentText>
           {term
-            ? `Delete “${term.wordDisplay ?? term.value}” and unwrap its backend marker?`
+            ? `Delete “${term.value}” and unwrap its backend marker?`
             : ''}
         </DialogContentText>
         {deleteError ? (
@@ -673,9 +672,6 @@ export function AdminArticleContentPage() {
   const termCefr = CEFR_LEVELS.find(
     (level) => level === searchParams.get('termCefr'),
   )
-  const termUnit = LEXICAL_UNIT_TYPES.find(
-    (unitType) => unitType === searchParams.get('termUnit'),
-  )
   const termOrigin = TERM_ORIGINS.find(
     (origin) => origin === searchParams.get('termOrigin'),
   )
@@ -690,7 +686,6 @@ export function AdminArticleContentPage() {
     limit: positiveInteger(searchParams.get('termLimit'), 20, 100),
     ...(termQ ? { q: termQ } : {}),
     ...(termCefr ? { cefrLevel: termCefr } : {}),
-    ...(termUnit ? { unitType: termUnit } : {}),
     ...(termOrigin ? { origin: termOrigin } : {}),
     ...(termReview ? { reviewStatus: termReview } : {}),
     ...(termExplanation
@@ -827,7 +822,7 @@ export function AdminArticleContentPage() {
           moderationTarget.action === 'approve' ? 'approved' : 'rejected'
         setFeedback({
           severity: 'success',
-          message: `${moderationTarget.term.wordDisplay ?? moderationTarget.term.value} ${actionLabel}.`,
+          message: `${moderationTarget.term.value} ${actionLabel}.`,
         })
         setModerationTarget(null)
       },
@@ -1408,21 +1403,6 @@ export function AdminArticleContentPage() {
                 </TextField>
                 <TextField
                   select
-                  label="Unit type"
-                  value={termUnit ?? ''}
-                  onChange={(event) =>
-                    updateParams(
-                      { termUnit: event.target.value || undefined },
-                      'termPage',
-                    )
-                  }
-                >
-                  <MenuItem value="">All unit types</MenuItem>
-                  <MenuItem value="WORD">Word</MenuItem>
-                  <MenuItem value="PHRASE">Phrase</MenuItem>
-                </TextField>
-                <TextField
-                  select
                   label="Status"
                   value={
                     termParams.isActive === undefined
@@ -1487,7 +1467,7 @@ export function AdminArticleContentPage() {
                               sx={{ flexWrap: 'wrap', gap: 0.75 }}
                             >
                               <Typography sx={{ fontWeight: 750 }}>
-                                {term.wordDisplay ?? term.value}
+                                {term.value}
                               </Typography>
                               <Chip
                                 label={`Sentence ${term.sentenceOrder}`}
@@ -1534,15 +1514,6 @@ export function AdminArticleContentPage() {
                               {term.contextualMeaningVi ??
                                 'Enrichment will be generated after approval and reader lookup.'}
                             </Typography>
-                            {term.selectionReason ? (
-                              <Typography
-                                color="text.secondary"
-                                variant="body2"
-                                sx={{ mt: 0.75 }}
-                              >
-                                Selection reason: {term.selectionReason}
-                              </Typography>
-                            ) : null}
                           </Box>
                           {!isReadOnly ? (
                             <Stack
@@ -1677,8 +1648,8 @@ export function AdminArticleContentPage() {
         }
         description={
           moderationTarget?.action === 'approve'
-            ? `Approve “${moderationTarget.term.wordDisplay ?? moderationTarget.term.value}” and add its reader marker exactly once? Contextual enrichment remains lazy until a reader looks it up.`
-            : `Reject “${moderationTarget?.term.wordDisplay ?? moderationTarget?.term.value ?? ''}”? Rejected terms remain inaccessible to readers.`
+            ? `Approve “${moderationTarget.term.value}” and add its reader marker exactly once? Contextual enrichment remains lazy until a reader looks it up.`
+            : `Reject “${moderationTarget?.term.value ?? ''}”? Rejected terms remain inaccessible to readers.`
         }
         confirmLabel={
           moderationTarget?.action === 'approve' ? 'Approve' : 'Reject'

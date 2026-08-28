@@ -12,11 +12,11 @@ export function I18nLanguageSync() {
   const { i18n } = useTranslation()
 
   useEffect(() => {
-    const preferredLang = currentUser?.profile.preferredLanguage
+    const preferredLang = currentUser?.preferredLanguage
     if (preferredLang && i18n.language !== preferredLang) {
       void i18n.changeLanguage(preferredLang)
     }
-  }, [currentUser?.profile.preferredLanguage, i18n])
+  }, [currentUser?.preferredLanguage, i18n])
 
   return null
 }

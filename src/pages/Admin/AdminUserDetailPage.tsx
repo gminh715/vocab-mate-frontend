@@ -278,8 +278,8 @@ export function AdminUserDetailPage() {
     )
   }
 
-  const { user, profile, learningSummary } = detailQuery.data
-  const displayName = profile?.displayName ?? 'No profile'
+  const { user, learningSummary } = detailQuery.data
+  const displayName = user.displayName
 
   return (
     <Stack spacing={3.5}>
@@ -298,7 +298,7 @@ export function AdminUserDetailPage() {
         sx={{ alignItems: { sm: 'center' } }}
       >
         <Avatar
-          src={profile?.avatarUrl ?? undefined}
+          src={user.avatarUrl ?? undefined}
           alt=""
           sx={{
             width: 64,
@@ -377,38 +377,26 @@ export function AdminUserDetailPage() {
               <Typography variant="h2" sx={{ fontSize: 27 }}>
                 Profile
               </Typography>
-              {profile ? (
-                <Box
-                  component="dl"
-                  sx={{
-                    m: 0,
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-                    gap: 3,
-                  }}
-                >
-                  <DetailField
-                    label="Display name"
-                    value={profile.displayName}
-                  />
-                  <DetailField
-                    label="CEFR level"
-                    value={profile.currentCefrLevel}
-                  />
-                  <DetailField
-                    label="Preferred language"
-                    value={profile.preferredLanguage}
-                  />
-                  <DetailField
-                    label="Learning goal"
-                    value={profile.learningGoal ?? 'Not set'}
-                  />
-                </Box>
-              ) : (
-                <Typography color="text.secondary">
-                  This account does not have a profile.
-                </Typography>
-              )}
+              <Box
+                component="dl"
+                sx={{
+                  m: 0,
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                  gap: 3,
+                }}
+              >
+                <DetailField label="Display name" value={user.displayName} />
+                <DetailField label="CEFR level" value={user.currentCefrLevel} />
+                <DetailField
+                  label="Preferred language"
+                  value={user.preferredLanguage}
+                />
+                <DetailField
+                  label="Learning goal"
+                  value={user.learningGoal ?? 'Not set'}
+                />
+              </Box>
             </Stack>
           </Paper>
 
@@ -431,10 +419,6 @@ export function AdminUserDetailPage() {
               >
                 {[
                   ['Saved vocabulary', learningSummary.savedVocabularyCount],
-                  [
-                    'Mastered vocabulary',
-                    learningSummary.masteredVocabularyCount,
-                  ],
                   [
                     'Completed articles',
                     learningSummary.completedArticleCount,

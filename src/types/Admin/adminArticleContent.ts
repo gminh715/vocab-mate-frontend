@@ -6,14 +6,12 @@ import type {
 import type { CefrLevel } from '@/types/Auth/auth'
 import type { PublicCategory } from '@/types/Admin/adminCategories'
 
-export const LEXICAL_UNIT_TYPES = ['WORD', 'PHRASE'] as const
 export const TERM_ORIGINS = ['MANUAL', 'AI', 'NLP'] as const
 export const TERM_REVIEW_STATUSES = [
   'PENDING',
   'APPROVED',
   'REJECTED',
 ] as const
-export type LexicalUnitType = (typeof LEXICAL_UNIT_TYPES)[number]
 export type TermOrigin = (typeof TERM_ORIGINS)[number]
 export type TermReviewStatus =
   (typeof TERM_REVIEW_STATUSES)[number]
@@ -25,9 +23,6 @@ export interface ArticleSentence {
   sentenceOrder: number
   sentenceText: string
   translationVi: string | null
-  explanationVi: string | null
-  referenceExplanation: string | null
-  skill: string | null
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -42,10 +37,7 @@ export interface ArticleSentenceTerm {
   id: string
   sentenceId: string
   value: string
-  wordDisplay: string | null
   lemma: string
-  normalizedLemma: string | null
-  unitType: LexicalUnitType
   partOfSpeech: string | null
   ipa: string | null
   cefrLevel: CefrLevel | null
@@ -56,15 +48,11 @@ export interface ArticleSentenceTerm {
   antonyms: string[]
   collocations: string[]
   relatedTerms: string[]
-  vocabularyTopic: string | null
   examples: ArticleTermExample[]
-  skill: string | null
   origin: TermOrigin
   reviewStatus: TermReviewStatus
-  selectionReason: string | null
   explanationStatus: AiGenerationStatus
   explanationError: string | null
-  explanationGeneratedAt: string | null
   isLookupEnabled: boolean
   isActive: boolean
   createdAt: string
@@ -90,9 +78,6 @@ export interface ArticleSentenceDetail {
 
 export interface UpdateArticleSentenceRequest {
   translationVi?: string
-  explanationVi?: string
-  referenceExplanation?: string
-  skill?: string
   isActive?: boolean
 }
 
@@ -115,7 +100,6 @@ export interface ArticleTermListParams {
   limit: number
   sentenceId?: string
   cefrLevel?: CefrLevel
-  unitType?: LexicalUnitType
   origin?: TermOrigin
   reviewStatus?: TermReviewStatus
   explanationStatus?: AiGenerationStatus
@@ -143,10 +127,7 @@ export interface ArticleTermDetail {
 
 export interface CreateArticleTermRequest {
   value: string
-  wordDisplay: string
   lemma: string
-  normalizedLemma: string
-  unitType: LexicalUnitType
   partOfSpeech: string
   ipa?: string
   cefrLevel: CefrLevel
@@ -157,9 +138,7 @@ export interface CreateArticleTermRequest {
   antonyms?: string[]
   collocations?: string[]
   relatedTerms?: string[]
-  vocabularyTopic?: string
   examples?: ArticleTermExample[]
-  skill?: string
   isLookupEnabled?: boolean
   isActive?: boolean
 }

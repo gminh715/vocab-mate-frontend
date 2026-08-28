@@ -7,14 +7,11 @@ const newLearner: CurrentUser = {
   email: 'learner@example.com',
   role: 'USER',
   status: 'ACTIVE',
-  profile: {
-    displayName: 'Learner',
-    avatarUrl: null,
-    currentCefrLevel: 'A1',
-    learningGoal: null,
-    dailyStudyMinutes: null,
-    preferredLanguage: 'vi',
-  },
+  displayName: 'Learner',
+  avatarUrl: null,
+  currentCefrLevel: 'A1',
+  learningGoal: null,
+  preferredLanguage: 'vi',
 }
 
 describe('postAuthPath', () => {
@@ -56,7 +53,7 @@ describe('postAuthPath', () => {
       postLoginPath(
         {
           ...newLearner,
-          profile: { ...newLearner.profile, dailyStudyMinutes: 10 },
+          learningGoal: 'Read English news confidently',
         },
         { from: '/reading-history' },
       ),

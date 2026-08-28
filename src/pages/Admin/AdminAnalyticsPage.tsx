@@ -118,7 +118,6 @@ const metricDefinitions: Array<{
   { key: 'articles', label: 'Articles', detail: 'Current content, all statuses' },
   { key: 'publishedArticles', label: 'Published', detail: 'Currently available articles' },
   { key: 'savedVocabulary', label: 'Vocabulary saves', detail: 'New saves in this range' },
-  { key: 'completedSessions', label: 'Completed sessions', detail: 'Completed reviews in this range' },
 ]
 
 function OverviewMetrics({ data }: { data: AdminAnalyticsOverview }) {
@@ -249,7 +248,6 @@ const distributionLabels: Array<{
   { key: 'inactive', label: 'Inactive' },
   { key: 'readingOnly', label: 'Reading only' },
   { key: 'vocabularyOnly', label: 'Vocabulary only' },
-  { key: 'reviewOnly', label: 'Daily Review only' },
   { key: 'multiActivity', label: 'Multiple activities' },
 ]
 
@@ -494,7 +492,7 @@ export function AdminAnalyticsPage() {
                   <TableContainer><Table size="small" aria-label="Contextual term save counts">
                     <TableHead><TableRow><TableCell>Term</TableCell><TableCell>Article</TableCell><TableCell align="right">Saves</TableCell></TableRow></TableHead>
                     <TableBody>{content.termSaveCounts.map((term) => (
-                      <TableRow key={term.articleSentenceTermId}><TableCell><Typography sx={{ fontWeight: 750 }}>{term.value}</Typography><Typography variant="caption" color="text.secondary">{term.cefrLevel} · {term.normalizedLemma}</Typography></TableCell><TableCell>{term.articleTitle}</TableCell><TableCell align="right">{formatInteger(term.saveCount)}</TableCell></TableRow>
+                      <TableRow key={term.articleSentenceTermId}><TableCell><Typography sx={{ fontWeight: 750 }}>{term.value}</Typography><Typography variant="caption" color="text.secondary">{term.cefrLevel} · {term.lemma}</Typography></TableCell><TableCell>{term.articleTitle}</TableCell><TableCell align="right">{formatInteger(term.saveCount)}</TableCell></TableRow>
                     ))}</TableBody>
                   </Table></TableContainer>
                 )}

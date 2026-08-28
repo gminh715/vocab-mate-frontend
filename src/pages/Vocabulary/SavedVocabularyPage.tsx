@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link as RouterLink, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -16,7 +16,6 @@ import { useTheme } from '@mui/material/styles'
 import { useTranslation } from 'react-i18next'
 import { CollectionSidebar } from '@/components/Vocabulary/CollectionSidebar'
 import { AddVocabularyToCollectionDialog } from '@/components/Vocabulary/AddVocabularyToCollectionDialog'
-import { BookOpenIcon } from '@/components/Dashboard/DashboardIcons'
 import { VocabularyFilterBar } from '@/components/Vocabulary/VocabularyFilterBar'
 import { VocabularyItemCard } from '@/components/Vocabulary/VocabularyItemCard'
 import { VocabularyItemTable } from '@/components/Vocabulary/VocabularyItemTable'
@@ -41,7 +40,6 @@ import {
   vocabularyParamsFromSearchParams,
   vocabularySearchParamsFromParams,
 } from '@/utils/Vocabulary/vocabularyParams'
-import { reviewStartPath } from '@/utils/paths'
 
 export function SavedVocabularyPage() {
   const { t } = useTranslation('vocabulary')
@@ -96,7 +94,7 @@ export function SavedVocabularyPage() {
   const handleSelectCollection = (collectionId?: string) => {
     handleFilterChange({
       collectionId,
-      ...(collectionId ? { cefrLevel: undefined, dueOnly: undefined } : {}),
+      ...(collectionId ? { cefrLevel: undefined } : {}),
     })
   }
 
@@ -188,10 +186,7 @@ export function SavedVocabularyPage() {
     })
   }
 
-  const hasActiveFilters = Boolean(
-    currentParams.q ||
-      currentParams.learningStatus,
-  )
+  const hasActiveFilters = Boolean(currentParams.q)
 
   const handleRetry = () => {
     void collectionsQuery.refetch()
@@ -291,16 +286,6 @@ export function SavedVocabularyPage() {
                 </Tooltip>
               </Stack>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                <Button
-                  component={RouterLink}
-                  to={reviewStartPath('RECALL')}
-                  variant="contained"
-                  color="error"
-                  startIcon={<BookOpenIcon size={19} />}
-                  sx={{ whiteSpace: 'nowrap' }}
-                >
-                  {t('collectionActions.studyFlashcards')}
-                </Button>
                 <Button
                   variant="outlined"
                   color="error"

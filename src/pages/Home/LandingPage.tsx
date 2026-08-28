@@ -22,7 +22,6 @@ import {
   ArrowRightIcon,
   BookOpenIcon,
   BookmarkIcon,
-  FlameIcon,
   LayersIcon,
   SparklesIcon,
   TargetIcon,
@@ -62,7 +61,7 @@ const DEMO_TERMS: Record<string, InteractiveDemoTerm> = {
     meaningVi: 'Sự tiếp thu, thu nhận (kiến thức, ngôn ngữ) một cách tự nhiên.',
     meaningEn: 'The process of getting or learning something, especially knowledge or a skill.',
     translationVi: 'Việc tiếp thu từ vựng đòi hỏi sự lặp lại trong ngữ cảnh phong phú.',
-    translationEn: 'Language acquisition requires spaced repetition in rich contexts.',
+    translationEn: 'Language acquisition grows through repeated exposure to rich contexts.',
     exampleEn: 'Natural language acquisition is faster with real articles.',
     exampleVi: 'Việc tiếp thu ngôn ngữ tự nhiên nhanh hơn thông qua bài báo thực tế.',
   },
@@ -508,7 +507,7 @@ export function LandingPage() {
 
                 <Stack spacing={0.5} sx={{ alignItems: 'center' }}>
                   <Typography sx={{ fontWeight: 800, fontSize: 24, color: '#0F5138' }}>
-                    Spaced Repetition
+                    Collections
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#5D7068', fontSize: 13, fontWeight: 600 }}>
                     {t('hero.statAccuracy')}
@@ -743,7 +742,7 @@ export function LandingPage() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
               gap: 3,
             }}
           >
@@ -811,33 +810,6 @@ export function LandingPage() {
                 border: '1px solid #D9E4DE',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: '#B23B3B',
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 12px 28px rgba(178, 59, 59, 0.12)',
-                },
-              }}
-            >
-              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: '#FEE2E2', color: '#B23B3B', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <FlameIcon size={26} color="#B23B3B" />
-              </Box>
-              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
-                {t('features.srTitle')}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
-                {t('features.srDesc')}
-              </Typography>
-            </Paper>
-
-            {/* Feature 4 */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3.5,
-                borderRadius: 3.5,
-                bgcolor: '#FFFFFF',
-                border: '1px solid #D9E4DE',
-                transition: 'all 0.3s ease',
-                '&:hover': {
                   borderColor: '#0284C7',
                   transform: 'translateY(-4px)',
                   boxShadow: '0 12px 28px rgba(2, 132, 199, 0.12)',
@@ -848,10 +820,10 @@ export function LandingPage() {
                 <LayersIcon size={26} color="#0284C7" />
               </Box>
               <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 700, color: '#17372B', mb: 1 }}>
-                {t('features.dailyReviewTitle')}
+                {t('features.collectionsTitle')}
               </Typography>
               <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.6 }}>
-                {t('features.dailyReviewDesc')}
+                {t('features.collectionsDesc')}
               </Typography>
             </Paper>
           </Box>

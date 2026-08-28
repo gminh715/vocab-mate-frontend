@@ -1,10 +1,8 @@
 import { CEFR_LEVELS, type CefrLevel } from '@/types/Auth/auth'
 import {
-  LEARNING_STATUSES,
   VOCABULARY_SORTS,
   type GetCollectionItemsQueryParams,
   type GetVocabulariesQueryParams,
-  type LearningStatus,
   type VocabularySort,
 } from '@/types/Vocabulary/vocabulary'
 
@@ -42,23 +40,17 @@ export const vocabularyParamsFromSearchParams = (
   searchParams: URLSearchParams,
 ): GetVocabulariesQueryParams => {
   const qValue = searchParams.get('q')?.trim()
-  const statusValue = searchParams.get('learningStatus')
   const cefrValue = searchParams.get('cefrLevel')
   const collectionValue = searchParams.get('collectionId')
-  const dueValue = searchParams.get('dueOnly')
   const sortValue = searchParams.get('sort')
 
   const q = qValue ? qValue : undefined
-  const learningStatus = includes(LEARNING_STATUSES, statusValue)
-    ? (statusValue as LearningStatus)
-    : undefined
   const cefrLevel = includes(CEFR_LEVELS, cefrValue)
     ? (cefrValue as CefrLevel)
     : undefined
   const collectionId = isUuid(collectionValue)
     ? collectionValue!
     : undefined
-  const dueOnly = dueValue === 'true' ? true : undefined
   const sort = includes(VOCABULARY_SORTS, sortValue)
     ? (sortValue as VocabularySort)
     : 'newest'
@@ -67,10 +59,8 @@ export const vocabularyParamsFromSearchParams = (
     page: pageFromValue(searchParams.get('page')),
     limit: limitFromValue(searchParams.get('limit')),
     ...(q ? { q } : {}),
-    ...(learningStatus ? { learningStatus } : {}),
     ...(!collectionId && cefrLevel ? { cefrLevel } : {}),
     ...(collectionId ? { collectionId } : {}),
-    ...(!collectionId && dueOnly !== undefined ? { dueOnly } : {}),
     sort,
   }
 }
@@ -81,9 +71,6 @@ export const collectionItemsParamsFromVocabularyParams = (
   page: params.page,
   limit: params.limit,
   ...(params.q ? { q: params.q } : {}),
-  ...(params.learningStatus
-    ? { learningStatus: params.learningStatus }
-    : {}),
   sort: params.sort,
 })
 
@@ -97,10 +84,8 @@ export const vocabularySearchParamsFromParams = (
     searchParams.set('limit', String(params.limit))
   }
   if (params.q) searchParams.set('q', params.q)
-  if (params.learningStatus) searchParams.set('learningStatus', params.learningStatus)
   if (params.cefrLevel) searchParams.set('cefrLevel', params.cefrLevel)
   if (params.collectionId) searchParams.set('collectionId', params.collectionId)
-  if (params.dueOnly) searchParams.set('dueOnly', 'true')
   if (params.sort !== 'newest') searchParams.set('sort', params.sort)
 
   return searchParams

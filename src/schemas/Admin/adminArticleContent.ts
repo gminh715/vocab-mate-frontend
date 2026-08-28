@@ -4,7 +4,6 @@ import type {
   UpdateArticleSentenceRequest,
   UpdateArticleTermRequest,
 } from '@/types/Admin/adminArticleContent'
-import { LEXICAL_UNIT_TYPES } from '@/types/Admin/adminArticleContent'
 import { CEFR_LEVELS } from '@/types/Auth/auth'
 
 const optionalMetadata = (maximum: number, message: string) =>
@@ -15,15 +14,6 @@ export const sentenceFormSchema = z.object({
     20_000,
     'Translation must be 20,000 characters or fewer.',
   ),
-  explanationVi: optionalMetadata(
-    20_000,
-    'Explanation must be 20,000 characters or fewer.',
-  ),
-  referenceExplanation: optionalMetadata(
-    20_000,
-    'Reference explanation must be 20,000 characters or fewer.',
-  ),
-  skill: optionalMetadata(300, 'Skill must be 300 characters or fewer.'),
   isActive: z.boolean(),
 })
 
@@ -36,13 +26,6 @@ export const toUpdateArticleSentenceRequest = (
   ...(values.translationVi
     ? { translationVi: values.translationVi }
     : {}),
-  ...(values.explanationVi
-    ? { explanationVi: values.explanationVi }
-    : {}),
-  ...(values.referenceExplanation
-    ? { referenceExplanation: values.referenceExplanation }
-    : {}),
-  ...(values.skill ? { skill: values.skill } : {}),
   isActive: values.isActive,
 })
 
@@ -84,12 +67,7 @@ const termExampleSchema = z.object({
 
 export const articleTermFormSchema = z.object({
   value: termString('Term value'),
-  wordDisplay: termString('Display form'),
   lemma: termString('Lemma'),
-  normalizedLemma: termString('Normalized lemma').transform((value) =>
-    value.toLocaleLowerCase('en-US'),
-  ),
-  unitType: z.enum(LEXICAL_UNIT_TYPES),
   partOfSpeech: termString('Part of speech'),
   ipa: optionalTermString('IPA'),
   cefrLevel: z.enum(CEFR_LEVELS),
@@ -107,11 +85,9 @@ export const articleTermFormSchema = z.object({
   antonyms: termArray,
   collocations: termArray,
   relatedTerms: termArray,
-  vocabularyTopic: optionalTermString('Vocabulary topic'),
   examples: z
     .array(termExampleSchema)
     .max(50, 'Use no more than 50 examples.'),
-  skill: optionalTermString('Skill'),
   isLookupEnabled: z.boolean(),
   isActive: z.boolean(),
 })
@@ -123,10 +99,7 @@ const toTermRequest = (
   values: ArticleTermFormOutput,
 ): CreateArticleTermRequest => ({
   value: values.value,
-  wordDisplay: values.wordDisplay,
   lemma: values.lemma,
-  normalizedLemma: values.normalizedLemma,
-  unitType: values.unitType,
   partOfSpeech: values.partOfSpeech,
   ...(values.ipa ? { ipa: values.ipa } : {}),
   cefrLevel: values.cefrLevel,
@@ -139,11 +112,7 @@ const toTermRequest = (
   antonyms: values.antonyms,
   collocations: values.collocations,
   relatedTerms: values.relatedTerms,
-  ...(values.vocabularyTopic
-    ? { vocabularyTopic: values.vocabularyTopic }
-    : {}),
   examples: values.examples,
-  ...(values.skill ? { skill: values.skill } : {}),
   isLookupEnabled: values.isLookupEnabled,
   isActive: values.isActive,
 })
@@ -172,17 +141,8 @@ export const toUpdateArticleTermRequest = (
     ...(values.value !== initialValues.value
       ? { value: values.value }
       : {}),
-    ...(values.wordDisplay !== initialValues.wordDisplay
-      ? { wordDisplay: values.wordDisplay }
-      : {}),
     ...(values.lemma !== initialValues.lemma
       ? { lemma: values.lemma }
-      : {}),
-    ...(values.normalizedLemma !== initialValues.normalizedLemma
-      ? { normalizedLemma: values.normalizedLemma }
-      : {}),
-    ...(values.unitType !== initialValues.unitType
-      ? { unitType: values.unitType }
       : {}),
     ...(values.partOfSpeech !== initialValues.partOfSpeech
       ? { partOfSpeech: values.partOfSpeech }
@@ -217,14 +177,7 @@ export const toUpdateArticleTermRequest = (
     ...(!sameStrings(values.relatedTerms, initialValues.relatedTerms)
       ? { relatedTerms: values.relatedTerms }
       : {}),
-    ...(values.vocabularyTopic !== initialValues.vocabularyTopic &&
-    values.vocabularyTopic
-      ? { vocabularyTopic: values.vocabularyTopic }
-      : {}),
     ...(!sameExamples ? { examples: values.examples } : {}),
-    ...(values.skill !== initialValues.skill && values.skill
-      ? { skill: values.skill }
-      : {}),
     ...(values.isLookupEnabled !== initialValues.isLookupEnabled
       ? { isLookupEnabled: values.isLookupEnabled }
       : {}),

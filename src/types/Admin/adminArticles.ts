@@ -41,10 +41,7 @@ export interface AdminArticleListItem {
   cefrLevel: CefrLevel
   status: ArticleStatus
   contentVersion: number
-  importSource: string | null
   externalId: string | null
-  canonicalUrl: string | null
-  contentHash: string | null
   sourcePublishedAt: string | null
   aiAnalysisStatus: AiGenerationStatus | null
   aiAnalysisError: string | null

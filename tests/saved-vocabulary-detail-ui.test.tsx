@@ -20,26 +20,21 @@ const mockDetailData: VocabularyDetailData = {
   vocabulary: {
     id: userVocabularyId,
     articleSentenceTermId: '550e8400-e29b-41d4-a716-446655440002',
-    learningStatus: 'NEW',
     savedWordDisplay: 'harmful',
     savedLemma: 'harmful',
     savedPartOfSpeech: 'adjective',
     savedIpa: 'hɑːmfʊl',
     savedCefrLevel: 'B1',
     savedMeaningVi: 'có hại',
+    definitionEn: 'causing damage or injury',
     savedAt: '2026-07-24T10:00:00.000Z',
-    nextReviewAt: null,
-    savedContextSentence: 'Plastic waste is harmful to marine life.',
-    savedContextTranslationVi: 'Rác thải nhựa có hại cho sinh vật biển.',
-    savedExplanation: 'Refers to something causing damage.',
+    createdAt: '2026-07-24T10:00:00.000Z',
     savedExamples: [
       {
         sentence: 'Smoke is harmful.',
         translationVi: 'Khói có hại.',
       },
     ],
-    lastReviewedAt: null,
-    reviewIntervalDays: null,
   },
   collections: [
     {
@@ -119,41 +114,16 @@ describe('Saved Vocabulary Detail Page UI', () => {
     vi.restoreAllMocks()
   })
 
-  it('renders vocabulary details, contextual sentence, and source article info', async () => {
+  it('renders the reusable vocabulary snapshot and source article info', async () => {
     renderDetailPage()
 
     expect(await screen.findByRole('heading', { name: 'harmful' })).toBeInTheDocument()
     expect(screen.getByText('có hại')).toBeInTheDocument()
-    expect(screen.getByText(/Plastic waste is harmful to marine life/i)).toBeInTheDocument()
+    expect(screen.getByText('causing damage or injury')).toBeInTheDocument()
     expect(screen.getByText('Plastic and marine life')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Read Article in Reader' })).toHaveAttribute(
       'href',
       '/read/plastic-and-marine-life',
-    )
-  })
-
-  it('allows updating learning status', async () => {
-    const updatedDetail: VocabularyDetailData = {
-      ...mockDetailData,
-      vocabulary: {
-        ...mockDetailData.vocabulary,
-        learningStatus: 'LEARNING',
-      },
-    }
-    vi.spyOn(vocabulariesApi, 'updateStatus').mockResolvedValue(updatedDetail)
-
-    renderDetailPage()
-
-    const statusSelect = await screen.findByRole('combobox')
-    const user = userEvent.setup()
-    await user.click(statusSelect)
-
-    const learningOption = await screen.findByRole('option', { name: /LEARNING/i })
-    await user.click(learningOption)
-
-    expect(vocabulariesApi.updateStatus).toHaveBeenCalledWith(
-      userVocabularyId,
-      'LEARNING',
     )
   })
 

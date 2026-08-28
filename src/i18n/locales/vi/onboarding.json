@@ -22,8 +22,6 @@
   "planTitle": "Hoàn thiện kế hoạch học",
   "goalLabel": "Mục tiêu CEFR",
   "goalHint": "Chọn trình độ bạn muốn đạt hoặc duy trì.",
-  "durationLabel": "Thời gian học mỗi ngày",
-  "minutes": "{{count}} phút",
   "save": "Lưu và vào Vocab Mate",
   "saving": "Đang lưu…",
   "saveError": "Không thể lưu kế hoạch học. Hãy thử lại."

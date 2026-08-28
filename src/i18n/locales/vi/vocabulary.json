@@ -23,7 +23,7 @@
     "deleteTooltip": "Xóa {{name}}",
     "deleteDialog": {
       "title": "Xóa bộ sưu tập?",
-      "description": "\"{{name}}\" và các từ chỉ thuộc bộ sưu tập này sẽ bị xóa khỏi Từ vựng đã lưu. Từ có trong bộ sưu tập khác và lịch sử Ôn tập hằng ngày vẫn được giữ lại.",
+      "description": "\"{{name}}\" và các từ chỉ thuộc bộ sưu tập này sẽ bị xóa khỏi Từ vựng đã lưu. Từ có trong bộ sưu tập khác vẫn được giữ lại.",
       "cancel": "Hủy",
       "confirm": "Xóa bộ sưu tập",
       "deleting": "Đang xóa…",
@@ -41,7 +41,6 @@
     "errorUpdate": "Không thể đổi tên bộ sưu tập. Tên này có thể đã tồn tại."
   },
   "collectionActions": {
-    "studyFlashcards": "Học với Flashcards",
     "addVocabulary": "Thêm từ vựng"
   },
   "filterBar": {
@@ -49,27 +48,15 @@
     "filtersButton": "Bộ lọc",
     "clearAll": "Xóa tất cả",
     "popoverTitle": "Bộ lọc",
-    "status": "Trạng thái",
-    "allStatuses": "Tất cả trạng thái",
     "cefrLevel": "Trình độ CEFR",
     "allLevels": "Tất cả trình độ",
     "collection": "Bộ sưu tập",
     "allCollections": "Tất cả bộ sưu tập",
     "sortBy": "Sắp xếp",
     "sortNewest": "Mới nhất",
-    "sortOldest": "Cũ nhất",
-    "dueOnly": "Chỉ đến hạn"
-  },
-  "dueHeader": {
-    "showAllVocabulary": "Xem Tất Cả Từ Vựng",
-    "showingDueOnly": "Đang Hiển Thị Chỉ Từ Đến Hạn",
-    "dueCount": "{{count}} Đến hạn",
-    "youHaveDue_one": "Bạn có {{count}} từ cần ôn tập hôm nay.",
-    "youHaveDue_other": "Bạn có {{count}} từ cần ôn tập hôm nay.",
-    "viewDueItems": "Xem Từ Đến Hạn"
+    "sortOldest": "Cũ nhất"
   },
   "card": {
-    "dueChip": "Đến hạn",
     "detailsButton": "Chi tiết",
     "deleteTooltip": "Xóa từ đã lưu",
     "deleteAriaLabel": "Xóa {{word}}",
@@ -82,7 +69,6 @@
   },
   "table": {
     "ariaLabel": "Bảng danh sách từ vựng đã lưu",
-    "colStatus": "Trạng thái",
     "colVocabulary": "Từ vựng",
     "colPos": "Từ loại / Cấp độ",
     "colMeaning": "Nghĩa",
@@ -93,7 +79,6 @@
     "detailsAriaLabel": "Chi tiết {{word}}",
     "deleteTooltip": "Xóa từ đã lưu",
     "deleteAriaLabel": "Xóa {{word}}",
-    "dueChip": "Đến hạn",
     "bulk": {
       "selectAll": "Chọn tất cả từ vựng trên trang này",
       "selectWord": "Chọn {{word}}",
@@ -112,13 +97,6 @@
       "cancel": "Hủy",
       "confirm": "Xóa"
     }
-  },
-  "statusLabels": {
-    "NEW": "Mới",
-    "LEARNING": "Đang học",
-    "REVIEWING": "Đang ôn",
-    "MASTERED": "Thành thạo",
-    "IGNORED": "Bỏ qua"
   },
   "createCollection": {
     "dialogTitle": "Tạo Bộ Sưu Tập Mới",

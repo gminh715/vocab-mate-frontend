@@ -45,7 +45,7 @@ export function ProtectedRoute() {
 
   if (
     currentUser?.role === 'USER' &&
-    currentUser.profile.dailyStudyMinutes === null &&
+    currentUser.learningGoal === null &&
     location.pathname !== routePaths.onboarding
   ) {
     return <Navigate to={routePaths.onboarding} replace />
@@ -61,7 +61,7 @@ export function OnboardingRoute() {
   if (!currentUser) return <Navigate to={routePaths.login} replace />
   if (
     currentUser.role !== 'USER' ||
-    currentUser.profile.dailyStudyMinutes !== null
+    currentUser.learningGoal !== null
   ) {
     return (
       <Navigate to={defaultAuthenticatedPath(currentUser.role)} replace />

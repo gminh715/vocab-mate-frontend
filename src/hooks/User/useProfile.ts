@@ -13,8 +13,7 @@ export const useUpdateMyProfileMutation = () => {
   return useMutation({
     mutationFn: profileApi.update,
     retry: false,
-    onSuccess: ({ user, profile }, request: UpdateMyProfileRequest) => {
-      const currentUser: CurrentUser = { ...user, profile }
+    onSuccess: (currentUser: CurrentUser, request: UpdateMyProfileRequest) => {
       queryClient.setQueryData(
         authQueryKeys.currentUser(),
         currentUser,

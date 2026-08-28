@@ -22,8 +22,6 @@
   "planTitle": "Complete your learning plan",
   "goalLabel": "CEFR goal",
   "goalHint": "Choose the level you want to reach or maintain.",
-  "durationLabel": "Daily study time",
-  "minutes": "{{count}} minutes",
   "save": "Save and enter Vocab Mate",
   "saving": "Saving…",
   "saveError": "Your learning plan could not be saved. Try again."

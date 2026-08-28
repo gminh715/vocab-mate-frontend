@@ -1,6 +1,5 @@
 import type {
-  PublicUser,
-  UserProfile,
+  CurrentUser,
   UserRole,
   UserStatus,
 } from '@/types/Auth/auth'
@@ -18,10 +17,14 @@ export interface AdminUserListParams {
   sort: AdminUserSort
 }
 
-export interface AdminUserListItem extends PublicUser {
+export interface AdminUserListItem {
+  id: string
+  email: string
+  role: UserRole
+  status: UserStatus
   lastLoginAt: string | null
   createdAt: string
-  profile: Pick<UserProfile, 'displayName'> | null
+  displayName: string
 }
 
 export interface PaginationMeta {
@@ -37,14 +40,12 @@ export interface AdminUserListData {
 }
 
 export interface AdminUserDetail {
-  user: PublicUser & {
+  user: CurrentUser & {
     lastLoginAt: string | null
     createdAt: string
   }
-  profile: UserProfile | null
   learningSummary: {
     savedVocabularyCount: number
-    masteredVocabularyCount: number
     completedArticleCount: number
   }
 }

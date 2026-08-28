@@ -1,16 +1,6 @@
 import type { CefrLevel } from '@/types/Auth/auth'
 import type { PaginationMeta } from '@/types/Admin/adminUsers'
 
-export const LEARNING_STATUSES = [
-  'NEW',
-  'LEARNING',
-  'REVIEWING',
-  'MASTERED',
-  'IGNORED',
-] as const
-
-export type LearningStatus = (typeof LEARNING_STATUSES)[number]
-
 export const VOCABULARY_SORTS = ['newest', 'oldest'] as const
 
 export type VocabularySort = (typeof VOCABULARY_SORTS)[number]
@@ -29,15 +19,15 @@ export interface VocabularyCollectionSummary {
 export interface VocabularySnapshot {
   id: string
   articleSentenceTermId: string
-  learningStatus: LearningStatus
   savedWordDisplay: string
   savedLemma: string
   savedPartOfSpeech: string
   savedIpa: string | null
   savedCefrLevel: CefrLevel
   savedMeaningVi: string
+  definitionEn: string | null
   savedAt: string
-  nextReviewAt: string | null
+  createdAt: string
 }
 
 export interface VocabularyListItem extends VocabularySnapshot {
@@ -53,20 +43,13 @@ export interface GetVocabulariesQueryParams {
   page: number
   limit: number
   q?: string
-  learningStatus?: LearningStatus
   cefrLevel?: CefrLevel
   collectionId?: string
-  dueOnly?: boolean
   sort: VocabularySort
 }
 
 export interface VocabularyDetail extends VocabularySnapshot {
-  savedContextSentence: string
-  savedContextTranslationVi: string
-  savedExplanation: string | null
   savedExamples: unknown[]
-  lastReviewedAt: string | null
-  reviewIntervalDays: number | null
 }
 
 export interface VocabularySourceArticle {
@@ -120,7 +103,6 @@ export interface GetCollectionItemsQueryParams {
   page: number
   limit: number
   q?: string
-  learningStatus?: LearningStatus
   sort: VocabularySort
 }
 

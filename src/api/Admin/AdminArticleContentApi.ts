@@ -50,7 +50,6 @@ export const termListRequestParams = (params: ArticleTermListParams) => ({
   limit: params.limit,
   ...(params.sentenceId ? { sentenceId: params.sentenceId } : {}),
   ...(params.cefrLevel ? { cefrLevel: params.cefrLevel } : {}),
-  ...(params.unitType ? { unitType: params.unitType } : {}),
   ...(params.origin ? { origin: params.origin } : {}),
   ...(params.reviewStatus ? { reviewStatus: params.reviewStatus } : {}),
   ...(params.explanationStatus

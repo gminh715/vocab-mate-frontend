@@ -2,9 +2,7 @@ import type { PublicArticleMetadata } from '@/types/Article/articles'
 import type { ArticleStatus } from '@/types/Admin/adminArticles'
 import type { PublicCategory } from '@/types/Admin/adminCategories'
 import type { PaginationMeta } from '@/types/Admin/adminUsers'
-import type { LexicalUnitType } from '@/types/Admin/adminArticleContent'
 import type { CefrLevel } from '@/types/Auth/auth'
-import type { LearningStatus } from '@/types/Vocabulary/vocabulary'
 
 export const READING_STATUSES = ['READING', 'COMPLETED'] as const
 
@@ -23,7 +21,6 @@ export interface ReaderProgress {
   articleId: string
   status: ReadingStatus
   progressPercent: number
-  lastBlockKey: string | null
   completedAt: string | null
 }
 
@@ -36,7 +33,6 @@ export interface ReaderArticleData {
 
 export interface UpdateReadingProgressInput {
   progressPercent?: number
-  lastBlockKey?: string
 }
 
 export interface ReadingProgressData {
@@ -76,9 +72,7 @@ export interface ReadingHistoryData {
 export interface ContextualTerm {
   id: string
   value: string
-  wordDisplay: string
   lemma: string
-  unitType: LexicalUnitType
   partOfSpeech: string
   ipa: string | null
   cefrLevel: CefrLevel
@@ -89,14 +83,11 @@ export interface ContextualTerm {
   antonyms: string[]
   collocations: string[]
   relatedTerms: string[]
-  vocabularyTopic: string | null
   examples: Array<{
     sentence: string
     translationVi: string
   }>
-  skill: string | null
   explanationStatus: 'PENDING' | 'PROCESSING' | 'READY' | 'FAILED'
-  explanationGeneratedAt: string | null
 }
 
 export interface ContextualParentSentence {
@@ -104,15 +95,11 @@ export interface ContextualParentSentence {
   sentenceOrder: number
   sentenceText: string
   translationVi: string | null
-  explanationVi: string | null
-  referenceExplanation: string | null
-  skill: string | null
 }
 
 export interface ContextualTermSaveState {
   isSaved: boolean
   userVocabularyId: string | null
-  learningStatus: LearningStatus | null
 }
 
 export interface ContextualTermLookupData {

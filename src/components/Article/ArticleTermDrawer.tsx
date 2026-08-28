@@ -36,7 +36,6 @@ import type {
   CreateArticleTermRequest,
   UpdateArticleTermRequest,
 } from '@/types/Admin/adminArticleContent'
-import { LEXICAL_UNIT_TYPES } from '@/types/Admin/adminArticleContent'
 import { CEFR_LEVELS } from '@/types/Auth/auth'
 
 interface CreateTermDrawerProps {
@@ -65,10 +64,7 @@ type ArticleTermDrawerProps = CreateTermDrawerProps | EditTermDrawerProps
 
 const emptyTermValues: ArticleTermFormValues = {
   value: '',
-  wordDisplay: '',
   lemma: '',
-  normalizedLemma: '',
-  unitType: 'WORD',
   partOfSpeech: '',
   ipa: '',
   cefrLevel: 'B1',
@@ -79,9 +75,7 @@ const emptyTermValues: ArticleTermFormValues = {
   antonyms: [],
   collocations: [],
   relatedTerms: [],
-  vocabularyTopic: '',
   examples: [],
-  skill: '',
   isLookupEnabled: true,
   isActive: true,
 }
@@ -90,10 +84,7 @@ const termValues = (
   term: ArticleSentenceTerm,
 ): ArticleTermFormValues => ({
   value: term.value,
-  wordDisplay: term.wordDisplay ?? term.value,
   lemma: term.lemma,
-  normalizedLemma: term.normalizedLemma ?? term.lemma,
-  unitType: term.unitType,
   partOfSpeech: term.partOfSpeech ?? '',
   ipa: term.ipa ?? '',
   cefrLevel: term.cefrLevel ?? 'A1',
@@ -104,9 +95,7 @@ const termValues = (
   antonyms: term.antonyms,
   collocations: term.collocations,
   relatedTerms: term.relatedTerms,
-  vocabularyTopic: term.vocabularyTopic ?? '',
   examples: term.examples,
-  skill: term.skill ?? '',
   isLookupEnabled: term.isLookupEnabled,
   isActive: term.isActive,
 })
@@ -260,8 +249,6 @@ export function ArticleTermDrawer(props: ArticleTermDrawerProps) {
       ['ipa', 'IPA'],
       ['definitionEn', 'English definition'],
       ['contextualExplanation', 'Contextual explanation'],
-      ['vocabularyTopic', 'Vocabulary topic'],
-      ['skill', 'Skill'],
     ] as const
     const clearedField = optionalFields.find(
       ([name]) => defaultValues[name] && !values[name],
@@ -398,36 +385,11 @@ export function ArticleTermDrawer(props: ArticleTermDrawerProps) {
               {...register('value')}
             />
             <TextField
-              label="Display form"
-              error={Boolean(errors.wordDisplay)}
-              helperText={errors.wordDisplay?.message}
-              {...register('wordDisplay')}
-            />
-            <TextField
               label="Lemma"
               error={Boolean(errors.lemma)}
               helperText={errors.lemma?.message}
               {...register('lemma')}
             />
-            <TextField
-              label="Normalized lemma"
-              error={Boolean(errors.normalizedLemma)}
-              helperText={errors.normalizedLemma?.message}
-              {...register('normalizedLemma')}
-            />
-            <TextField
-              select
-              label="Unit type"
-              error={Boolean(errors.unitType)}
-              helperText={errors.unitType?.message}
-              {...register('unitType')}
-            >
-              {LEXICAL_UNIT_TYPES.map((unitType) => (
-                <MenuItem key={unitType} value={unitType}>
-                  {unitType === 'WORD' ? 'Word' : 'Phrase'}
-                </MenuItem>
-              ))}
-            </TextField>
             <TextField
               label="Part of speech"
               error={Boolean(errors.partOfSpeech)}
@@ -484,27 +446,6 @@ export function ArticleTermDrawer(props: ArticleTermDrawerProps) {
             helperText={errors.contextualExplanation?.message}
             {...register('contextualExplanation')}
           />
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-              gap: 2,
-            }}
-          >
-            <TextField
-              label="Vocabulary topic"
-              error={Boolean(errors.vocabularyTopic)}
-              helperText={errors.vocabularyTopic?.message}
-              {...register('vocabularyTopic')}
-            />
-            <TextField
-              label="Skill"
-              error={Boolean(errors.skill)}
-              helperText={errors.skill?.message}
-              {...register('skill')}
-            />
-          </Box>
-
           <Divider />
           <SectionHeading
             title="Relationships"

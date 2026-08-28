@@ -34,26 +34,18 @@ const currentUser: CurrentUser = {
   email: 'learner@example.com',
   role: 'USER',
   status: 'ACTIVE',
-  profile: {
-    displayName: 'Mai',
-    avatarUrl: null,
-    currentCefrLevel: 'B1',
-    learningGoal: 'C1',
-    dailyStudyMinutes: 10,
-    preferredLanguage: 'en',
-  },
+  displayName: 'Mai',
+  avatarUrl: null,
+  currentCefrLevel: 'B1',
+  learningGoal: 'C1',
+  preferredLanguage: 'en',
 }
 
 const updateResult = (
-  profile: CurrentUser['profile'],
+  updates: Partial<CurrentUser>,
 ): UpdatedMyProfile => ({
-  user: {
-    id: currentUser.id,
-    email: currentUser.email,
-    role: currentUser.role,
-    status: currentUser.status,
-  },
-  profile,
+  ...currentUser,
+  ...updates,
 })
 
 const renderSettings = () => {
@@ -90,10 +82,9 @@ describe('profile DTO mapping and validation', () => {
         avatarUrl: undefined,
         currentCefrLevel: 'B1',
         learningGoal: 'C1',
-        dailyStudyMinutes: 10,
         preferredLanguage: 'en',
       },
-      currentUser.profile,
+      currentUser,
     )
 
     expect(request).toEqual({
@@ -111,7 +102,6 @@ describe('profile DTO mapping and validation', () => {
       avatarUrl: '',
       currentCefrLevel: 'B2',
       learningGoal: 'C1',
-      dailyStudyMinutes: 10,
       preferredLanguage: '',
     })
 
@@ -129,7 +119,6 @@ describe('profile DTO mapping and validation', () => {
       avatarUrl: '',
       currentCefrLevel: 'B2',
       learningGoal: 'B1',
-      dailyStudyMinutes: 10,
       preferredLanguage: 'en',
     })
 
@@ -174,7 +163,6 @@ describe('Profile settings UI', () => {
       .spyOn(profileApi, 'update')
       .mockResolvedValue(
         updateResult({
-          ...currentUser.profile,
           preferredLanguage: 'vi',
         }),
       )
@@ -265,24 +253,7 @@ describe('Profile settings UI', () => {
       const updateSpy = vi
         .spyOn(profileApi, 'update')
         .mockImplementation(async (request) =>
-          updateResult({
-            ...currentUser.profile,
-            ...request,
-            displayName:
-              request.displayName ?? currentUser.profile.displayName,
-            avatarUrl:
-              request.avatarUrl ?? currentUser.profile.avatarUrl,
-            currentCefrLevel:
-              request.currentCefrLevel ??
-              currentUser.profile.currentCefrLevel,
-            learningGoal:
-              request.learningGoal ?? currentUser.profile.learningGoal,
-            dailyStudyMinutes:
-              request.dailyStudyMinutes ?? currentUser.profile.dailyStudyMinutes,
-            preferredLanguage:
-              request.preferredLanguage ??
-              currentUser.profile.preferredLanguage,
-          }),
+          updateResult(request),
         )
       const { queryClient } = renderSettings()
       queryClient.setQueryData(readingQueryKeys.article('city-trees'), {
@@ -333,7 +304,6 @@ describe('Profile settings UI', () => {
   it('invalidates reader payloads after the target CEFR changes', async () => {
     const updateSpy = vi.spyOn(profileApi, 'update').mockResolvedValue(
       updateResult({
-        ...currentUser.profile,
         learningGoal: 'C2',
       }),
     )

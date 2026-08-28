@@ -45,7 +45,6 @@ describe('collectionsApi', () => {
       page: 2,
       limit: 20,
       q: 'harmful',
-      learningStatus: 'LEARNING' as const,
       sort: 'oldest' as const,
     }
 

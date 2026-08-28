@@ -23,7 +23,7 @@
     "deleteTooltip": "Delete {{name}}",
     "deleteDialog": {
       "title": "Delete collection?",
-      "description": "\"{{name}}\" and words saved only in this collection will be deleted from Saved Vocabulary. Words in another collection and Daily Review history will remain.",
+      "description": "\"{{name}}\" and words saved only in this collection will be deleted from Saved Vocabulary. Words in another collection will remain.",
       "cancel": "Cancel",
       "confirm": "Delete collection",
       "deleting": "Deleting…",
@@ -41,7 +41,6 @@
     "errorUpdate": "This collection could not be renamed. The name may already exist."
   },
   "collectionActions": {
-    "studyFlashcards": "Study with Flashcards",
     "addVocabulary": "Add vocabulary"
   },
   "filterBar": {
@@ -49,27 +48,15 @@
     "filtersButton": "Filters",
     "clearAll": "Clear all",
     "popoverTitle": "Filters",
-    "status": "Status",
-    "allStatuses": "All Statuses",
     "cefrLevel": "CEFR Level",
     "allLevels": "All Levels",
     "collection": "Collection",
     "allCollections": "All Collections",
     "sortBy": "Sort By",
     "sortNewest": "Newest",
-    "sortOldest": "Oldest",
-    "dueOnly": "Due only"
-  },
-  "dueHeader": {
-    "showAllVocabulary": "Show All Vocabulary",
-    "showingDueOnly": "Showing Due Items Only",
-    "dueCount": "{{count}} Due",
-    "youHaveDue_one": "You have {{count}} word due for review today.",
-    "youHaveDue_other": "You have {{count}} words due for review today.",
-    "viewDueItems": "View Due Items"
+    "sortOldest": "Oldest"
   },
   "card": {
-    "dueChip": "Due",
     "detailsButton": "Details",
     "deleteTooltip": "Delete saved word",
     "deleteAriaLabel": "Delete {{word}}",
@@ -82,7 +69,6 @@
   },
   "table": {
     "ariaLabel": "Saved vocabulary list table",
-    "colStatus": "Status",
     "colVocabulary": "Vocabulary",
     "colPos": "POS / Level",
     "colMeaning": "Meaning",
@@ -93,7 +79,6 @@
     "detailsAriaLabel": "Details {{word}}",
     "deleteTooltip": "Delete saved word",
     "deleteAriaLabel": "Delete {{word}}",
-    "dueChip": "Due",
     "bulk": {
       "selectAll": "Select all vocabulary on this page",
       "selectWord": "Select {{word}}",
@@ -116,13 +101,6 @@
       "cancel": "Cancel",
       "confirm": "Remove"
     }
-  },
-  "statusLabels": {
-    "NEW": "New",
-    "LEARNING": "Learning",
-    "REVIEWING": "Reviewing",
-    "MASTERED": "Mastered",
-    "IGNORED": "Ignored"
   },
   "createCollection": {
     "dialogTitle": "Create New Collection",

@@ -46,7 +46,6 @@ const readerData: ReaderArticleData = {
     articleId,
     status: 'READING',
     progressPercent: 20,
-    lastBlockKey: null,
     completedAt: null,
   },
 }
@@ -55,9 +54,7 @@ const unsavedLookup: ContextualTermLookupData = {
   term: {
     id: termId,
     value: 'harmful',
-    wordDisplay: 'harmful',
     lemma: 'harmful',
-    unitType: 'WORD',
     partOfSpeech: 'adjective',
     ipa: null,
     cefrLevel: 'B1',
@@ -68,28 +65,22 @@ const unsavedLookup: ContextualTermLookupData = {
     antonyms: [],
     collocations: ['harmful effect'],
     relatedTerms: [],
-    vocabularyTopic: null,
     examples: [
       {
         sentence: 'Smoke can be harmful to your health.',
         translationVi: 'Khói có thể có hại cho sức khỏe.',
       },
     ],
-    skill: null,
   },
   parentSentence: {
     id: '550e8400-e29b-41d4-a716-446655440001',
     sentenceOrder: 1,
     sentenceText: 'Plastic waste is harmful to marine life.',
     translationVi: 'Rác thải nhựa có hại cho sinh vật biển.',
-    explanationVi: null,
-    referenceExplanation: null,
-    skill: null,
   },
   saveState: {
     isSaved: false,
     userVocabularyId: null,
-    learningStatus: null,
   },
 }
 
@@ -98,7 +89,6 @@ const savedLookup: ContextualTermLookupData = {
   saveState: {
     isSaved: true,
     userVocabularyId: '770e8400-e29b-41d4-a716-446655440000',
-    learningStatus: 'NEW',
   },
 }
 
@@ -106,22 +96,16 @@ const savedVocabulary: SaveVocabularyData = {
   vocabulary: {
     id: '770e8400-e29b-41d4-a716-446655440000',
     articleSentenceTermId: termId,
-    learningStatus: 'NEW',
     savedWordDisplay: 'harmful',
     savedLemma: 'harmful',
     savedPartOfSpeech: 'adjective',
     savedIpa: null,
     savedCefrLevel: 'B1',
     savedMeaningVi: 'có hại',
+    definitionEn: 'causing damage or injury',
     savedAt: '2026-07-24T10:00:00.000Z',
-    nextReviewAt: null,
-    savedContextSentence: 'Plastic waste is harmful to marine life.',
-    savedContextTranslationVi:
-      'Rác thải nhựa có hại cho sinh vật biển.',
-    savedExplanation: null,
+    createdAt: '2026-07-24T10:00:00.000Z',
     savedExamples: unsavedLookup.term.examples,
-    lastReviewedAt: null,
-    reviewIntervalDays: null,
   },
   collections: [],
 }
@@ -307,7 +291,6 @@ describe('contextual vocabulary lookup and save flow', () => {
     ).toEqual({
       isSaved: true,
       userVocabularyId: savedVocabulary.vocabulary.id,
-      learningStatus: 'NEW',
     })
     expect(queryClient.getQueryState(vocabularyListKey)?.isInvalidated).toBe(
       true,

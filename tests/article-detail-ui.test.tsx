@@ -20,13 +20,11 @@ const userAccount: CurrentUser = {
   email: 'learner@example.com',
   role: 'USER',
   status: 'ACTIVE',
-  profile: {
-    displayName: 'Learner',
-    avatarUrl: null,
-    currentCefrLevel: 'B1',
-    learningGoal: null,
-    preferredLanguage: 'en',
-  },
+  displayName: 'Learner',
+  avatarUrl: null,
+  currentCefrLevel: 'B1',
+  learningGoal: 'Read English news confidently',
+  preferredLanguage: 'en',
 }
 
 const createQueryClient = () =>

@@ -20,19 +20,8 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import type { LearningStatus, VocabularySnapshot } from '@/types/Vocabulary/vocabulary'
+import type { VocabularySnapshot } from '@/types/Vocabulary/vocabulary'
 import { vocabularyDetailPath } from '@/utils/paths'
-
-const statusColorMap: Record<
-  LearningStatus,
-  'info' | 'warning' | 'secondary' | 'success' | 'default'
-> = {
-  NEW: 'info',
-  LEARNING: 'warning',
-  REVIEWING: 'secondary',
-  MASTERED: 'success',
-  IGNORED: 'default',
-}
 
 const TABLE_HEADER_HEIGHT = 56
 const TABLE_ROW_HEIGHT = 76
@@ -103,10 +92,7 @@ export function VocabularyItemTable({
                 }}
               />
             </TableCell>
-            <TableCell sx={{ width: '15%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
-              {t('table.colStatus')}
-            </TableCell>
-            <TableCell sx={{ width: '28%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
+            <TableCell sx={{ width: '38%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
               {t('table.colVocabulary')}
             </TableCell>
             <TableCell sx={{ width: '13%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
@@ -136,11 +122,6 @@ export function VocabularyItemTable({
         </TableHead>
         <TableBody>
           {items.map((item) => {
-            const isDue =
-              item.learningStatus !== 'MASTERED' &&
-              item.learningStatus !== 'IGNORED' &&
-              (!item.nextReviewAt || new Date(item.nextReviewAt) <= new Date())
-
             return (
               <TableRow
                 key={item.id}
@@ -163,25 +144,6 @@ export function VocabularyItemTable({
                       },
                     }}
                   />
-                </TableCell>
-
-                <TableCell sx={{ verticalAlign: 'middle' }}>
-                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                    <Chip
-                      label={t(`statusLabels.${item.learningStatus}`)}
-                      size="small"
-                      color={statusColorMap[item.learningStatus]}
-                      sx={{ fontWeight: 750, fontSize: 11 }}
-                    />
-                    {isDue ? (
-                      <Chip
-                        label={t('table.dueChip')}
-                        size="small"
-                        color="secondary"
-                        sx={{ fontWeight: 800, fontSize: 10 }}
-                      />
-                    ) : null}
-                  </Stack>
                 </TableCell>
 
                 <TableCell sx={{ verticalAlign: 'middle' }}>

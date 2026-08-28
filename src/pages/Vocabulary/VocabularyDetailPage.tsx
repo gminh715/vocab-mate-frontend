@@ -13,11 +13,8 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Divider from '@mui/material/Divider'
-import FormControl from '@mui/material/FormControl'
 import Grid from '@mui/material/Grid'
-import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
-import Select from '@mui/material/Select'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -27,22 +24,9 @@ import { isApiError } from '@/config/apiClient'
 import { useRemoveCollectionItemMutation } from '@/hooks/Vocabulary/useCollections'
 import {
   useDeleteVocabularyMutation,
-  useUpdateVocabularyStatusMutation,
   useVocabularyDetailQuery,
 } from '@/hooks/Vocabulary/useVocabularies'
-import { LEARNING_STATUSES, type LearningStatus } from '@/types/Vocabulary/vocabulary'
 import { readerPath, routePaths } from '@/utils/paths'
-
-const statusColorMap: Record<
-  LearningStatus,
-  'info' | 'warning' | 'secondary' | 'success' | 'default'
-> = {
-  NEW: 'info',
-  LEARNING: 'warning',
-  REVIEWING: 'secondary',
-  MASTERED: 'success',
-  IGNORED: 'default',
-}
 
 const cefrColorMap: Record<string, string> = {
   A1: '#4CAF50',
@@ -89,21 +73,12 @@ export function VocabularyDetailPage() {
   const { data, isLoading, isError, error, refetch } =
     useVocabularyDetailQuery(userVocabularyId)
 
-  const updateStatusMutation = useUpdateVocabularyStatusMutation()
   const deleteMutation = useDeleteVocabularyMutation()
   const removeCollectionMutation = useRemoveCollectionItemMutation()
 
   const vocabulary = data?.vocabulary
   const collections = data?.collections ?? []
   const sourceArticle = data?.sourceArticle
-
-  const handleUpdateStatus = (newStatus: LearningStatus) => {
-    if (!userVocabularyId) return
-    updateStatusMutation.mutate({
-      userVocabularyId,
-      learningStatus: newStatus,
-    })
-  }
 
   const handleRemoveFromCollection = (collectionId: string) => {
     if (!userVocabularyId) return
@@ -194,11 +169,6 @@ export function VocabularyDetailPage() {
     )
   }
 
-  const isDue =
-    vocabulary.learningStatus !== 'MASTERED' &&
-    vocabulary.learningStatus !== 'IGNORED' &&
-    (!vocabulary.nextReviewAt || new Date(vocabulary.nextReviewAt) <= new Date())
-
   const parsedExamples = parseExamples(vocabulary.savedExamples)
 
   return (
@@ -274,13 +244,6 @@ export function VocabularyDetailPage() {
                     }}
                   />
 
-                  {isDue ? (
-                    <Chip
-                      label="Due for review"
-                      color="secondary"
-                      sx={{ fontWeight: 800 }}
-                    />
-                  ) : null}
                 </Stack>
               </Stack>
 
@@ -295,37 +258,13 @@ export function VocabularyDetailPage() {
                 </Typography>
               </Box>
 
-              <Box>
-                <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 800 }}>
-                  Context Sentence
-                </Typography>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2,
-                    mt: 0.5,
-                    borderRadius: 2,
-                    bgcolor: 'background.default',
-                    borderLeft: '4px solid',
-                    borderColor: 'primary.main',
-                  }}
-                >
-                  <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                    &quot;{vocabulary.savedContextSentence}&quot;
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    {vocabulary.savedContextTranslationVi}
-                  </Typography>
-                </Paper>
-              </Box>
-
-              {vocabulary.savedExplanation ? (
+              {vocabulary.definitionEn ? (
                 <Box>
                   <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 800 }}>
-                    Contextual Explanation
+                    English Definition
                   </Typography>
                   <Typography variant="body1" sx={{ mt: 0.5 }}>
-                    {vocabulary.savedExplanation}
+                    {vocabulary.definitionEn}
                   </Typography>
                 </Box>
               ) : null}
@@ -358,52 +297,6 @@ export function VocabularyDetailPage() {
 
         <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={3}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            >
-              <Stack spacing={2}>
-                <Typography variant="h6" sx={{ fontWeight: 750 }}>
-                  Learning Status
-                </Typography>
-
-                <FormControl size="small" fullWidth>
-                  <Select
-                    id="detail-learning-status-select"
-                    value={vocabulary.learningStatus}
-                    disabled={updateStatusMutation.isPending}
-                    onChange={(e) =>
-                      handleUpdateStatus(e.target.value as LearningStatus)
-                    }
-                    sx={{ fontWeight: 700 }}
-                  >
-                    {LEARNING_STATUSES.map((status) => (
-                      <MenuItem key={status} value={status}>
-                        <Chip
-                          label={status}
-                          size="small"
-                          color={statusColorMap[status]}
-                          sx={{ fontWeight: 700, fontSize: 11, mr: 1.5 }}
-                        />
-                        {status}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                {vocabulary.nextReviewAt ? (
-                  <Typography variant="caption" color="text.secondary">
-                    Next review: {new Date(vocabulary.nextReviewAt).toLocaleDateString()}
-                  </Typography>
-                ) : null}
-              </Stack>
-            </Paper>
-
             <Paper
               elevation={0}
               sx={{

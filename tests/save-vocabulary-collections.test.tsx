@@ -90,7 +90,6 @@ const mockUnsavedLookup = {
   saveState: {
     isSaved: false,
     userVocabularyId: null,
-    learningStatus: null,
   },
 }
 
@@ -99,7 +98,6 @@ const mockSavedLookup = {
   saveState: {
     isSaved: true,
     userVocabularyId,
-    learningStatus: 'NEW' as const,
   },
 }
 
@@ -110,7 +108,6 @@ describe('Save Vocabulary with Collections', () => {
       vocabulary: {
         id: userVocabularyId,
         articleSentenceTermId: termId,
-        learningStatus: 'NEW',
         savedWordDisplay: 'harmful',
         savedLemma: 'harmful',
         savedPartOfSpeech: 'adjective',
@@ -118,13 +115,10 @@ describe('Save Vocabulary with Collections', () => {
         savedCefrLevel: 'B1',
         savedMeaningVi: 'có hại',
         savedAt: '2026-07-24T10:00:00.000Z',
-        nextReviewAt: null,
         savedContextSentence: 'Plastic waste is harmful.',
         savedContextTranslationVi: 'Rác thải nhựa có hại.',
         savedExplanation: null,
         savedExamples: [],
-        lastReviewedAt: null,
-        reviewIntervalDays: null,
       },
       collections: [],
     })

@@ -265,7 +265,7 @@ export function AdminUsersPage() {
                   <TableRow key={user.id} hover>
                     <TableCell>
                       <Typography sx={{ fontWeight: 700 }}>
-                        {user.profile?.displayName ?? 'No profile'}
+                        {user.displayName}
                       </Typography>
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
@@ -292,7 +292,7 @@ export function AdminUsersPage() {
                         to={adminUserPath(user.id)}
                         variant="outlined"
                         size="small"
-                        aria-label={`View ${user.profile?.displayName ?? user.email}`}
+                        aria-label={`View ${user.displayName || user.email}`}
                       >
                         View
                       </Button>

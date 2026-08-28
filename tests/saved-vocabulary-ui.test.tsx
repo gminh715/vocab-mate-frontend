@@ -20,7 +20,6 @@ import type {
 const mockVocabularyItem: VocabularyListItem = {
   id: '770e8400-e29b-41d4-a716-446655440000',
   articleSentenceTermId: '550e8400-e29b-41d4-a716-446655440002',
-  learningStatus: 'NEW',
   savedWordDisplay: 'harmful',
   savedLemma: 'harmful',
   savedPartOfSpeech: 'adjective',
@@ -28,7 +27,6 @@ const mockVocabularyItem: VocabularyListItem = {
   savedCefrLevel: 'B1',
   savedMeaningVi: 'có hại',
   savedAt: '2026-07-24T10:00:00.000Z',
-  nextReviewAt: '2026-07-25T10:00:00.000Z',
   collections: [
     {
       id: '550e8400-e29b-41d4-a716-446655440010',
@@ -46,7 +44,6 @@ const secondVocabularyItem: VocabularyListItem = {
   savedLemma: 'sustainable',
   savedIpa: 'səˈsteɪnəbəl',
   savedMeaningVi: 'bền vững',
-  learningStatus: 'REVIEWING',
 }
 
 const mockVocabularyList: VocabularyListData = {
@@ -170,7 +167,7 @@ describe('Saved Vocabulary Page UI', () => {
 
   it('loads a selected collection through the collection items API', async () => {
     renderPage([
-      `/vocabularies?collectionId=${mockCollectionDetail.collection.id}&cefrLevel=B2&dueOnly=true`,
+      `/vocabularies?collectionId=${mockCollectionDetail.collection.id}&cefrLevel=B2`,
     ])
 
     expect(await screen.findByText('harmful')).toBeInTheDocument()
@@ -186,9 +183,6 @@ describe('Saved Vocabulary Page UI', () => {
       },
     )
     expect(vocabulariesApi.findAll).not.toHaveBeenCalled()
-    expect(
-      screen.queryByRole('button', { name: 'View Due Items' }),
-    ).not.toBeInTheDocument()
   })
 
   it('selects the current page and deletes the selected vocabulary in bulk', async () => {
@@ -262,20 +256,6 @@ describe('Saved Vocabulary Page UI', () => {
 
     const retryButton = screen.getByRole('button', { name: 'Retry' })
     expect(retryButton).toBeInTheDocument()
-  })
-
-  it('keeps collection actions in the right column instead of beside collection names', async () => {
-    renderPage()
-
-    expect(
-      await screen.findByRole('button', { name: 'Rename Environment' }),
-    ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Delete Environment' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: 'Study with Flashcards' }),
-    ).toHaveAttribute('href', '/review?reviewGoal=RECALL')
-    expect(screen.getByRole('button', { name: 'Add vocabulary' })).toBeInTheDocument()
-    expect(screen.queryByText('All Vocabulary')).not.toBeInTheDocument()
   })
 
   it('opens the add-vocabulary dialog for the selected collection', async () => {

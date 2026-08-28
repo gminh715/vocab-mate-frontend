@@ -17,9 +17,7 @@ import { usePlacementVocabularyQuery } from '@/hooks/Placement/usePlacement'
 import { useUpdateMyProfileMutation } from '@/hooks/User/useProfile'
 import {
   CEFR_LEVELS,
-  DAILY_STUDY_MINUTES,
   type CefrLevel,
-  type DailyStudyMinutes,
 } from '@/types/Auth/auth'
 import type {
   PlacementQuestion,
@@ -72,8 +70,6 @@ function PlacementExperience({
   const [scores, setScores] = useState<PlacementScores | null>(null)
   const [resultLevel, setResultLevel] = useState<CefrLevel>('A1')
   const [learningGoal, setLearningGoal] = useState<CefrLevel>('A2')
-  const [dailyStudyMinutes, setDailyStudyMinutes] =
-    useState<DailyStudyMinutes>(10)
 
   const question = questions[questionIndex]
   const isLastQuestion = questionIndex === questions.length - 1
@@ -103,7 +99,6 @@ function PlacementExperience({
       await updateProfile.mutateAsync({
         currentCefrLevel: resultLevel,
         learningGoal,
-        dailyStudyMinutes,
       })
       navigate(routePaths.home, { replace: true })
     } catch {
@@ -232,32 +227,6 @@ function PlacementExperience({
               <MenuItem key={level} value={level}>{level}</MenuItem>
             ))}
           </TextField>
-          <Box>
-            <Typography sx={{ mb: 1.25, fontWeight: 800 }}>{t('durationLabel')}</Typography>
-            <Box role="radiogroup" aria-label={t('durationLabel')} sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1 }}>
-              {DAILY_STUDY_MINUTES.map((minutes) => {
-                const selected = dailyStudyMinutes === minutes
-                return (
-                  <ButtonBase
-                    key={minutes}
-                    role="radio"
-                    aria-checked={selected}
-                    onClick={() => setDailyStudyMinutes(minutes)}
-                    sx={{
-                      minHeight: 74,
-                      border: '1px solid',
-                      borderColor: selected ? 'secondary.main' : 'divider',
-                      borderRadius: 2,
-                      bgcolor: selected ? 'secondary.light' : 'background.paper',
-                      fontWeight: 800,
-                    }}
-                  >
-                    {t('minutes', { count: minutes })}
-                  </ButtonBase>
-                )
-              })}
-            </Box>
-          </Box>
           {updateProfile.isError ? <Alert severity="error">{t('saveError')}</Alert> : null}
           <Button variant="contained" size="large" disabled={updateProfile.isPending} onClick={() => void savePlan()}>
             {updateProfile.isPending ? (

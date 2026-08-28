@@ -4,7 +4,6 @@
     "home": "Trang chủ",
     "articles": "Bài đọc",
     "readingHistory": "Lịch sử đọc",
-    "reviewHistory": "Lịch sử ôn tập",
     "vocabulary": "Từ vựng",
     "admin": "Quản trị",
     "profileSettings": "Cài đặt hồ sơ",
@@ -33,25 +32,9 @@
         "label": "Từ đã lưu",
         "detail": "Từ trong thư viện của bạn"
       },
-      "dueToday": {
-        "label": "Ôn hôm nay",
-        "detail": "Sẵn sàng ôn tập hàng ngày"
-      },
-      "mastered": {
-        "label": "Đã thành thạo",
-        "detail": "Từ vựng đã thành thạo"
-      },
       "articlesCompleted": {
         "label": "Bài đọc hoàn thành",
         "detail": "Bài đọc đã đọc xong"
-      },
-      "reviewAccuracy": {
-        "label": "Độ chính xác ôn tập",
-        "detail": "Câu trả lời đúng trong Ôn tập hằng ngày"
-      },
-      "sessions": {
-        "label": "Phiên ôn tập",
-        "detail": "Phiên ôn tập đã hoàn thành"
       }
     }
   },
@@ -66,11 +49,11 @@
       },
       "1": {
         "title": "Lưu từ vựng hữu ích",
-        "body": "Chọn các từ được chuẩn bị sẵn trong khi đọc để xây dựng danh sách ôn tập."
+        "body": "Chọn các từ được chuẩn bị sẵn trong khi đọc để xây dựng kho từ vựng đã lưu."
       },
       "2": {
-        "title": "Hoàn thành lượt Ôn tập hằng ngày đầu tiên",
-        "body": "Lưu các từ hữu ích rồi ôn lại khi chúng đến hạn."
+        "title": "Tạo bộ sưu tập cá nhân",
+        "body": "Sắp xếp các từ đã lưu vào một bộ sưu tập phù hợp với sở thích của bạn."
       }
     }
   },
@@ -88,56 +71,6 @@
     },
     "errorMessage": "Tổng quan vẫn khả dụng, nhưng không thể tải bài đọc đang dở.",
     "tryAgain": "Thử lại"
-  },
-  "review": {
-    "loadingLabel": "Đang tải bài ôn hôm nay",
-    "errorMessage": "Không thể tải thông tin ôn tập.",
-    "dailyReview": "Ôn Tập Hàng Ngày",
-    "sessionInProgress": "Phiên đang diễn ra",
-    "readyChip": "Sẵn sàng",
-    "pickUpTitle": "Tiếp tục từ chỗ bạn dừng",
-    "keepWordsTitle": "Giữ từ quen thuộc trong tầm tay",
-    "wordReady_one": "từ sẵn sàng",
-    "wordReady_other": "từ sẵn sàng",
-    "wordRemaining_one": "từ còn lại",
-    "wordRemaining_other": "từ còn lại",
-    "estTime": "thời gian ôn ước tính",
-    "resumeReview": "Tiếp Tục Ôn",
-    "startReview": "Bắt Đầu Ôn",
-    "noReviewsDue": "Không Có Bài Ôn",
-    "planDialog": {
-      "eyebrow": "Chọn nhịp học",
-      "title": "Thiết kế lượt ôn hôm nay",
-      "description_one": "Bạn có {{count}} từ sẵn sàng. Hãy chọn khoảng thời gian và kỹ năng muốn củng cố.",
-      "description_other": "Bạn có {{count}} từ sẵn sàng. Hãy chọn khoảng thời gian và kỹ năng muốn củng cố.",
-      "durationLabel": "Bạn có bao nhiêu thời gian?",
-      "minutes": "phút",
-      "itemEstimate_one": "khoảng {{count}} từ",
-      "itemEstimate_other": "khoảng {{count}} từ",
-      "goalLabel": "Lượt ôn nên tập trung vào đâu?",
-      "goals": {
-        "BALANCED": {
-          "label": "Cân bằng",
-          "description": "Kết hợp nhận diện, gợi nhớ, chính tả và ngữ cảnh."
-        },
-        "RECALL": {
-          "label": "Gợi nhớ",
-          "description": "Luyện tìm đúng từ dựa trên nghĩa."
-        },
-        "SPELLING": {
-          "label": "Chính tả",
-          "description": "Gõ từ chính xác từ gợi ý trong câu."
-        },
-        "CONTEXT": {
-          "label": "Ngữ cảnh",
-          "description": "Chọn nghĩa phù hợp với câu thực tế."
-        }
-      },
-      "selectedPlan": "Khoảng luyện tập của bạn",
-      "planSummary": "{{minutes}} phút · khoảng {{count}} từ · {{goal}}",
-      "cancel": "Để sau",
-      "start": "Bắt đầu kế hoạch"
-    }
   },
   "accessibility": {
     "loadingOverview": "Đang tải tổng quan học tập",

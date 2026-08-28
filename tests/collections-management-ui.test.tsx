@@ -50,7 +50,6 @@ const mockVocabList: VocabularyListData = {
     {
       id: userVocabularyId,
       articleSentenceTermId: '550e8400-e29b-41d4-a716-446655440002',
-      learningStatus: 'NEW',
       savedWordDisplay: 'harmful',
       savedLemma: 'harmful',
       savedPartOfSpeech: 'adjective',
@@ -58,7 +57,6 @@ const mockVocabList: VocabularyListData = {
       savedCefrLevel: 'B1',
       savedMeaningVi: 'có hại',
       savedAt: '2026-07-24T10:00:00.000Z',
-      nextReviewAt: null,
       collections: [
         {
           id: collectionId1,

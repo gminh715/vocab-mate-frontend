@@ -9,20 +9,14 @@ import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useMemo, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link as RouterLink, useSearchParams } from 'react-router-dom'
-import { LearningAnalyticsSections } from '@/components/Dashboard/LearningAnalyticsSections'
-import { ReviewReadyCard } from '@/components/Dashboard/ReviewReadyCard'
+import { Link as RouterLink } from 'react-router-dom'
 import {
   BookOpenIcon,
   BookmarkIcon,
-  CheckCircleIcon,
   ClockIcon,
-  FlameIcon,
   SparklesIcon,
-  TargetIcon,
-  TrendingUpIcon,
 } from '@/components/Dashboard/DashboardIcons'
 import { useAuth } from '@/contexts/AuthContext'
 import { normalizeApiError } from '@/config/apiClient'
@@ -30,11 +24,6 @@ import { useAnalyticsOverviewQuery } from '@/hooks/Analytics/useAnalytics'
 import { useReadingHistoryQuery } from '@/hooks/Reading/useReading'
 import type { AnalyticsOverview } from '@/types/Analytics/analytics'
 import type { ReadingHistoryItem } from '@/types/Reading/reading'
-import {
-  analyticsDateRangeError,
-  analyticsFiltersFromSearchParams,
-  analyticsRequestParams,
-} from '@/utils/Analytics/analyticsParams'
 import { readerPath, routePaths } from '@/utils/paths'
 
 const CONTINUE_READING_PARAMS = {
@@ -45,21 +34,10 @@ const CONTINUE_READING_PARAMS = {
 } as const
 
 const integerFormatter = new Intl.NumberFormat()
-const accuracyFormatter = new Intl.NumberFormat(undefined, {
-  style: 'percent',
-  maximumFractionDigits: 1,
-})
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',
   timeStyle: 'short',
 })
-
-const formatAccuracy = (value: number | null | undefined): string =>
-  accuracyFormatter.format(
-    typeof value === 'number' && Number.isFinite(value)
-      ? Math.min(1, Math.max(0, value))
-      : 0,
-  )
 
 const overviewErrorMessage = (error: unknown, t: (key: string) => string): string => {
   const apiError = normalizeApiError(error)
@@ -92,24 +70,6 @@ const metricDefinitions: MetricDefinition[] = [
     icon: (size, color) => <BookmarkIcon size={size} color={color} />,
   },
   {
-    key: 'dueToday',
-    labelKey: 'overview.metrics.dueToday.label',
-    detailKey: 'overview.metrics.dueToday.detail',
-    href: `${routePaths.vocabularies}?dueOnly=true`,
-    color: '#d97706',
-    bgColor: '#fef3c7',
-    icon: (size, color) => <FlameIcon size={size} color={color} />,
-  },
-  {
-    key: 'mastered',
-    labelKey: 'overview.metrics.mastered.label',
-    detailKey: 'overview.metrics.mastered.detail',
-    href: `${routePaths.vocabularies}?learningStatus=MASTERED`,
-    color: '#059669',
-    bgColor: '#d1fae5',
-    icon: (size, color) => <CheckCircleIcon size={size} color={color} />,
-  },
-  {
     key: 'articlesCompleted',
     labelKey: 'overview.metrics.articlesCompleted.label',
     detailKey: 'overview.metrics.articlesCompleted.detail',
@@ -117,23 +77,6 @@ const metricDefinitions: MetricDefinition[] = [
     color: '#7c3aed',
     bgColor: '#ede9fe',
     icon: (size, color) => <BookOpenIcon size={size} color={color} />,
-  },
-  {
-    key: 'reviewAccuracy',
-    labelKey: 'overview.metrics.reviewAccuracy.label',
-    detailKey: 'overview.metrics.reviewAccuracy.detail',
-    color: '#e11d48',
-    bgColor: '#ffe4e6',
-    icon: (size, color) => <TargetIcon size={size} color={color} />,
-    format: formatAccuracy,
-  },
-  {
-    key: 'sessions',
-    labelKey: 'overview.metrics.sessions.label',
-    detailKey: 'overview.metrics.sessions.detail',
-    color: '#0891b2',
-    bgColor: '#cff4fc',
-    icon: (size, color) => <TrendingUpIcon size={size} color={color} />,
   },
 ]
 
@@ -496,21 +439,7 @@ function SectionHeading({
 export function HomePage() {
   const { t } = useTranslation('home')
   const { currentUser } = useAuth()
-  const [searchParams] = useSearchParams()
-  const searchString = searchParams.toString()
-  const analyticsFilters = useMemo(
-    () => analyticsFiltersFromSearchParams(new URLSearchParams(searchString)),
-    [searchString],
-  )
-  const overviewParams = useMemo(
-    () => analyticsRequestParams(analyticsFilters),
-    [analyticsFilters],
-  )
-  const rangeError = analyticsDateRangeError(analyticsFilters)
-  const overviewQuery = useAnalyticsOverviewQuery(
-    overviewParams,
-    rangeError === null,
-  )
+  const overviewQuery = useAnalyticsOverviewQuery({})
   const readingQuery = useReadingHistoryQuery(CONTINUE_READING_PARAMS)
   const overview = overviewQuery.data
   const continueReading = readingQuery.data?.items ?? []
@@ -566,10 +495,10 @@ export function HomePage() {
               variant="outlined"
               sx={{ fontWeight: 700 }}
             />
-            {currentUser?.profile.currentCefrLevel ? (
+            {currentUser?.currentCefrLevel ? (
               <Chip
                 size="small"
-                label={`CEFR Level ${currentUser.profile.currentCefrLevel}`}
+                label={`CEFR Level ${currentUser.currentCefrLevel}`}
                 color="secondary"
                 sx={{ fontWeight: 700 }}
               />
@@ -584,7 +513,7 @@ export function HomePage() {
               letterSpacing: '-0.02em',
             }}
           >
-            {t('header.welcome', { name: currentUser?.profile.displayName })}
+            {t('header.welcome', { name: currentUser?.displayName })}
           </Typography>
           <Button
             component={RouterLink}
@@ -599,18 +528,12 @@ export function HomePage() {
         </Box>
       </Paper>
 
-      <ReviewReadyCard />
-
       <Stack component="section" spacing={2} aria-labelledby="overview-title">
         <SectionHeading
           id="overview-title"
           title={t('overview.title')}
         />
-        {rangeError ? (
-          <Alert severity="info">
-            {t('overview.rangeErrorAlert')}
-          </Alert>
-        ) : overviewQuery.isPending ? (
+        {overviewQuery.isPending ? (
           <OverviewSkeleton />
         ) : overviewQuery.isError ? (
           <Alert
@@ -731,7 +654,6 @@ export function HomePage() {
         )}
       </Stack>
 
-      <LearningAnalyticsSections />
     </Stack>
   )
 }

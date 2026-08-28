@@ -123,7 +123,6 @@ export const useResetReadingMutation = (slug?: string) => {
               articleId,
               status: 'READING',
               progressPercent: 0,
-              lastBlockKey: null,
               completedAt: null,
             }),
         )

@@ -28,7 +28,6 @@ describe('authenticated session cleanup', () => {
     queryClient.setQueryData(['reading', 'history'], { private: true })
     queryClient.setQueryData(['vocabularies', 'list'], { private: true })
     queryClient.setQueryData(['collections', 'list'], { private: true })
-    queryClient.setQueryData(['review', 'session'], { private: true })
     queryClient.setQueryData(['/adminUsers', 'list'], { private: true })
     queryClient.setQueryData(['articles', 'list'], { public: true })
     queryClient.setQueryData(['categories', 'list'], { public: true })
@@ -47,7 +46,6 @@ describe('authenticated session cleanup', () => {
     expect(
       queryClient.getQueryData(['collections', 'list']),
     ).toBeUndefined()
-    expect(queryClient.getQueryData(['review', 'session'])).toBeUndefined()
     expect(
       queryClient.getQueryData(['/adminUsers', 'list']),
     ).toBeUndefined()

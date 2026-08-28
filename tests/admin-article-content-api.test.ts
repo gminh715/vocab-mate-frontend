@@ -49,10 +49,7 @@ describe('adminArticleContentApi', () => {
       'sentence/id',
       {
         value: 'digital tools',
-        wordDisplay: 'digital tools',
         lemma: 'digital tool',
-        normalizedLemma: 'digital tool',
-        unitType: 'PHRASE',
         partOfSpeech: 'noun phrase',
         cefrLevel: 'B1',
         contextualMeaningVi: 'công cụ số',
@@ -126,7 +123,6 @@ describe('adminArticleContentApi', () => {
         limit: 10,
         sentenceId: 'sentence-1',
         cefrLevel: 'B2',
-        unitType: 'PHRASE',
         origin: 'AI',
         reviewStatus: 'PENDING',
         explanationStatus: 'FAILED',
@@ -138,7 +134,6 @@ describe('adminArticleContentApi', () => {
       limit: 10,
       sentenceId: 'sentence-1',
       cefrLevel: 'B2',
-      unitType: 'PHRASE',
       origin: 'AI',
       reviewStatus: 'PENDING',
       explanationStatus: 'FAILED',
@@ -153,15 +148,10 @@ describe('article content DTO mapping', () => {
     expect(
       toUpdateArticleSentenceRequest({
         translationVi: 'Bản dịch',
-        explanationVi: 'Giải thích',
-        referenceExplanation: '',
-        skill: 'reading',
         isActive: true,
       }),
     ).toEqual({
       translationVi: 'Bản dịch',
-      explanationVi: 'Giải thích',
-      skill: 'reading',
       isActive: true,
     })
   })
@@ -169,10 +159,7 @@ describe('article content DTO mapping', () => {
   it('maps structured term arrays and examples to the exact create DTO', () => {
     const values = articleTermFormSchema.parse({
       value: '  digital tools  ',
-      wordDisplay: 'Digital tools',
       lemma: 'digital tool',
-      normalizedLemma: '  Digital Tool  ',
-      unitType: 'PHRASE',
       partOfSpeech: 'noun phrase',
       ipa: '',
       cefrLevel: 'B1',
@@ -183,24 +170,19 @@ describe('article content DTO mapping', () => {
       antonyms: [],
       collocations: ['use digital tools'],
       relatedTerms: [],
-      vocabularyTopic: 'technology',
       examples: [
         {
           sentence: 'Digital tools improve access.',
           translationVi: 'Công cụ số cải thiện khả năng tiếp cận.',
         },
       ],
-      skill: '',
       isLookupEnabled: true,
       isActive: true,
     })
 
     expect(toCreateArticleTermRequest(values)).toEqual({
       value: 'digital tools',
-      wordDisplay: 'Digital tools',
       lemma: 'digital tool',
-      normalizedLemma: 'digital tool',
-      unitType: 'PHRASE',
       partOfSpeech: 'noun phrase',
       cefrLevel: 'B1',
       contextualMeaningVi: 'công cụ số',
@@ -209,7 +191,6 @@ describe('article content DTO mapping', () => {
       antonyms: [],
       collocations: ['use digital tools'],
       relatedTerms: [],
-      vocabularyTopic: 'technology',
       examples: [
         {
           sentence: 'Digital tools improve access.',

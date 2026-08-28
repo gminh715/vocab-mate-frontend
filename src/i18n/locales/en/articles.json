@@ -97,21 +97,12 @@
       "meaningUnavailable": "Vietnamese meaning unavailable",
       "lemma": "Lemma",
       "partOfSpeech": "Part of speech",
-      "cefrLevel": "CEFR level",
-      "termType": "Term type",
-      "topic": "Topic",
-      "skill": "Skill",
-      "unitTypes": {
-        "WORD": "Word",
-        "PHRASE": "Phrase"
-      }
+      "cefrLevel": "CEFR level"
     },
     "sections": {
       "englishDefinition": "English definition",
       "contextualExplanation": "Contextual explanation",
       "sourceSentence": "Source sentence",
-      "sentenceExplanation": "Sentence explanation",
-      "referenceNote": "Reference note",
       "examples": "Examples",
       "synonyms": "Synonyms",
       "antonyms": "Antonyms",
@@ -194,7 +185,7 @@
     },
     "resetDialog": {
       "title": "Reset Reading Progress?",
-      "description": "This article will be removed from reading history. Saved vocabulary and Daily Review history will not be deleted.",
+      "description": "This article will be removed from reading history. Saved vocabulary will not be deleted.",
       "confirmLabel": "Reset Progress"
     },
     "pagination": {

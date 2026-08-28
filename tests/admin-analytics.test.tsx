@@ -37,7 +37,6 @@ const zeroOverview = {
   articles: 0,
   publishedArticles: 0,
   savedVocabulary: 0,
-  completedSessions: 0,
 }
 
 const zeroContent = {
@@ -59,7 +58,6 @@ const zeroUsers = {
     inactive: 0,
     readingOnly: 0,
     vocabularyOnly: 0,
-    reviewOnly: 0,
     multiActivity: 0,
   },
 }

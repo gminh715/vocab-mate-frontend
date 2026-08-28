@@ -30,14 +30,11 @@ const userAccount: CurrentUser = {
   email: 'learner@example.com',
   role: 'USER',
   status: 'ACTIVE',
-  profile: {
-    displayName: 'Learner',
-    avatarUrl: null,
-    currentCefrLevel: 'B1',
-    learningGoal: null,
-    dailyStudyMinutes: 10,
-    preferredLanguage: 'en',
-  },
+  displayName: 'Learner',
+  avatarUrl: null,
+  currentCefrLevel: 'B1',
+  learningGoal: 'Read English news confidently',
+  preferredLanguage: 'en',
 }
 
 const adminAccount: CurrentUser = {
@@ -45,10 +42,7 @@ const adminAccount: CurrentUser = {
   id: 'admin-1',
   email: 'admin@example.com',
   role: 'ADMIN',
-  profile: {
-    ...userAccount.profile,
-    displayName: 'Admin',
-  },
+  displayName: 'Admin',
 }
 
 const adminUserList: AdminUserListData = {
@@ -73,17 +67,12 @@ const adminCategoryList: AdminCategoryListData = {
 
 const adminUserDetail: AdminUserDetail = {
   user: {
-    id: 'user-1',
-    email: 'learner@example.com',
-    role: 'USER',
-    status: 'ACTIVE',
+    ...userAccount,
     lastLoginAt: null,
     createdAt: '2026-07-20T10:00:00.000Z',
   },
-  profile: userAccount.profile,
   learningSummary: {
     savedVocabularyCount: 0,
-    masteredVocabularyCount: 0,
     completedArticleCount: 0,
   },
 }

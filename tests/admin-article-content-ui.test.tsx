@@ -282,8 +282,7 @@ describe('Admin article content workspace', () => {
       new ApiError({
         status: 409,
         code: 'CONFLICT',
-        message:
-          'Term is referenced by vocabulary or review history and cannot be deleted',
+        message: 'Term is referenced by saved vocabulary and cannot be deleted',
       }),
     )
     const update = vi.mocked(adminArticleContentApi.updateTerm)

@@ -87,7 +87,6 @@ const lookupData: ContextualTermLookupData = {
   saveState: {
     isSaved: false,
     userVocabularyId: null,
-    learningStatus: null,
   },
 }
 

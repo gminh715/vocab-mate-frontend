@@ -86,7 +86,7 @@ export function AdminHeader({
           noWrap
           sx={{ display: { xs: 'none', sm: 'block' }, maxWidth: 200 }}
         >
-          {currentUser?.profile.displayName}
+          {currentUser?.displayName}
         </Typography>
         <Button
           variant="outlined"

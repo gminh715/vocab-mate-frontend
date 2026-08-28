@@ -24,13 +24,11 @@ const currentUser: CurrentUser = {
   email: 'learner@example.com',
   role: 'USER',
   status: 'ACTIVE',
-  profile: {
-    displayName: 'Mai',
-    avatarUrl: null,
-    currentCefrLevel: 'B1',
-    learningGoal: 'C1',
-    preferredLanguage: 'en',
-  },
+  displayName: 'Mai',
+  avatarUrl: null,
+  currentCefrLevel: 'B1',
+  learningGoal: 'C1',
+  preferredLanguage: 'en',
 }
 
 const renderSecurity = () => {
@@ -238,7 +236,6 @@ describe('Security settings UI', () => {
     queryClient.setQueryData(['reading', 'history'], { private: true })
     queryClient.setQueryData(['vocabularies', 'list'], { private: true })
     queryClient.setQueryData(['collections', 'list'], { private: true })
-    queryClient.setQueryData(['review', 'session'], { private: true })
     queryClient.setQueryData(['articles', 'list'], { public: true })
     queryClient.setQueryData(['categories', 'list'], { public: true })
     await fillValidPasswords(user)
@@ -272,7 +269,6 @@ describe('Security settings UI', () => {
     expect(
       queryClient.getQueryData(['collections', 'list']),
     ).toBeUndefined()
-    expect(queryClient.getQueryData(['review', 'session'])).toBeUndefined()
     expect(queryClient.getQueryData(['articles', 'list'])).toEqual({
       public: true,
     })

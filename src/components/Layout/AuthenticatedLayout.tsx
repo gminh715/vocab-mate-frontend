@@ -77,7 +77,7 @@ export function AuthenticatedLayout() {
     if (!currentUser || updateProfileMutation.isPending) return
 
     const preferredLanguage =
-      currentUser.profile.preferredLanguage === 'en' ? 'vi' : 'en'
+      currentUser.preferredLanguage === 'en' ? 'vi' : 'en'
     closeAccountMenu()
 
     try {
@@ -186,7 +186,6 @@ export function AuthenticatedLayout() {
               {currentUser ? (
                 <>
                   <NavLink to={routePaths.readingHistory}>{t('nav.readingHistory', 'Reading history')}</NavLink>
-                  <NavLink to={routePaths.reviewHistory}>{t('nav.reviewHistory', 'Review history')}</NavLink>
                   <NavLink to={routePaths.vocabularies}>{t('nav.vocabulary', 'Vocabulary')}</NavLink>
                 </>
               ) : null}
@@ -202,15 +201,15 @@ export function AuthenticatedLayout() {
                 <Button
                   color="inherit"
                   id="account-menu-button"
-                  aria-label={`Open account menu for ${currentUser.profile.displayName}`}
+                  aria-label={`Open account menu for ${currentUser.displayName}`}
                   aria-controls={accountMenuOpen ? 'account-menu' : undefined}
                   aria-haspopup="menu"
                   aria-expanded={accountMenuOpen ? 'true' : undefined}
                   onClick={(event) => setAccountMenuAnchor(event.currentTarget)}
                   startIcon={
                     <UserAvatar
-                      displayName={currentUser.profile.displayName}
-                      avatarUrl={currentUser.profile.avatarUrl}
+                      displayName={currentUser.displayName}
+                      avatarUrl={currentUser.avatarUrl}
                       size={32}
                     />
                   }
@@ -229,7 +228,7 @@ export function AuthenticatedLayout() {
                       textOverflow: 'ellipsis',
                     }}
                   >
-                    {currentUser.profile.displayName}
+                    {currentUser.displayName}
                   </Box>
                 </Button>
                 <Menu
@@ -256,9 +255,9 @@ export function AuthenticatedLayout() {
                   >
                     <ListItemText
                       primary={t('nav.languageSettings', 'Language settings')}
-                      secondary={t('nav.languageCurrent', `Current: ${currentUser.profile.preferredLanguage.toUpperCase()} · Switch to ${currentUser.profile.preferredLanguage === 'en' ? 'VI' : 'EN'}`, {
-                        current: currentUser.profile.preferredLanguage.toUpperCase(),
-                        target: currentUser.profile.preferredLanguage === 'en' ? 'VI' : 'EN',
+                      secondary={t('nav.languageCurrent', `Current: ${currentUser.preferredLanguage.toUpperCase()} · Switch to ${currentUser.preferredLanguage === 'en' ? 'VI' : 'EN'}`, {
+                        current: currentUser.preferredLanguage.toUpperCase(),
+                        target: currentUser.preferredLanguage === 'en' ? 'VI' : 'EN',
                       })}
                     />
                   </MenuItem>

@@ -97,21 +97,12 @@
       "meaningUnavailable": "Chưa có nghĩa tiếng Việt",
       "lemma": "Dạng gốc",
       "partOfSpeech": "Từ loại",
-      "cefrLevel": "Trình độ CEFR",
-      "termType": "Loại từ vựng",
-      "topic": "Chủ đề",
-      "skill": "Kỹ năng",
-      "unitTypes": {
-        "WORD": "Từ",
-        "PHRASE": "Cụm từ"
-      }
+      "cefrLevel": "Trình độ CEFR"
     },
     "sections": {
       "englishDefinition": "Định nghĩa tiếng Anh",
       "contextualExplanation": "Giải thích theo ngữ cảnh",
       "sourceSentence": "Câu gốc",
-      "sentenceExplanation": "Giải thích câu",
-      "referenceNote": "Ghi chú tham chiếu",
       "examples": "Ví dụ",
       "synonyms": "Từ đồng nghĩa",
       "antonyms": "Từ trái nghĩa",
@@ -194,7 +185,7 @@
     },
     "resetDialog": {
       "title": "Đặt lại tiến độ đọc?",
-      "description": "Bài viết này sẽ bị xóa khỏi lịch sử đọc. Từ vựng đã lưu và lịch sử Ôn tập hằng ngày sẽ không bị xóa.",
+      "description": "Bài viết này sẽ bị xóa khỏi lịch sử đọc. Từ vựng đã lưu sẽ không bị xóa.",
       "confirmLabel": "Đặt lại tiến độ"
     },
     "pagination": {

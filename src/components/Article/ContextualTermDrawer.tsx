@@ -490,10 +490,7 @@ function LookupDetails({
   const { t } = useTranslation('articles')
   const { term, parentSentence } = data
   const examples = displayExamples(term.examples)
-  const hasOptionalIdentity =
-    hasText(term.ipa) ||
-    hasText(term.vocabularyTopic) ||
-    hasText(term.skill)
+  const hasOptionalIdentity = hasText(term.ipa)
 
   return (
     <Stack spacing={3} sx={{ p: { xs: 2.5, sm: 3.5 } }}>
@@ -560,28 +557,10 @@ function LookupDetails({
           <Typography component="dt">{t('lookup.details.cefrLevel')}</Typography>
           <Typography component="dd">{term.cefrLevel}</Typography>
         </Box>
-        <Box>
-          <Typography component="dt">{t('lookup.details.termType')}</Typography>
-          <Typography component="dd">
-            {t(`lookup.details.unitTypes.${term.unitType}`)}
-          </Typography>
-        </Box>
         {hasOptionalIdentity && hasText(term.ipa) ? (
           <Box>
             <Typography component="dt">IPA</Typography>
             <Typography component="dd">{term.ipa}</Typography>
-          </Box>
-        ) : null}
-        {hasOptionalIdentity && hasText(term.vocabularyTopic) ? (
-          <Box>
-            <Typography component="dt">{t('lookup.details.topic')}</Typography>
-            <Typography component="dd">{term.vocabularyTopic}</Typography>
-          </Box>
-        ) : null}
-        {hasOptionalIdentity && hasText(term.skill) ? (
-          <Box>
-            <Typography component="dt">{t('lookup.details.skill')}</Typography>
-            <Typography component="dd">{term.skill}</Typography>
           </Box>
         ) : null}
       </Box>
@@ -624,22 +603,6 @@ function LookupDetails({
           ) : null}
         </Paper>
       </DetailSection>
-
-      {hasText(parentSentence.explanationVi) ? (
-        <DetailSection title={t('lookup.sections.sentenceExplanation')}>
-          <Typography sx={{ lineHeight: 1.7 }}>
-            {parentSentence.explanationVi}
-          </Typography>
-        </DetailSection>
-      ) : null}
-
-      {hasText(parentSentence.referenceExplanation) ? (
-        <DetailSection title={t('lookup.sections.referenceNote')}>
-          <Typography sx={{ lineHeight: 1.7 }}>
-            {parentSentence.referenceExplanation}
-          </Typography>
-        </DetailSection>
-      ) : null}
 
       {examples.length > 0 ? (
         <DetailSection title={t('lookup.sections.examples')}>
@@ -756,7 +719,7 @@ export function ContextualTermDrawer({
                 textWrap: 'balance',
               }}
             >
-              {lookupQuery.data?.term.wordDisplay ?? t('lookup.title')}
+              {lookupQuery.data?.term.value ?? t('lookup.title')}
             </Typography>
             <Typography
               id="contextual-term-drawer-description"

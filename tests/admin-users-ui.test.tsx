@@ -19,8 +19,6 @@ const detail: AdminUserDetail = {
     status: 'ACTIVE',
     lastLoginAt: '2026-07-23T10:00:00.000Z',
     createdAt: '2026-07-20T10:00:00.000Z',
-  },
-  profile: {
     displayName: 'Admin User',
     avatarUrl: null,
     currentCefrLevel: 'B2',
@@ -29,7 +27,6 @@ const detail: AdminUserDetail = {
   },
   learningSummary: {
     savedVocabularyCount: 12,
-    masteredVocabularyCount: 4,
     completedArticleCount: 3,
   },
 }

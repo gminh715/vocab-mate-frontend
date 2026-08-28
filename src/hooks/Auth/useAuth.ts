@@ -21,8 +21,6 @@ const privateQueryRoots = new Set([
   'auth',
   'collections',
   'reading',
-  'review',
-  'reviews',
   'vocabularies',
   '/adminAnalytics',
   '/adminArticleContent',

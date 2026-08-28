@@ -9,14 +9,13 @@ import {
 describe('vocabulary search params mapping', () => {
   it('maps valid URL search parameters to API query parameters', () => {
     const searchParams = new URLSearchParams(
-      'page=2&limit=50&q=harmful&learningStatus=LEARNING&cefrLevel=B2&collectionId=550e8400-e29b-41d4-a716-446655440010&dueOnly=true&sort=oldest',
+      'page=2&limit=50&q=harmful&cefrLevel=B2&collectionId=550e8400-e29b-41d4-a716-446655440010&sort=oldest',
     )
 
     expect(vocabularyParamsFromSearchParams(searchParams)).toEqual({
       page: 2,
       limit: 50,
       q: 'harmful',
-      learningStatus: 'LEARNING',
       collectionId: '550e8400-e29b-41d4-a716-446655440010',
       sort: 'oldest',
     })
@@ -28,24 +27,21 @@ describe('vocabulary search params mapping', () => {
         page: 2,
         limit: 50,
         q: 'harmful',
-        learningStatus: 'LEARNING',
         cefrLevel: 'B2',
         collectionId: '550e8400-e29b-41d4-a716-446655440010',
-        dueOnly: true,
         sort: 'oldest',
       }),
     ).toEqual({
       page: 2,
       limit: 50,
       q: 'harmful',
-      learningStatus: 'LEARNING',
       sort: 'oldest',
     })
   })
 
   it('normalizes invalid parameters and applies default values', () => {
     const invalidSearchParams = new URLSearchParams(
-      'page=-5&limit=999&learningStatus=INVALID&cefrLevel=Z1&collectionId=not-a-uuid&dueOnly=maybe&sort=invalid',
+      'page=-5&limit=999&cefrLevel=Z1&collectionId=not-a-uuid&sort=invalid',
     )
 
     expect(vocabularyParamsFromSearchParams(invalidSearchParams)).toEqual({
@@ -62,12 +58,11 @@ describe('vocabulary search params mapping', () => {
       page: 1,
       limit: 20,
       q: 'climate',
-      learningStatus: 'NEW' as const,
       sort: 'newest' as const,
     }
 
     const searchParams = vocabularySearchParamsFromParams(params)
-    expect(searchParams.toString()).toBe('q=climate&learningStatus=NEW')
+    expect(searchParams.toString()).toBe('q=climate')
   })
 
   it('preserves page number and custom limit when non-default', () => {

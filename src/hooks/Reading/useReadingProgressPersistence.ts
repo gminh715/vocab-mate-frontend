@@ -303,7 +303,6 @@ export const useReadingProgressPersistence = ({
       articleId,
       status: 'READING',
       progressPercent: 0,
-      lastBlockKey: null,
       completedAt: null,
     })
   }

@@ -67,9 +67,6 @@
       "learningGoal": "Mục tiêu học tập",
       "learningGoalHint": "Chọn trình độ hiện tại hoặc mục tiêu CEFR cao hơn.",
       "learningGoalNotSet": "Chưa đặt",
-      "dailyStudyMinutes": "Thời gian học mỗi ngày",
-      "dailyStudyMinutesHint": "Được dùng tự động khi bắt đầu ôn tập hằng ngày.",
-      "minutes": "{{count}} phút",
       "unsavedChanges": "Chưa lưu thay đổi",
       "saving": "Đang lưu…",
       "saveChanges": "Lưu thay đổi"

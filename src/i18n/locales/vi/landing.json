@@ -12,12 +12,12 @@
   "hero": {
     "badge": "Nền tảng học từ vựng AI thế hệ mới",
     "title": "Học Từ Vựng Tiếng Anh Qua Báo Chí Thực Tế Cùng AI Agent",
-    "subtitle": "Vocab Mate giúp bạn làm chủ từ vựng theo ngữ cảnh bài viết thực tế, tô sáng từ thông minh theo chuẩn CEFR và ghi nhớ bền vững bằng thuật toán Spaced Repetition.",
+    "subtitle": "Vocab Mate giúp bạn hiểu từ vựng theo ngữ cảnh bài viết thực tế, nhận giải thích bằng AI, tô sáng theo chuẩn CEFR và lưu từ hữu ích vào bộ sưu tập cá nhân.",
     "ctaPrimary": "Bắt đầu học miễn phí",
     "ctaSecondary": "Khám phá bài đọc",
     "statUsers": "10,000+ từ vựng đã lưu",
     "statArticles": "Bài báo Guardian cập nhật",
-    "statAccuracy": "Spaced Repetition tối ưu"
+    "statAccuracy": "Bộ sưu tập cá nhân"
   },
   "demo": {
     "badge": "Demo tương tác trực tiếp",
@@ -38,28 +38,26 @@
     "contextDesc": "AI phân tích chính xác nghĩa của từ trong câu cụ thể, không dùng dịch tự động thô ráp hay nghĩa từ điển chung chung.",
     "cefrTitle": "Tô sáng theo CEFR (A1 - C2)",
     "cefrDesc": "Tự động quét bài báo và tô sáng từ vựng từ trình độ CEFR hiện tại đến trình độ mục tiêu của bạn.",
-    "srTitle": "Ôn tập Spaced Repetition",
-    "srDesc": "Hệ thống lặp lại ngắt quãng tính toán chính xác 'thời điểm vàng' bạn sắp quên để nhắc nhở ôn tập tối ưu trí nhớ.",
-    "dailyReviewTitle": "Ôn tập hằng ngày với AI",
-    "dailyReviewDesc": "Tạo lượt ôn tập hằng ngày có trọng tâm với câu hỏi trắc nghiệm, điền từ và ngữ cảnh từ các từ bạn đã lưu."
+    "collectionsTitle": "Bộ sưu tập cá nhân",
+    "collectionsDesc": "Lưu từ vựng theo ngữ cảnh vào các bộ sưu tập để sắp xếp những từ hữu ích theo chủ đề riêng của bạn."
   },
   "steps": {
     "badge": "Quy trình đơn giản",
-    "title": "3 bước để làm chủ vốn từ vựng",
+    "title": "3 bước để xây dựng vốn từ vựng",
     "step1Title": "1. Chọn bài báo yêu thích",
     "step1Desc": "Khám phá hàng ngàn bài báo từ The Guardian thuộc nhiều chủ đề: Công nghệ, Văn hoá, Khoa học, Kinh tế.",
     "step2Title": "2. Click tra từ & lưu từ vựng",
     "step2Desc": "Chạm nhẹ vào từ mới để xem giải thích AI chi tiết và lưu trực tiếp vào bộ sưu tập cá nhân.",
-    "step3Title": "3. Ôn tập 5 phút mỗi ngày",
-    "step3Desc": "Hoàn thành các lượt Ôn tập hằng ngày linh hoạt để đưa từ vựng đến mốc Thành thạo."
+    "step3Title": "3. Sắp xếp từ đã lưu",
+    "step3Desc": "Nhóm từ vựng theo ngữ cảnh vào các bộ sưu tập cá nhân để dễ dàng xem lại khi cần."
   },
   "faq": {
     "badge": "Hỏi & Đáp",
     "title": "Câu hỏi thường gặp",
     "q1": "Vocab Mate có miễn phí không?",
-    "a1": "Có! Bạn có thể tạo tài khoản miễn phí và trải nghiệm ngay tính năng đọc báo, tra từ vựng AI và ôn tập cơ bản.",
+    "a1": "Có! Bạn có thể tạo tài khoản miễn phí rồi đọc báo, tra từ vựng bằng AI và lưu các từ hữu ích ngay lập tức.",
     "q2": "AI Agent trợ giúp học như thế nào?",
-    "a2": "AI Agent phân tích ngữ cảnh câu, đưa ra giải thích từ vựng chính xác, gợi ý ví dụ và điều chỉnh câu hỏi Ôn tập hằng ngày theo điểm yếu của bạn.",
+    "a2": "AI Agent phân tích ngữ cảnh câu, đưa ra bản dịch tự nhiên và gợi ý ví dụ cho các từ vựng đã được chuẩn bị.",
     "q3": "Tôi có thể đổi trình độ CEFR mục tiêu không?",
     "a3": "Hoàn toàn được! Bạn có thể điều chỉnh trình độ mục tiêu từ A1 đến C2 trong trang Cài đặt cá nhân bất kỳ lúc nào.",
     "q4": "Nguồn bài báo lấy từ đâu?",

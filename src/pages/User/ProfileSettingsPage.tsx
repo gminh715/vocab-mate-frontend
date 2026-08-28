@@ -34,7 +34,6 @@ const backendFieldNames = [
   'avatarUrl',
   'currentCefrLevel',
   'learningGoal',
-  'dailyStudyMinutes',
   'preferredLanguage',
 ] as const
 
@@ -100,14 +99,14 @@ export function ProfileSettingsPage() {
   } = useForm<ProfileFormValues, unknown, ProfileFormOutput>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: currentUser
-      ? profileToFormValues(currentUser.profile)
+      ? profileToFormValues(currentUser)
       : undefined,
   })
 
   useEffect(() => {
     if (!currentUser || loadedUserId.current === currentUser.id) return
     loadedUserId.current = currentUser.id
-    reset(profileToFormValues(currentUser.profile))
+    reset(profileToFormValues(currentUser))
   }, [currentUser, reset])
 
   useEffect(() => {
@@ -133,7 +132,7 @@ export function ProfileSettingsPage() {
     setSuccessMessage(null)
     updateMutation.reset()
 
-    if (currentUser.profile.avatarUrl && !values.avatarUrl) {
+    if (currentUser.avatarUrl && !values.avatarUrl) {
       setError('avatarUrl', {
         type: 'server',
         message: t('profile.cannotRemoveAvatar'),
@@ -141,7 +140,7 @@ export function ProfileSettingsPage() {
       return
     }
 
-    if (currentUser.profile.learningGoal && !values.learningGoal) {
+    if (currentUser.learningGoal && !values.learningGoal) {
       setError('learningGoal', {
         type: 'server',
         message: t('profile.cannotClearGoal'),
@@ -151,17 +150,17 @@ export function ProfileSettingsPage() {
 
     const request = toUpdateMyProfileRequest(
       values,
-      currentUser.profile,
+      currentUser,
     )
 
     if (Object.keys(request).length === 0) {
-      reset(profileToFormValues(currentUser.profile))
+      reset(profileToFormValues(currentUser))
       return
     }
 
     try {
       const updated = await updateMutation.mutateAsync(request)
-      reset(profileToFormValues(updated.profile))
+      reset(profileToFormValues(updated))
       setSuccessMessage(t('profile.successMessage'))
     } catch (error: unknown) {
       const apiError = normalizeApiError(error)
@@ -306,7 +305,7 @@ export function ProfileSettingsPage() {
                       lineHeight: 1,
                     }}
                   >
-                    {currentCefrLevel || currentUser.profile.currentCefrLevel}
+                    {currentCefrLevel || currentUser.currentCefrLevel}
                   </Typography>
                   <Typography
                     sx={{
@@ -316,7 +315,7 @@ export function ProfileSettingsPage() {
                     }}
                   >
                     {t(
-                      `profile.cefrCard.levels.${currentCefrLevel || currentUser.profile.currentCefrLevel}.title`,
+                      `profile.cefrCard.levels.${currentCefrLevel || currentUser.currentCefrLevel}.title`,
                     )}
                   </Typography>
                 </Stack>
@@ -325,7 +324,7 @@ export function ProfileSettingsPage() {
                   size="small"
                   label={t('profile.cefrCard.vocabSize', {
                     count: t(
-                      `profile.cefrCard.levels.${currentCefrLevel || currentUser.profile.currentCefrLevel}.vocab`,
+                      `profile.cefrCard.levels.${currentCefrLevel || currentUser.currentCefrLevel}.vocab`,
                     ),
                   })}
                   sx={{
@@ -339,7 +338,7 @@ export function ProfileSettingsPage() {
 
                 <Typography sx={{ opacity: 0.88, fontSize: 13.5, lineHeight: 1.55 }}>
                   {t(
-                    `profile.cefrCard.levels.${currentCefrLevel || currentUser.profile.currentCefrLevel}.description`,
+                    `profile.cefrCard.levels.${currentCefrLevel || currentUser.currentCefrLevel}.description`,
                   )}
                 </Typography>
               </Paper>
@@ -421,25 +420,6 @@ export function ProfileSettingsPage() {
                     )}
                   />
 
-                  <Controller
-                    control={control}
-                    name="dailyStudyMinutes"
-                    render={({ field }) => (
-                      <TextField
-                        select
-                        label={t('profile.form.dailyStudyMinutes')}
-                        error={Boolean(errors.dailyStudyMinutes)}
-                        helperText={errors.dailyStudyMinutes?.message}
-                        {...field}
-                      >
-                        {[5, 10, 15].map((minutes) => (
-                          <MenuItem key={minutes} value={minutes}>
-                            {t('profile.form.minutes', { count: minutes })}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    )}
-                  />
                 </Box>
 
                 <Stack

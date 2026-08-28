@@ -31,7 +31,6 @@ export interface AdminAnalyticsOverview {
   articles: number
   publishedArticles: number
   savedVocabulary: number
-  completedSessions: number
 }
 
 export interface AdminTopArticle {
@@ -56,7 +55,7 @@ export interface AdminArticleCompletion {
 export interface AdminTermSave {
   articleSentenceTermId: string
   value: string
-  normalizedLemma: string
+  lemma: string
   cefrLevel: CefrLevel
   articleId: string
   articleTitle: string
@@ -85,7 +84,6 @@ export interface LearningDistribution {
   inactive: number
   readingOnly: number
   vocabularyOnly: number
-  reviewOnly: number
   multiActivity: number
 }
 

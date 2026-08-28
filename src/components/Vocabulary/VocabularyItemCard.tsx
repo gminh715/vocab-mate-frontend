@@ -14,22 +14,10 @@ import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type {
-  LearningStatus,
   VocabularyCollectionSummary,
   VocabularySnapshot,
 } from '@/types/Vocabulary/vocabulary'
 import { vocabularyDetailPath } from '@/utils/paths'
-
-const statusColorMap: Record<
-  LearningStatus,
-  'info' | 'warning' | 'secondary' | 'success' | 'default'
-> = {
-  NEW: 'info',
-  LEARNING: 'warning',
-  REVIEWING: 'secondary',
-  MASTERED: 'success',
-  IGNORED: 'default',
-}
 
 const cefrColorMap: Record<string, string> = {
   A1: '#4CAF50',
@@ -55,11 +43,6 @@ export function VocabularyItemCard({
 }: VocabularyItemCardProps) {
   const { t } = useTranslation('vocabulary')
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-
-  const isDue =
-    item.learningStatus !== 'MASTERED' &&
-    item.learningStatus !== 'IGNORED' &&
-    (!item.nextReviewAt || new Date(item.nextReviewAt) <= new Date())
 
   return (
     <Box
@@ -131,14 +114,6 @@ export function VocabularyItemCard({
               }}
             />
 
-            {isDue ? (
-              <Chip
-                label={t('card.dueChip')}
-                size="small"
-                color="secondary"
-                sx={{ fontWeight: 800, fontSize: 11 }}
-              />
-            ) : null}
           </Stack>
         </Stack>
 
@@ -171,13 +146,6 @@ export function VocabularyItemCard({
             justifyContent: 'space-between',
           }}
         >
-          <Chip
-            label={t(`statusLabels.${item.learningStatus}`)}
-            size="small"
-            color={statusColorMap[item.learningStatus]}
-            sx={{ fontWeight: 700, fontSize: 11 }}
-          />
-
           <Stack direction="row" spacing={1}>
             <Button
               component={RouterLink}

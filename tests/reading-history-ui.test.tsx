@@ -98,7 +98,7 @@ describe('reading history page', () => {
     })
   })
 
-  it('confirms reset and preserves vocabulary and Daily Review history', async () => {
+  it('confirms reset and preserves saved vocabulary', async () => {
     const user = userEvent.setup()
     renderHistory()
 
@@ -113,7 +113,7 @@ describe('reading history page', () => {
       name: 'Reset Reading Progress?',
     })
     expect(dialog).toHaveTextContent(
-      'Saved vocabulary and Daily Review history will not be deleted.',
+      'Saved vocabulary will not be deleted.',
     )
     await user.click(
       within(dialog).getByRole('button', { name: 'Reset Progress' }),

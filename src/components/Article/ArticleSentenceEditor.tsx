@@ -31,9 +31,6 @@ interface ArticleSentenceEditorProps {
 
 const sentenceValues = (sentence: ArticleSentence): SentenceFormValues => ({
   translationVi: sentence.translationVi ?? '',
-  explanationVi: sentence.explanationVi ?? '',
-  referenceExplanation: sentence.referenceExplanation ?? '',
-  skill: sentence.skill ?? '',
   isActive: sentence.isActive,
 })
 
@@ -74,9 +71,6 @@ export function ArticleSentenceEditor({
   const submit = handleSubmit(async (values) => {
     const optionalFields = [
       ['translationVi', 'translation'],
-      ['explanationVi', 'explanation'],
-      ['referenceExplanation', 'reference explanation'],
-      ['skill', 'skill'],
     ] as const
     const initialValues = sentenceValues(sentence)
     const clearedField = optionalFields.find(
@@ -144,31 +138,6 @@ export function ArticleSentenceEditor({
             error={Boolean(errors.translationVi)}
             helperText={errors.translationVi?.message}
             {...register('translationVi')}
-          />
-          <TextField
-            label="Vietnamese explanation"
-            multiline
-            minRows={4}
-            disabled={isReadOnly}
-            error={Boolean(errors.explanationVi)}
-            helperText={errors.explanationVi?.message}
-            {...register('explanationVi')}
-          />
-          <TextField
-            label="Reference explanation"
-            multiline
-            minRows={3}
-            disabled={isReadOnly}
-            error={Boolean(errors.referenceExplanation)}
-            helperText={errors.referenceExplanation?.message}
-            {...register('referenceExplanation')}
-          />
-          <TextField
-            label="Skill"
-            disabled={isReadOnly}
-            error={Boolean(errors.skill)}
-            helperText={errors.skill?.message}
-            {...register('skill')}
           />
           <Controller
             control={control}

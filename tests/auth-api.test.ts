@@ -37,14 +37,11 @@ const authData: AuthData = {
 
 const currentUser: CurrentUser = {
   ...authData.user,
-  profile: {
-    displayName: 'Learner',
-    avatarUrl: null,
-    currentCefrLevel: 'B1',
-    learningGoal: null,
-    dailyStudyMinutes: 10,
-    preferredLanguage: 'vi',
-  },
+  displayName: 'Learner',
+  avatarUrl: null,
+  currentCefrLevel: 'B1',
+  learningGoal: null,
+  preferredLanguage: 'vi',
 }
 
 describe('authApi', () => {

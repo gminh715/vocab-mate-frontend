@@ -1,6 +1,5 @@
 import type { Location } from 'react-router-dom'
 import type { CurrentUser, UserRole } from '@/types/Auth/auth'
-import type { ReviewGoal } from '@/types/Review/review'
 
 export const routePaths = {
   home: '/',
@@ -11,14 +10,10 @@ export const routePaths = {
   articleDetail: '/articles/:slug',
   reader: '/read/:slug',
   readingHistory: '/reading-history',
-  reviewHistory: '/review-history',
   profileSettings: '/settings/profile',
   securitySettings: '/settings/security',
   vocabularies: '/vocabularies',
   vocabularyDetail: '/vocabularies/:userVocabularyId',
-  review: '/review',
-  reviewSession: '/review/:sessionId',
-  reviewSummary: '/review/:sessionId/summary',
   admin: '/admin',
   adminUsers: '/admin/users',
   adminUserDetail: '/admin/users/:userId',
@@ -68,17 +63,6 @@ export const vocabularyDetailPath = (userVocabularyId: string): string =>
     encodeURIComponent(userVocabularyId),
   )
 
-export const reviewSessionPath = (sessionId: string): string =>
-  routePaths.reviewSession.replace(':sessionId', encodeURIComponent(sessionId))
-
-export const reviewSummaryPath = (sessionId: string): string =>
-  routePaths.reviewSummary.replace(':sessionId', encodeURIComponent(sessionId))
-
-export const reviewStartPath = (reviewGoal?: ReviewGoal): string =>
-  reviewGoal
-    ? `${routePaths.review}?${new URLSearchParams({ reviewGoal }).toString()}`
-    : routePaths.review
-
 export interface AuthRedirectState {
   from?: string
 }
@@ -112,6 +96,6 @@ export const postLoginPath = (
   user: CurrentUser,
   state: unknown,
 ): string =>
-  user.role === 'USER' && user.profile.dailyStudyMinutes === null
+  user.role === 'USER' && user.learningGoal === null
     ? routePaths.onboarding
     : postAuthPath(user.role, state)

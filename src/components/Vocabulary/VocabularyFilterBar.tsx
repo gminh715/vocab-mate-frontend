@@ -18,10 +18,8 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import {
-  LEARNING_STATUSES,
   VOCABULARY_SORTS,
   type GetVocabulariesQueryParams,
-  type LearningStatus,
   type VocabularySort,
 } from '@/types/Vocabulary/vocabulary'
 
@@ -69,14 +67,9 @@ export function VocabularyFilterBar({
     return () => clearTimeout(timer)
   }, [searchInput, params.q, onFilterChange])
 
-  const activeFilterCount = [
-    params.learningStatus,
-  ].filter(Boolean).length
+  const activeFilterCount = 0
 
-  const hasActiveFilters = Boolean(
-    params.q ||
-      params.learningStatus,
-  )
+  const hasActiveFilters = Boolean(params.q)
 
   const open = Boolean(anchorEl)
 
@@ -199,29 +192,6 @@ export function VocabularyFilterBar({
           <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
             {t('filterBar.popoverTitle')}
           </Typography>
-
-          <FormControl size="small" fullWidth>
-            <InputLabel id="learning-status-label">{t('filterBar.status')}</InputLabel>
-            <Select
-              labelId="learning-status-label"
-              id="learning-status-select"
-              value={params.learningStatus ?? ''}
-              label={t('filterBar.status')}
-              onChange={(e) =>
-                onFilterChange({
-                  learningStatus:
-                    (e.target.value as LearningStatus) || undefined,
-                })
-              }
-            >
-              <MenuItem value="">{t('filterBar.allStatuses')}</MenuItem>
-              {LEARNING_STATUSES.map((status) => (
-                <MenuItem key={status} value={status}>
-                  {t(`statusLabels.${status}`)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
 
           <FormControl size="small" fullWidth>
             <InputLabel id="sort-label">{t('filterBar.sortBy')}</InputLabel>

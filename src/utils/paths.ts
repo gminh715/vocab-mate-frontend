@@ -14,6 +14,9 @@ export const routePaths = {
   securitySettings: '/settings/security',
   vocabularies: '/vocabularies',
   vocabularyDetail: '/vocabularies/:userVocabularyId',
+  tutorSession: '/tutor/session',
+  tutorHistory: '/tutor/history',
+  tutorHistoryDetail: '/tutor/history/:sessionId',
   admin: '/admin',
   adminUsers: '/admin/users',
   adminUserDetail: '/admin/users/:userId',
@@ -61,6 +64,12 @@ export const vocabularyDetailPath = (userVocabularyId: string): string =>
   routePaths.vocabularyDetail.replace(
     ':userVocabularyId',
     encodeURIComponent(userVocabularyId),
+  )
+
+export const tutorHistoryDetailPath = (sessionId: string): string =>
+  routePaths.tutorHistoryDetail.replace(
+    ':sessionId',
+    encodeURIComponent(sessionId),
   )
 
 export interface AuthRedirectState {

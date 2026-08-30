@@ -187,6 +187,7 @@ export function AuthenticatedLayout() {
                 <>
                   <NavLink to={routePaths.readingHistory}>{t('nav.readingHistory', 'Reading history')}</NavLink>
                   <NavLink to={routePaths.vocabularies}>{t('nav.vocabulary', 'Vocabulary')}</NavLink>
+                  <NavLink to={routePaths.tutorSession} end={false}>{t('nav.tutor', 'Practice')}</NavLink>
                 </>
               ) : null}
               {currentUser?.role === 'ADMIN' ? (
@@ -242,6 +243,13 @@ export function AuthenticatedLayout() {
                     },
                   }}
                 >
+                  <MenuItem
+                    component={RouterLink}
+                    to={routePaths.tutorHistory}
+                    onClick={closeAccountMenu}
+                  >
+                    <ListItemText primary={t('nav.tutorHistory', 'Practice history')} />
+                  </MenuItem>
                   <MenuItem
                     component={RouterLink}
                     to={routePaths.profileSettings}

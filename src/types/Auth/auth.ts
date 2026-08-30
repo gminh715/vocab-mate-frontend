@@ -16,17 +16,19 @@ export interface PublicUser {
 export interface UserLearningSettings {
   displayName: string
   avatarUrl: string | null
-  currentCefrLevel: CefrLevel
+  currentCefrLevel: CefrLevel | null
   learningGoal: string | null
   preferredLanguage: string
+  dailyStudyMinutes: number
 }
 
 export interface UpdateMyProfileRequest {
   displayName?: string
   avatarUrl?: string
-  currentCefrLevel?: CefrLevel
-  learningGoal?: CefrLevel
+  currentCefrLevel?: CefrLevel | null
+  learningGoal?: string | null
   preferredLanguage?: string
+  dailyStudyMinutes?: 5 | 10 | 15 | 20
 }
 
 export interface CurrentUser extends PublicUser, UserLearningSettings {}

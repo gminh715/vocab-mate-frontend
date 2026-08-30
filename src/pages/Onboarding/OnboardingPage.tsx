@@ -68,8 +68,9 @@ function PlacementExperience({
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
   const [scores, setScores] = useState<PlacementScores | null>(null)
-  const [resultLevel, setResultLevel] = useState<CefrLevel>('A1')
-  const [learningGoal, setLearningGoal] = useState<CefrLevel>('A2')
+  const [resultLevel, setResultLevel] = useState<CefrLevel | ''>('')
+  const [learningGoal, setLearningGoal] = useState<CefrLevel | ''>('')
+  const [dailyStudyMinutes, setDailyStudyMinutes] = useState<5 | 10 | 15 | 20>(10)
 
   const question = questions[questionIndex]
   const isLastQuestion = questionIndex === questions.length - 1
@@ -94,11 +95,32 @@ function PlacementExperience({
     setPhase('PLAN')
   }
 
+  const goToManualPlan = () => {
+    setScores(null)
+    setResultLevel('B1')
+    setLearningGoal('B2')
+    setPhase('PLAN')
+  }
+
   const savePlan = async () => {
     try {
       await updateProfile.mutateAsync({
-        currentCefrLevel: resultLevel,
-        learningGoal,
+        currentCefrLevel: resultLevel ? (resultLevel as CefrLevel) : null,
+        learningGoal: learningGoal ? (learningGoal as CefrLevel) : null,
+        dailyStudyMinutes,
+      })
+      navigate(routePaths.home, { replace: true })
+    } catch {
+      // The mutation error is rendered below the plan controls.
+    }
+  }
+
+  const skipAll = async () => {
+    try {
+      await updateProfile.mutateAsync({
+        currentCefrLevel: null,
+        learningGoal: null,
+        dailyStudyMinutes,
       })
       navigate(routePaths.home, { replace: true })
     } catch {
@@ -139,9 +161,31 @@ function PlacementExperience({
           >
             <Typography sx={{ fontWeight: 800 }}>{t('distribution')}</Typography>
           </Box>
-          <Button variant="contained" size="large" onClick={() => setPhase('TEST')}>
-            {t('start')}
-          </Button>
+          <Stack spacing={1.5}>
+            <Button variant="contained" size="large" onClick={() => setPhase('TEST')}>
+              {t('start')}
+            </Button>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+              <Button
+                variant="outlined"
+                size="medium"
+                fullWidth
+                onClick={goToManualPlan}
+              >
+                {t('chooseManually')}
+              </Button>
+              <Button
+                variant="text"
+                size="medium"
+                fullWidth
+                color="inherit"
+                disabled={updateProfile.isPending}
+                onClick={() => void skipAll()}
+              >
+                {t('skipSetup')}
+              </Button>
+            </Stack>
+          </Stack>
         </Stack>
       ) : null}
 
@@ -152,7 +196,12 @@ function PlacementExperience({
               <Typography sx={{ fontWeight: 800 }}>
                 {t('question', { current: questionIndex + 1, total: questions.length })}
               </Typography>
-              <Chip size="small" color="primary" label={question.level} sx={{ fontWeight: 800 }} />
+              <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                <Chip size="small" color="primary" label={question.level} sx={{ fontWeight: 800 }} />
+                <Button size="small" color="inherit" onClick={goToManualPlan}>
+                  {t('skipTest')}
+                </Button>
+              </Stack>
             </Stack>
             <LinearProgress
               variant="determinate"
@@ -202,36 +251,116 @@ function PlacementExperience({
         </Stack>
       ) : null}
 
-      {phase === 'PLAN' && scores ? (
+      {phase === 'PLAN' ? (
         <Stack spacing={3}>
-          <Box>
-            <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 34, sm: 48 } }}>
-              {t('resultTitle', { level: resultLevel })}
-            </Typography>
-            <Typography color="text.secondary" sx={{ mt: 1.5 }}>{t('resultBody')}</Typography>
-          </Box>
-          <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: 'wrap' }}>
-            <ScoreChip label={t('basic')} score={scores.BASIC} />
-            <ScoreChip label={t('intermediate')} score={scores.INTERMEDIATE} />
-            <ScoreChip label={t('advanced')} score={scores.ADVANCED} />
-          </Stack>
-          <Typography component="h2" variant="h2" sx={{ fontSize: 24 }}>{t('planTitle')}</Typography>
+          {scores && resultLevel ? (
+            <>
+              <Box>
+                <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 34, sm: 48 } }}>
+                  {t('resultTitle', { level: resultLevel })}
+                </Typography>
+                <Typography color="text.secondary" sx={{ mt: 1.5 }}>{t('resultBody')}</Typography>
+              </Box>
+              <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: 'wrap' }}>
+                <ScoreChip label={t('basic')} score={scores.BASIC} />
+                <ScoreChip label={t('intermediate')} score={scores.INTERMEDIATE} />
+                <ScoreChip label={t('advanced')} score={scores.ADVANCED} />
+              </Stack>
+              <Typography component="h2" variant="h2" sx={{ fontSize: 24 }}>{t('planTitle')}</Typography>
+            </>
+          ) : (
+            <Box>
+              <Typography component="h1" variant="h1" sx={{ fontSize: { xs: 34, sm: 48 } }}>
+                {t('manualPlanTitle')}
+              </Typography>
+              <Typography color="text.secondary" sx={{ mt: 1.5 }}>
+                {t('currentCefrHint')}
+              </Typography>
+            </Box>
+          )}
+
+          {/* Current CEFR level selector */}
           <TextField
             select
-            label={t('goalLabel')}
-            value={learningGoal}
-            onChange={(event) => setLearningGoal(event.target.value as CefrLevel)}
-            helperText={t('goalHint')}
+            id="current-cefr-select"
+            label={t('currentCefrLabel')}
+            value={resultLevel}
+            onChange={(event) => {
+              const nextCefr = event.target.value as CefrLevel | ''
+              setResultLevel(nextCefr)
+              if (
+                nextCefr &&
+                learningGoal &&
+                cefrRank(learningGoal as CefrLevel) < cefrRank(nextCefr)
+              ) {
+                setLearningGoal(nextCefr)
+              }
+            }}
+            helperText={t('currentCefrHint')}
           >
-            {CEFR_LEVELS.filter((level) => cefrRank(level) >= cefrRank(resultLevel)).map((level) => (
-              <MenuItem key={level} value={level}>{level}</MenuItem>
+            <MenuItem value="">
+              <em>{t('noCefrOption')}</em>
+            </MenuItem>
+            {CEFR_LEVELS.map((level) => (
+              <MenuItem key={level} value={level}>
+                {level}
+              </MenuItem>
             ))}
           </TextField>
+
+          {/* Learning goal selector */}
+          <TextField
+            select
+            id="learning-goal-select"
+            label={t('goalLabel')}
+            value={learningGoal}
+            onChange={(event) => setLearningGoal(event.target.value as CefrLevel | '')}
+            helperText={t('goalHint')}
+          >
+            <MenuItem value="">
+              <em>{t('noGoalOption')}</em>
+            </MenuItem>
+            {CEFR_LEVELS.filter((level) =>
+              resultLevel ? cefrRank(level) >= cefrRank(resultLevel as CefrLevel) : true,
+            ).map((level) => (
+              <MenuItem key={level} value={level}>
+                {level}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          {/* Daily study duration selector */}
+          <TextField
+            select
+            id="study-duration-select"
+            label={t('studyDurationLabel')}
+            value={dailyStudyMinutes}
+            onChange={(event) => setDailyStudyMinutes(Number(event.target.value) as 5 | 10 | 15 | 20)}
+            helperText={t('studyDurationHint')}
+          >
+            {([5, 10, 15, 20] as const).map((mins) => (
+              <MenuItem key={mins} value={mins}>
+                {t('studyDurationOption', { minutes: mins })}
+              </MenuItem>
+            ))}
+          </TextField>
+
           {updateProfile.isError ? <Alert severity="error">{t('saveError')}</Alert> : null}
-          <Button variant="contained" size="large" disabled={updateProfile.isPending} onClick={() => void savePlan()}>
+
+          <Button
+            variant="contained"
+            size="large"
+            disabled={updateProfile.isPending}
+            onClick={() => void savePlan()}
+          >
             {updateProfile.isPending ? (
-              <><CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />{t('saving')}</>
-            ) : t('save')}
+              <>
+                <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />
+                {t('saving')}
+              </>
+            ) : (
+              t('save')
+            )}
           </Button>
         </Stack>
       ) : null}

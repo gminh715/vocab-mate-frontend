@@ -387,7 +387,7 @@ export function AdminUserDetailPage() {
                 }}
               >
                 <DetailField label="Display name" value={user.displayName} />
-                <DetailField label="CEFR level" value={user.currentCefrLevel} />
+                <DetailField label="CEFR level" value={user.currentCefrLevel ?? 'Not set'} />
                 <DetailField
                   label="Preferred language"
                   value={user.preferredLanguage}

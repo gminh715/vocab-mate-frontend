@@ -67,6 +67,8 @@
       "learningGoal": "Learning goal",
       "learningGoalHint": "Choose your current level or a higher CEFR target.",
       "learningGoalNotSet": "Not set",
+      "dailyStudyMinutes": "Daily study time",
+      "dailyStudyMinutesHint": "Each session will automatically fit within your chosen time.",
       "unsavedChanges": "Unsaved changes",
       "saving": "Saving…",
       "saveChanges": "Save changes"

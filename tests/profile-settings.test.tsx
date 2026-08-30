@@ -39,6 +39,7 @@ const currentUser: CurrentUser = {
   currentCefrLevel: 'B1',
   learningGoal: 'C1',
   preferredLanguage: 'en',
+  dailyStudyMinutes: 10,
 }
 
 const updateResult = (

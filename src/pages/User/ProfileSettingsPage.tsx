@@ -35,6 +35,7 @@ const backendFieldNames = [
   'currentCefrLevel',
   'learningGoal',
   'preferredLanguage',
+  'dailyStudyMinutes',
 ] as const
 
 type ProfileFieldName = (typeof backendFieldNames)[number]
@@ -305,7 +306,7 @@ export function ProfileSettingsPage() {
                       lineHeight: 1,
                     }}
                   >
-                    {currentCefrLevel || currentUser.currentCefrLevel}
+                    {String(currentCefrLevel || currentUser.currentCefrLevel || '—')}
                   </Typography>
                   <Typography
                     sx={{
@@ -315,7 +316,7 @@ export function ProfileSettingsPage() {
                     }}
                   >
                     {t(
-                      `profile.cefrCard.levels.${currentCefrLevel || currentUser.currentCefrLevel}.title`,
+                      `profile.cefrCard.levels.${(typeof currentCefrLevel === 'string' && currentCefrLevel) || currentUser.currentCefrLevel || 'A1'}.title`,
                     )}
                   </Typography>
                 </Stack>
@@ -324,7 +325,7 @@ export function ProfileSettingsPage() {
                   size="small"
                   label={t('profile.cefrCard.vocabSize', {
                     count: t(
-                      `profile.cefrCard.levels.${currentCefrLevel || currentUser.currentCefrLevel}.vocab`,
+                      `profile.cefrCard.levels.${(typeof currentCefrLevel === 'string' && currentCefrLevel) || currentUser.currentCefrLevel || 'A1'}.vocab`,
                     ),
                   })}
                   sx={{
@@ -338,7 +339,7 @@ export function ProfileSettingsPage() {
 
                 <Typography sx={{ opacity: 0.88, fontSize: 13.5, lineHeight: 1.55 }}>
                   {t(
-                    `profile.cefrCard.levels.${currentCefrLevel || currentUser.currentCefrLevel}.description`,
+                    `profile.cefrCard.levels.${(typeof currentCefrLevel === 'string' && currentCefrLevel) || currentUser.currentCefrLevel || 'A1'}.description`,
                   )}
                 </Typography>
               </Paper>
@@ -389,6 +390,9 @@ export function ProfileSettingsPage() {
                         helperText={errors.currentCefrLevel?.message}
                         {...field}
                       >
+                        <MenuItem value="">
+                          <em>{t('profile.form.cefrNotSet', 'Chưa xác định')}</em>
+                        </MenuItem>
                         {CEFR_LEVELS.map((level) => (
                           <MenuItem key={level} value={level}>
                             {level}
@@ -421,6 +425,26 @@ export function ProfileSettingsPage() {
                   />
 
                 </Box>
+
+                <Controller
+                  control={control}
+                  name="dailyStudyMinutes"
+                  render={({ field }) => (
+                    <TextField
+                      select
+                      id="daily-study-minutes-select"
+                      label={t('profile.form.dailyStudyMinutes', 'Thời gian học mỗi ngày')}
+                      autoComplete="off"
+                      error={Boolean(errors.dailyStudyMinutes)}
+                      helperText={errors.dailyStudyMinutes?.message ?? t('profile.form.dailyStudyMinutesHint', 'Mỗi buổi học tự động khớp với khoảng thời gian bạn chọn.')}
+                      {...field}
+                    >
+                      {([5, 10, 15, 20] as const).map((mins) => (
+                        <MenuItem key={mins} value={mins}>{mins} phút</MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
 
                 <Stack
                   direction={{ xs: 'column', sm: 'row' }}

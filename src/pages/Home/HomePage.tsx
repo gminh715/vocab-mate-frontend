@@ -18,6 +18,7 @@ import {
   ClockIcon,
   SparklesIcon,
 } from '@/components/Dashboard/DashboardIcons'
+import { TutorDashboardCard } from '@/components/Tutor/TutorDashboardCard'
 import { useAuth } from '@/contexts/AuthContext'
 import { normalizeApiError } from '@/config/apiClient'
 import { useAnalyticsOverviewQuery } from '@/hooks/Analytics/useAnalytics'
@@ -100,7 +101,7 @@ function MetricCard({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        justify: 'space-between',
+        justifyContent: 'space-between',
       }}
     >
       <Stack
@@ -310,8 +311,6 @@ function EmptyLearningState() {
     </Paper>
   )
 }
-
-
 
 function ContinueReadingCard({ item }: { item: ReadingHistoryItem }) {
   const { t } = useTranslation('home')
@@ -528,6 +527,8 @@ export function HomePage() {
         </Box>
       </Paper>
 
+      <TutorDashboardCard />
+
       <Stack component="section" spacing={2} aria-labelledby="overview-title">
         <SectionHeading
           id="overview-title"
@@ -653,7 +654,6 @@ export function HomePage() {
           </Box>
         )}
       </Stack>
-
     </Stack>
   )
 }

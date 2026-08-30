@@ -191,6 +191,30 @@ const VocabularyDetailPage = lazy(() =>
   ),
 )
 
+const TutorSessionPage = lazy(() =>
+  import('@/pages/Tutor/TutorSessionPage').then(
+    ({ TutorSessionPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const TutorHistoryPage = lazy(() =>
+  import('@/pages/Tutor/TutorHistoryPage').then(
+    ({ TutorHistoryPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
+const TutorHistoryDetailPage = lazy(() =>
+  import('@/pages/Tutor/TutorHistoryDetailPage').then(
+    ({ TutorHistoryDetailPage: Component }) => ({
+      default: Component,
+    }),
+  ),
+)
+
 const LoginPage = lazy(() =>
   import('@/pages/Auth/LoginPage').then(({ LoginPage: Component }) => ({
     default: Component,
@@ -275,6 +299,18 @@ export function AppRoutes() {
           <Route
             path={routePaths.vocabularyDetail}
             element={<VocabularyDetailPage />}
+          />
+          <Route
+            path={routePaths.tutorSession}
+            element={<TutorSessionPage />}
+          />
+          <Route
+            path={routePaths.tutorHistory}
+            element={<TutorHistoryPage />}
+          />
+          <Route
+            path={routePaths.tutorHistoryDetail}
+            element={<TutorHistoryDetailPage />}
           />
           <Route
             path={routePaths.forbidden}

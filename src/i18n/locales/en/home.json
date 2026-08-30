@@ -5,6 +5,8 @@
     "articles": "Articles",
     "readingHistory": "Reading history",
     "vocabulary": "Vocabulary",
+    "tutor": "Practice",
+    "tutorHistory": "Practice history",
     "admin": "Admin",
     "profileSettings": "Profile settings",
     "languageSettings": "Language settings",
@@ -29,52 +31,51 @@
     "tryAgain": "Try again",
     "metrics": {
       "savedVocabulary": {
-        "label": "Saved vocabulary",
+        "label": "Saved Vocabulary",
         "detail": "Words in your library"
       },
       "articlesCompleted": {
-        "label": "Articles completed",
-        "detail": "Finished stories"
+        "label": "Articles Completed",
+        "detail": "Articles you've finished"
       }
     }
   },
   "empty": {
-    "title": "Start your learning trail",
-    "subtitle": "Three small milestones will bring this dashboard to life.",
+    "title": "Start your learning journey",
+    "subtitle": "Three small steps will bring this dashboard to life.",
     "cta": "Find your first article",
     "steps": {
       "0": {
         "title": "Read your first article",
-        "body": "Choose a story at your level and begin your reading trail."
+        "body": "Pick an article that matches your level and begin your journey."
       },
       "1": {
         "title": "Save useful vocabulary",
-        "body": "Select prepared terms while reading to build your saved vocabulary."
+        "body": "Select prepared words while reading to build your saved vocabulary library."
       },
       "2": {
         "title": "Create a personal collection",
-        "body": "Organize saved words into a collection that matches your interests."
+        "body": "Organize saved words into collections that fit your interests."
       }
     }
   },
   "continueReading": {
-    "title": "Continue Reading",
+    "title": "Continue reading",
     "historyButton": "Reading history",
-    "loadingLabel": "Loading in-progress articles",
+    "loadingLabel": "Loading articles",
+    "errorMessage": "Could not load recent articles. Try again.",
+    "tryAgain": "Try again",
+    "continueLabel": "Continue: {{title}}",
     "lastRead": "Last read {{date}}",
-    "archived": "Archived · Last read {{date}}",
-    "continueLabel": "Continue reading {{title}}",
+    "archived": "Archived article · last read {{date}}",
     "empty": {
-      "title": "No article is waiting for you",
-      "subtitle": "Start an article and it will appear here until you finish it.",
+      "title": "No active articles",
+      "subtitle": "Start reading a new article to track your progress here.",
       "cta": "Browse articles"
-    },
-    "errorMessage": "Your overview is still available, but in-progress articles could not be loaded.",
-    "tryAgain": "Try again"
+    }
   },
   "accessibility": {
-    "loadingOverview": "Loading learning overview",
-    "loadingArticles": "Loading in-progress articles",
-    "viewMetric": "View {{label}}"
+    "viewMetric": "View details for {{label}}",
+    "loadingOverview": "Loading learning overview"
   }
 }

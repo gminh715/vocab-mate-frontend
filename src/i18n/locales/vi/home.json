@@ -5,6 +5,8 @@
     "articles": "Bài đọc",
     "readingHistory": "Lịch sử đọc",
     "vocabulary": "Từ vựng",
+    "tutor": "Luyện tập",
+    "tutorHistory": "Lịch sử luyện tập",
     "admin": "Quản trị",
     "profileSettings": "Cài đặt hồ sơ",
     "languageSettings": "Cài đặt ngôn ngữ",
@@ -58,23 +60,22 @@
     }
   },
   "continueReading": {
-    "title": "Tiếp Tục Đọc",
+    "title": "Đọc tiếp",
     "historyButton": "Lịch sử đọc",
-    "loadingLabel": "Đang tải bài đọc đang dở",
+    "loadingLabel": "Đang tải bài đọc",
+    "errorMessage": "Không thể tải bài đọc gần đây. Hãy thử lại.",
+    "tryAgain": "Thử lại",
+    "continueLabel": "Đọc tiếp: {{title}}",
     "lastRead": "Đọc lần cuối {{date}}",
-    "archived": "Đã lưu trữ · Đọc lần cuối {{date}}",
-    "continueLabel": "Tiếp tục đọc {{title}}",
+    "archived": "Bài viết đã lưu trữ · đọc lần cuối {{date}}",
     "empty": {
-      "title": "Chưa có bài đọc nào đang chờ",
-      "subtitle": "Bắt đầu một bài đọc và nó sẽ xuất hiện ở đây cho đến khi bạn hoàn thành.",
-      "cta": "Khám phá bài đọc"
-    },
-    "errorMessage": "Tổng quan vẫn khả dụng, nhưng không thể tải bài đọc đang dở.",
-    "tryAgain": "Thử lại"
+      "title": "Không có bài đọc nào đang mở",
+      "subtitle": "Bắt đầu đọc một bài mới để lưu tiến độ và xem lại tại đây.",
+      "cta": "Duyệt danh sách bài đọc"
+    }
   },
   "accessibility": {
-    "loadingOverview": "Đang tải tổng quan học tập",
-    "loadingArticles": "Đang tải bài đọc đang dở",
-    "viewMetric": "Xem {{label}}"
+    "viewMetric": "Xem chi tiết cho {{label}}",
+    "loadingOverview": "Đang tải tổng quan học tập"
   }
 }

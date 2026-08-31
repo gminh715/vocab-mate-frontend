@@ -62,16 +62,16 @@ export function TutorHintBox({
             mt: 1.5,
             p: 2,
             borderRadius: 2,
-            bgcolor: 'info.light',
-            borderColor: 'info.main',
-            color: 'info.dark',
+            bgcolor: '#EFF6FF',
+            borderColor: '#BFDBFE',
+            color: '#1E40AF',
           }}
         >
           <Stack spacing={0.5}>
-            <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase' }}>
+            <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: '#1E40AF' }}>
               {t('session.hintTitle')}
             </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.9375rem' }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.9375rem', color: '#1E3A8A' }}>
               {meaningVi}
             </Typography>
           </Stack>

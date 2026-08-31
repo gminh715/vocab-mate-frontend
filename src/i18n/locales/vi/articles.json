@@ -1,13 +1,13 @@
 {
   "list": {
-    "heading": "Tìm bài đọc tiếng Anh tiếp theo",
-    "article_one": "bài viết",
-    "article_other": "bài viết",
+    "heading": "Thư viện tin tức",
+    "article_one": "tin tức",
+    "article_other": "tin tức",
     "dateUnavailable": "Không có ngày",
     "readAriaLabel": "Đọc {{title}}",
     "filters": {
-      "ariaLabel": "Bộ lọc bài viết",
-      "search": "Tìm kiếm bài viết",
+      "ariaLabel": "Bộ lọc tin tức",
+      "search": "Tìm kiếm tin tức",
       "searchPlaceholder": "Thử 'khí hậu' hay 'công nghệ'…",
       "category": "Danh mục",
       "allCategories": "Tất cả danh mục",
@@ -18,44 +18,44 @@
       "oldest": "Cũ nhất trước",
       "clearFilters": "Xóa bộ lọc"
     },
-    "loading": "Đang tải bài viết…",
+    "loading": "Đang tải tin tức…",
     "errors": {
       "invalidFilters": "Các bộ lọc này không hợp lệ. Xóa chúng và thử lại.",
-      "loadError": "Không thể tải bài viết. Vui lòng thử lại.",
+      "loadError": "Không thể tải tin tức. Vui lòng thử lại.",
       "tryAgain": "Thử lại",
-      "categoriesError": "Không thể tải danh mục. Bạn vẫn có thể tìm kiếm tất cả bài viết.",
+      "categoriesError": "Không thể tải danh mục. Bạn vẫn có thể tìm kiếm tất cả tin tức.",
       "retryCategories": "Tải lại danh mục"
     },
     "empty": {
-      "withFilters": "Không có bài viết nào khớp bộ lọc",
+      "withFilters": "Không có tin tức nào khớp bộ lọc",
       "withFiltersSubtitle": "Thử tìm kiếm rộng hơn, trình độ khác hoặc danh mục khác.",
-      "noArticles": "Chưa có bài viết nào được xuất bản",
-      "noArticlesSubtitle": "Các bài đọc học tập mới sẽ xuất hiện ở đây khi được xuất bản."
+      "noArticles": "Chưa có tin tức nào được xuất bản",
+      "noArticlesSubtitle": "Các tin tức mới sẽ xuất hiện ở đây khi được xuất bản."
     },
     "pagination": {
-      "ariaLabel": "Trang bài viết",
-      "resultsAriaLabel": "Kết quả bài viết"
+      "ariaLabel": "Trang tin tức",
+      "resultsAriaLabel": "Kết quả tin tức"
     }
   },
   "reader": {
-    "loading": "Đang tải trình đọc bài…",
+    "loading": "Đang tải trình đọc tin tức…",
     "notFound": {
-      "title": "Không tìm thấy bài viết",
-      "subtitle": "Bài viết này có thể không còn khả dụng hoặc đã ngừng xuất bản. Hãy chọn bài khác từ thư viện.",
-      "backButton": "Quay lại bài viết"
+      "title": "Không tìm thấy tin tức",
+      "subtitle": "Tin tức này có thể không còn khả dụng hoặc đã ngừng xuất bản. Hãy chọn bài khác từ thư viện.",
+      "backButton": "Quay lại tin tức"
     },
     "disabled": {
-      "title": "Không thể đọc bài",
+      "title": "Không thể đọc tin tức",
       "alert": "Tài khoản này đã bị tạm ngưng hoặc vô hiệu hóa. Liên hệ quản trị viên để được hỗ trợ.",
-      "backButton": "Quay lại bài viết"
+      "backButton": "Quay lại tin tức"
     },
-    "backButton": "← Quay lại bài viết",
+    "backButton": "← Quay lại tin tức",
     "errors": {
-      "invalidAddress": "Địa chỉ bài viết này không hợp lệ. Quay lại thư viện bài viết và chọn bài khác.",
-      "loadError": "Không thể tải trình đọc bài. Vui lòng thử lại.",
+      "invalidAddress": "Địa chỉ tin tức này không hợp lệ. Quay lại thư viện tin tức và chọn bài khác.",
+      "loadError": "Không thể tải trình đọc tin tức. Vui lòng thử lại.",
       "tryAgain": "Thử lại",
-      "contentUnavailable": "Nội dung bài viết hiện không khả dụng.",
-      "completionFailed": "Bạn đã đọc đến cuối, nhưng không thể đánh dấu bài là đã hoàn thành.",
+      "contentUnavailable": "Nội dung tin tức hiện không khả dụng.",
+      "completionFailed": "Bạn đã đọc đến cuối, nhưng không thể đánh dấu tin là đã hoàn thành.",
       "retryCompletion": "Thử lại"
     },
     "progress": {
@@ -68,8 +68,8 @@
     },
     "vocabulary": {
       "panelTitle": "Từ vựng",
-      "noHighlights": "Không có từ nào nằm trong khoảng từ CEFR hiện tại đến CEFR mục tiêu của bạn. Bạn vẫn có thể tra cứu từ vựng được chuẩn bị cho bài này.",
-      "hasHighlights": "Các từ được tô sáng nằm từ CEFR hiện tại đến CEFR mục tiêu của bạn. Bật tra cứu để khám phá toàn bộ từ vựng được chuẩn bị cho bài này.",
+      "noHighlights": "Không có từ nào nằm trong khoảng từ CEFR hiện tại đến CEFR mục tiêu của bạn. Bạn vẫn có thể tra cứu từ vựng được chuẩn bị cho tin tức này.",
+      "hasHighlights": "Các từ được tô sáng nằm từ CEFR hiện tại đến CEFR mục tiêu của bạn. Bật tra cứu để khám phá toàn bộ từ vựng được chuẩn bị cho tin tức này.",
       "turnOn": "Bật tra cứu từ vựng",
       "turnOff": "Tắt tra cứu từ vựng",
       "statusOff": "Tra cứu từ vựng đang tắt.",
@@ -88,7 +88,7 @@
     "tryAgain": "Thử lại",
     "errors": {
       "disabled": "Không thể tra cứu từ này trong ngữ cảnh hiện tại.",
-      "notFound": "Từ trong ngữ cảnh này không còn tồn tại trong bài viết.",
+      "notFound": "Từ trong ngữ cảnh này không còn tồn tại trong tin tức.",
       "preparing": "Thông tin của từ đang được chuẩn bị. Vui lòng thử lại sau giây lát.",
       "load": "Không thể tải thông tin từ vựng. Vui lòng thử lại."
     },
@@ -139,8 +139,8 @@
   },
   "history": {
     "title": "Lịch sử đọc",
-    "article_one": "bài viết",
-    "article_other": "bài viết",
+    "article_one": "tin tức",
+    "article_other": "tin tức",
     "progressAriaLabel": "Tiến độ đọc của {{title}}",
     "lastRead": "Đọc lần cuối {{date}}",
     "status": {
@@ -155,7 +155,7 @@
     "actions": {
       "readAgain": "Đọc lại",
       "continue": "Tiếp tục đọc",
-      "unavailable": "Bài viết không khả dụng",
+      "unavailable": "Tin tức không khả dụng",
       "reset": "Đặt lại tiến độ"
     },
     "filters": {
@@ -177,15 +177,15 @@
       "resetError": "Không thể đặt lại tiến độ đọc. Vui lòng thử lại."
     },
     "empty": {
-      "withFilter": "Không có bài nào khớp bộ lọc này",
+      "withFilter": "Không có tin nào khớp bộ lọc này",
       "withFilterSubtitle": "Chọn trạng thái khác hoặc xóa bộ lọc.",
       "noHistory": "Lịch sử đọc của bạn đang trống",
-      "noHistorySubtitle": "Mở một bài viết và bắt đầu đọc để xem ở đây.",
+      "noHistorySubtitle": "Mở một tin tức và bắt đầu đọc để xem ở đây.",
       "clearFilters": "Xóa bộ lọc"
     },
     "resetDialog": {
       "title": "Đặt lại tiến độ đọc?",
-      "description": "Bài viết này sẽ bị xóa khỏi lịch sử đọc. Từ vựng đã lưu sẽ không bị xóa.",
+      "description": "Tin tức này sẽ bị xóa khỏi lịch sử đọc. Từ vựng đã lưu sẽ không bị xóa.",
       "confirmLabel": "Đặt lại tiến độ"
     },
     "pagination": {

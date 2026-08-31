@@ -15,6 +15,12 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, Outlet, useMatch, useNavigate } from 'react-router-dom'
+import {
+  CheckIcon,
+  ChevronRightIcon,
+  UkFlagIcon,
+  VietnamFlagIcon,
+} from '@/components/Dashboard/DashboardIcons'
 import { UserAvatar } from '@/components/Shared/UserAvatar'
 import { routePaths } from '@/utils/paths'
 import {
@@ -64,26 +70,39 @@ export function AuthenticatedLayout() {
   const updateProfileMutation = useUpdateMyProfileMutation()
   const [accountMenuAnchor, setAccountMenuAnchor] =
     useState<HTMLElement | null>(null)
+  const [languageMenuAnchor, setLanguageMenuAnchor] =
+    useState<HTMLElement | null>(null)
   const [languageNotice, setLanguageNotice] = useState<string | null>(null)
   const accountMenuOpen = Boolean(accountMenuAnchor)
+  const languageMenuOpen = Boolean(languageMenuAnchor)
 
-  const closeAccountMenu = () => setAccountMenuAnchor(null)
+  const closeAccountMenu = () => {
+    setAccountMenuAnchor(null)
+    setLanguageMenuAnchor(null)
+  }
+
+  const closeLanguageMenu = () => {
+    setLanguageMenuAnchor(null)
+  }
 
   if (!currentUser) {
     return <Outlet />
   }
 
-  const changePreferredLanguage = async () => {
+  const selectLanguage = async (preferredLanguage: 'vi' | 'en') => {
     if (!currentUser || updateProfileMutation.isPending) return
-
-    const preferredLanguage =
-      currentUser.preferredLanguage === 'en' ? 'vi' : 'en'
     closeAccountMenu()
+
+    if (currentUser.preferredLanguage === preferredLanguage) {
+      return
+    }
 
     try {
       await updateProfileMutation.mutateAsync({ preferredLanguage })
       setLanguageNotice(
-        t('nav.languageUpdated', { language: preferredLanguage.toUpperCase() }),
+        t('nav.languageUpdated', {
+          language: preferredLanguage === 'vi' ? 'Tiếng Việt' : 'English',
+        }),
       )
     } catch {
       setLanguageNotice(t('nav.languageError'))
@@ -245,29 +264,33 @@ export function AuthenticatedLayout() {
                 >
                   <MenuItem
                     component={RouterLink}
-                    to={routePaths.tutorHistory}
-                    onClick={closeAccountMenu}
-                  >
-                    <ListItemText primary={t('nav.tutorHistory', 'Practice history')} />
-                  </MenuItem>
-                  <MenuItem
-                    component={RouterLink}
                     to={routePaths.profileSettings}
                     onClick={closeAccountMenu}
                   >
                     <ListItemText primary={t('nav.profileSettings', 'Profile settings')} />
                   </MenuItem>
                   <MenuItem
-                    onClick={() => void changePreferredLanguage()}
+                    id="language-menu-item"
+                    aria-controls={languageMenuOpen ? 'language-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={languageMenuOpen ? 'true' : undefined}
+                    onClick={(event) => setLanguageMenuAnchor(event.currentTarget)}
                     disabled={updateProfileMutation.isPending}
+                    sx={{ justifyContent: 'space-between', gap: 2 }}
                   >
-                    <ListItemText
-                      primary={t('nav.languageSettings', 'Language settings')}
-                      secondary={t('nav.languageCurrent', `Current: ${currentUser.preferredLanguage.toUpperCase()} · Switch to ${currentUser.preferredLanguage === 'en' ? 'VI' : 'EN'}`, {
-                        current: currentUser.preferredLanguage.toUpperCase(),
-                        target: currentUser.preferredLanguage === 'en' ? 'VI' : 'EN',
-                      })}
-                    />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      {currentUser.preferredLanguage === 'vi' ? (
+                        <VietnamFlagIcon size={20} />
+                      ) : (
+                        <UkFlagIcon size={20} />
+                      )}
+                      <ListItemText
+                        primary={t('nav.languageSettings', 'Language settings')}
+                        secondary={currentUser.preferredLanguage === 'vi' ? 'Tiếng Việt' : 'English'}
+                        sx={{ my: 0 }}
+                      />
+                    </Box>
+                    <ChevronRightIcon size={18} color="#5D7068" />
                   </MenuItem>
                   <Divider />
                   <MenuItem
@@ -281,6 +304,49 @@ export function AuthenticatedLayout() {
                           : t('nav.signOut', 'Sign out')
                       }
                     />
+                  </MenuItem>
+                </Menu>
+
+                {/* Submenu for Language Selection */}
+                <Menu
+                  id="language-menu"
+                  anchorEl={languageMenuAnchor}
+                  open={languageMenuOpen}
+                  onClose={closeLanguageMenu}
+                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        minWidth: 190,
+                        borderRadius: 2.5,
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem
+                    onClick={() => void selectLanguage('vi')}
+                    selected={currentUser.preferredLanguage === 'vi'}
+                    sx={{ gap: 1.5, py: 1.25 }}
+                  >
+                    <VietnamFlagIcon size={22} />
+                    <ListItemText primary="Tiếng Việt" secondary="Vietnamese" sx={{ my: 0 }} />
+                    {currentUser.preferredLanguage === 'vi' && (
+                      <CheckIcon size={18} color="#16A34A" />
+                    )}
+                  </MenuItem>
+
+                  <MenuItem
+                    onClick={() => void selectLanguage('en')}
+                    selected={currentUser.preferredLanguage === 'en'}
+                    sx={{ gap: 1.5, py: 1.25 }}
+                  >
+                    <UkFlagIcon size={22} />
+                    <ListItemText primary="English" secondary="Tiếng Anh" sx={{ my: 0 }} />
+                    {currentUser.preferredLanguage === 'en' && (
+                      <CheckIcon size={18} color="#16A34A" />
+                    )}
                   </MenuItem>
                 </Menu>
               </>

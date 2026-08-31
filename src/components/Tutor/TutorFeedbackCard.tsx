@@ -39,10 +39,12 @@ export function TutorFeedbackCard({
         mt: 3,
         p: { xs: 2.5, sm: 3 },
         borderRadius: 3,
-        borderColor: isCorrect ? 'success.main' : 'error.main',
+        borderColor: isCorrect ? '#86EFAC' : '#FECACA',
         borderWidth: 2,
-        bgcolor: isCorrect ? 'success.light' : 'error.light',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
+        bgcolor: isCorrect ? '#F0FDF4' : '#FEF2F2',
+        boxShadow: isCorrect
+          ? '0 8px 30px rgba(22, 163, 74, 0.08)'
+          : '0 8px 30px rgba(220, 38, 38, 0.08)',
       }}
     >
       <Stack spacing={2}>
@@ -50,7 +52,7 @@ export function TutorFeedbackCard({
           variant="h6"
           sx={{
             fontWeight: 800,
-            color: isCorrect ? 'success.dark' : 'error.dark',
+            color: isCorrect ? '#15803D' : '#DC2626',
             fontSize: '1.25rem',
           }}
         >
@@ -62,44 +64,113 @@ export function TutorFeedbackCard({
             variant="body1"
             sx={{
               fontWeight: 600,
-              color: isCorrect ? 'success.dark' : 'error.dark',
+              color: isCorrect ? '#166534' : '#991B1B',
             }}
           >
             {feedbackVi}
           </Typography>
         ) : null}
 
-        <Divider sx={{ my: 1, borderColor: isCorrect ? 'success.main' : 'error.main', opacity: 0.3 }} />
+        <Divider
+          sx={{
+            my: 1,
+            borderColor: isCorrect ? '#BBF7D0' : '#FECACA',
+          }}
+        />
 
         <Stack spacing={1.5}>
           {userAnswer !== undefined && userAnswer !== null ? (
             <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 700,
+                  color: isCorrect ? '#166534' : '#991B1B',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                }}
+              >
                 {t('feedback.yourAnswer')}
               </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary' }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 600,
+                  color: isCorrect ? '#14532D' : '#7F1D1D',
+                  textDecoration: !isCorrect ? 'line-through' : 'none',
+                }}
+              >
                 {String(userAnswer)}
               </Typography>
             </Box>
           ) : null}
 
           {!isCorrect && correctAnswer !== undefined && correctAnswer !== null ? (
-            <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: 'success.dark', textTransform: 'uppercase' }}>
+            <Box
+              sx={{
+                p: 1.5,
+                borderRadius: 2,
+                bgcolor: '#FFFFFF',
+                border: '1px solid #BBF7D0',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 700,
+                  color: '#15803D',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'block',
+                }}
+              >
                 {t('feedback.correctAnswer')}
               </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 700, color: 'success.dark', fontSize: '1.125rem' }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 800,
+                  color: '#15803D',
+                  fontSize: '1.125rem',
+                  mt: 0.25,
+                }}
+              >
                 {String(correctAnswer)}
               </Typography>
             </Box>
           ) : null}
 
           {explanationVi ? (
-            <Box sx={{ mt: 1 }}>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase' }}>
+            <Box
+              sx={{
+                mt: 1,
+                p: 2,
+                borderRadius: 2,
+                bgcolor: '#FFFFFF',
+                border: `1px solid ${isCorrect ? '#DCFCE7' : '#FEE2E2'}`,
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 700,
+                  color: isCorrect ? '#15803D' : '#991B1B',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'block',
+                  mb: 0.5,
+                }}
+              >
                 {t('feedback.explanation')}
               </Typography>
-              <Typography variant="body2" sx={{ mt: 0.5, lineHeight: 1.6, color: 'text.primary' }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  lineHeight: 1.65,
+                  color: '#1F2937',
+                  fontWeight: 500,
+                }}
+              >
                 {explanationVi}
               </Typography>
             </Box>
@@ -112,7 +183,6 @@ export function TutorFeedbackCard({
           fullWidth
           onClick={onNext}
           disabled={isLoadingNext}
-          color={isCorrect ? 'success' : 'primary'}
           startIcon={
             isLoadingNext ? (
               <CircularProgress size={18} color="inherit" />
@@ -124,7 +194,12 @@ export function TutorFeedbackCard({
             borderRadius: 2,
             fontWeight: 800,
             fontSize: '1rem',
-            boxShadow: 3,
+            bgcolor: isCorrect ? '#16A34A' : '#176B4B',
+            color: '#FFFFFF',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.12)',
+            '&:hover': {
+              bgcolor: isCorrect ? '#15803D' : '#0F5138',
+            },
           }}
         >
           {isLoadingNext

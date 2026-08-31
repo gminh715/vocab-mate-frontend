@@ -49,10 +49,10 @@
     "yourAnswer": "Your answer:",
     "correctAnswer": "Correct answer:",
     "explanation": "Explanation:",
-    "ratingAgain": "Need Review Soon (Again)",
-    "ratingHard": "Hard",
-    "ratingGood": "Good",
-    "ratingEasy": "Easy"
+    "ratingAgain": "Need Review (Forgotten)",
+    "ratingHard": "Hesitant (Hard to recall)",
+    "ratingGood": "Good Recall (Memorized)",
+    "ratingEasy": "Mastered (Deep memory)"
   },
   "summary": {
     "completedTitle": "Congratulations! Session Completed",
@@ -63,7 +63,11 @@
     "activities": "Activities Completed",
     "newWords": "New Words Learned",
     "reviewWords": "Words Reviewed",
-    "ratingDistribution": "Retention Rating Distribution",
+    "ratingDistribution": "Memory Retention Level",
+    "ratingAgain": "Need Review",
+    "ratingHard": "Hesitant",
+    "ratingGood": "Good Recall",
+    "ratingEasy": "Mastered",
     "relearningWords": "Words to Reinforce",
     "noRelearning": "No words need reinforcement!",
     "nextDue": "Words Due Next Session",

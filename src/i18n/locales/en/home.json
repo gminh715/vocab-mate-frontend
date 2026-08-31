@@ -77,5 +77,41 @@
   "accessibility": {
     "viewMetric": "View details for {{label}}",
     "loadingOverview": "Loading learning overview"
+  },
+  "streakWidget": {
+    "title": "Learning Streak",
+    "streakDays": "{{count}} days streak",
+    "daysUnit": "days streak",
+    "longestStreak": "Record: {{count}} days",
+    "todayCompleted": "Completed today",
+    "todayPending": "Not studied today",
+    "keepStreak": "Complete today's session to keep your streak going!",
+    "streakActive": "Great job! You are keeping a strong streak.",
+    "noStreak": "Start your learning streak today!",
+    "dayMon": "Mon",
+    "dayTue": "Tue",
+    "dayWed": "Wed",
+    "dayThu": "Thu",
+    "dayFri": "Fri",
+    "daySat": "Sat",
+    "daySun": "Sun",
+    "dayToday": "Today",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "currentMonthBtn": "This month",
+    "monthDaysLearned": "{{completed}} days completed this month",
+    "calendarTitle": "Activity Calendar"
+  },
+  "masteryWidget": {
+    "title": "Memory Mastery",
+    "masteryRate": "{{percent}}% Mastered",
+    "subtitle": "Spaced repetition retention stage distribution",
+    "stateNew": "New",
+    "stateLearning": "Learning",
+    "stateReview": "Mastered",
+    "stateRelearning": "Needs Review",
+    "totalWords": "Total: {{count}} words",
+    "empty": "No vocabulary data yet. Save words while reading to track retention!"
   }
 }
+

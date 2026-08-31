@@ -2,7 +2,7 @@
   "nav": {
     "skipToContent": "Bỏ qua đến nội dung chính",
     "home": "Trang chủ",
-    "articles": "Bài đọc",
+    "articles": "Tin tức",
     "readingHistory": "Lịch sử đọc",
     "vocabulary": "Từ vựng",
     "tutor": "Luyện tập",
@@ -18,10 +18,10 @@
     "signIn": "Đăng nhập"
   },
   "header": {
-    "chip": "Bảng Học Tập",
+    "chip": "Learning Dashboard",
     "welcome": "Chào mừng trở lại, {{name}}.",
     "continueLearning": "Tiếp Tục Học",
-    "browseArticles": "Khám Phá Bài Đọc"
+    "browseArticles": "Khám Phá Tin Tức"
   },
   "overview": {
     "title": "Tổng Quan",
@@ -35,19 +35,19 @@
         "detail": "Từ trong thư viện của bạn"
       },
       "articlesCompleted": {
-        "label": "Bài đọc hoàn thành",
-        "detail": "Bài đọc đã đọc xong"
+        "label": "Tin tức hoàn thành",
+        "detail": "Tin tức đã đọc xong"
       }
     }
   },
   "empty": {
     "title": "Bắt đầu hành trình học tập",
     "subtitle": "Ba mốc nhỏ sẽ làm bảng điều khiển này trở nên sống động.",
-    "cta": "Tìm bài đọc đầu tiên",
+    "cta": "Tìm tin tức đầu tiên",
     "steps": {
       "0": {
-        "title": "Đọc bài đầu tiên",
-        "body": "Chọn một bài đọc phù hợp với trình độ và bắt đầu hành trình của bạn."
+        "title": "Đọc tin tức đầu tiên",
+        "body": "Chọn một tin tức phù hợp với trình độ và bắt đầu hành trình của bạn."
       },
       "1": {
         "title": "Lưu từ vựng hữu ích",
@@ -62,20 +62,55 @@
   "continueReading": {
     "title": "Đọc tiếp",
     "historyButton": "Lịch sử đọc",
-    "loadingLabel": "Đang tải bài đọc",
-    "errorMessage": "Không thể tải bài đọc gần đây. Hãy thử lại.",
+    "loadingLabel": "Đang tải tin tức",
+    "errorMessage": "Không thể tải tin tức gần đây. Hãy thử lại.",
     "tryAgain": "Thử lại",
     "continueLabel": "Đọc tiếp: {{title}}",
     "lastRead": "Đọc lần cuối {{date}}",
-    "archived": "Bài viết đã lưu trữ · đọc lần cuối {{date}}",
+    "archived": "Tin tức đã lưu trữ · đọc lần cuối {{date}}",
     "empty": {
-      "title": "Không có bài đọc nào đang mở",
-      "subtitle": "Bắt đầu đọc một bài mới để lưu tiến độ và xem lại tại đây.",
-      "cta": "Duyệt danh sách bài đọc"
+      "title": "Không có tin tức nào đang mở",
+      "subtitle": "Bắt đầu đọc một tin tức mới để lưu tiến độ và xem lại tại đây.",
+      "cta": "Duyệt danh sách tin tức"
     }
   },
   "accessibility": {
     "viewMetric": "Xem chi tiết cho {{label}}",
     "loadingOverview": "Đang tải tổng quan học tập"
+  },
+  "streakWidget": {
+    "title": "Chuỗi Học Tập",
+    "streakDays": "{{count}} ngày liên tiếp",
+    "daysUnit": "ngày liên tiếp",
+    "longestStreak": "Kỷ lục: {{count}} ngày",
+    "todayCompleted": "Hôm nay đã học",
+    "todayPending": "Chưa học hôm nay",
+    "keepStreak": "Hãy hoàn thành phiên học hôm nay để duy trì chuỗi nhé!",
+    "streakActive": "Tuyệt vời! Bạn đang duy trì phong độ rất tốt.",
+    "noStreak": "Bắt đầu chuỗi học tập ngay hôm nay!",
+    "dayMon": "T2",
+    "dayTue": "T3",
+    "dayWed": "T4",
+    "dayThu": "T5",
+    "dayFri": "T6",
+    "daySat": "T7",
+    "daySun": "CN",
+    "dayToday": "Hôm nay",
+    "prevMonth": "Tháng trước",
+    "nextMonth": "Tháng sau",
+    "currentMonthBtn": "Tháng này",
+    "monthDaysLearned": "Đã học {{completed}} ngày trong tháng",
+    "calendarTitle": "Lịch học tập"
+  },
+  "masteryWidget": {
+    "title": "Mức Độ Ghi Nhớ",
+    "masteryRate": "{{percent}}% Đã nhớ sâu",
+    "subtitle": "Phân bổ theo chu kỳ lặp lại ngắt quãng",
+    "stateNew": "Từ mới",
+    "stateLearning": "Đang nạp",
+    "stateReview": "Đã nhớ sâu",
+    "stateRelearning": "Cần củng cố",
+    "totalWords": "Tổng: {{count}} từ",
+    "empty": "Chưa có dữ liệu từ vựng. Hãy lưu từ để theo dõi độ nhớ!"
   }
 }

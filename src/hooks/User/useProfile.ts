@@ -30,3 +30,18 @@ export const useUpdateMyProfileMutation = () => {
     },
   })
 }
+
+export const useUploadMyAvatarMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: profileApi.uploadAvatar,
+    retry: false,
+    onSuccess: (currentUser: CurrentUser) => {
+      queryClient.setQueryData(
+        authQueryKeys.currentUser(),
+        currentUser,
+      )
+    },
+  })
+}

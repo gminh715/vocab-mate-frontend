@@ -12,103 +12,10 @@ import { Link as RouterLink, useParams } from 'react-router-dom'
 import { ClockIcon, SparklesIcon } from '@/components/Dashboard/DashboardIcons'
 import { useTutorSessionDetailQuery } from '@/hooks/Tutor/useTutor'
 import type {
-  MicroLessonRetestPayload,
   MultipleChoicePayload,
   TutorSessionAnsweredItem,
 } from '@/types/Tutor/tutor'
 import { routePaths } from '@/utils/paths'
-
-function renderHistoryFactContent(text: string, targetWord?: string) {
-  if (!text) return null
-  const regex = /(\*\*[^*]+\*\*(?:\s*\([^)]+\))?)/g
-  const chunks = text.split(regex)
-
-  if (chunks.length > 1) {
-    return chunks.map((chunk, index) => {
-      const match = chunk.match(/^\*\*([^*]+)\*\*(?:\s*(\(([^)]+)\)))?$/)
-      if (match) {
-        const englishWord = match[1].trim()
-        const translation = match[3]?.trim()
-        return (
-          <Box
-            key={index}
-            component="span"
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'baseline',
-              gap: 0.5,
-              mx: 0.5,
-              px: 0.75,
-              py: 0.1,
-              borderRadius: 1,
-              bgcolor: 'rgba(124, 58, 237, 0.1)',
-              border: '1px solid rgba(124, 58, 237, 0.25)',
-              verticalAlign: 'baseline',
-            }}
-          >
-            <Box
-              component="strong"
-              sx={{ fontWeight: 800, color: 'primary.main', letterSpacing: '0.01em' }}
-            >
-              {englishWord}
-            </Box>
-            {translation && (
-              <Box component="span" sx={{ fontSize: '0.85em', color: 'text.secondary' }}>
-                ({translation})
-              </Box>
-            )}
-          </Box>
-        )
-      }
-      return chunk
-    })
-  }
-
-  if (targetWord && targetWord.trim()) {
-    const escaped = targetWord.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const wordRegex = new RegExp(`(\\b${escaped}[a-z]*\\b(?:\\s*\\([^)]+\\))?)`, 'gi')
-    const wordChunks = text.split(wordRegex)
-    if (wordChunks.length > 1) {
-      return wordChunks.map((chunk, index) => {
-        const wordMatch = chunk.match(new RegExp(`^(\\b${escaped}[a-z]*\\b)(?:\\s*\\(([^)]+)\\))?$`, 'i'))
-        if (wordMatch) {
-          const englishWord = wordMatch[1]
-          const translation = wordMatch[2]?.trim()
-          return (
-            <Box
-              key={index}
-              component="span"
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'baseline',
-                gap: 0.5,
-                mx: 0.5,
-                px: 0.75,
-                py: 0.1,
-                borderRadius: 1,
-                bgcolor: 'rgba(124, 58, 237, 0.1)',
-                border: '1px solid rgba(124, 58, 237, 0.25)',
-                verticalAlign: 'baseline',
-              }}
-            >
-              <Box component="strong" sx={{ fontWeight: 800, color: 'primary.main' }}>
-                {englishWord}
-              </Box>
-              {translation && (
-                <Box component="span" sx={{ fontSize: '0.85em', color: 'text.secondary' }}>
-                  ({translation})
-                </Box>
-              )}
-            </Box>
-          )
-        }
-        return chunk
-      })
-    }
-  }
-
-  return text
-}
 
 export function TutorHistoryDetailPage() {
   const { t } = useTranslation('tutor')
@@ -205,40 +112,6 @@ export function TutorHistoryDetailPage() {
             <Typography variant="body2" color="text.secondary">
               {String(payload.recallPromptVi)}
             </Typography>
-          </Paper>
-        ) : null}
-
-        {payload?.microLessonVi || (payload as unknown as MicroLessonRetestPayload)?.microLessonFactVi || (payload as unknown as MicroLessonRetestPayload)?.microLessonFactEn ? (
-          <Paper
-            variant="outlined"
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              bgcolor: 'rgba(124, 58, 237, 0.04)',
-              borderColor: 'primary.light',
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{ fontWeight: 800, color: 'primary.main', display: 'block', mb: 0.5, textTransform: 'uppercase' }}
-            >
-              💡 {(payload as unknown as MicroLessonRetestPayload)?.microLessonTitle || 'Fact Tri Thức & Bài Học Ngắn'}:
-            </Typography>
-
-            <Stack spacing={1}>
-              <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 500, lineHeight: 1.75 }}>
-                {renderHistoryFactContent(
-                  (payload as unknown as MicroLessonRetestPayload).microLessonFactVi ||
-                    String(payload.microLessonVi || ''),
-                  (payload as unknown as MicroLessonRetestPayload).wordDisplay,
-                )}
-              </Typography>
-              {(payload as unknown as MicroLessonRetestPayload).microLessonFactEn && (
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
-                  📖 English: {(payload as unknown as MicroLessonRetestPayload).microLessonFactEn}
-                </Typography>
-              )}
-            </Stack>
           </Paper>
         ) : null}
 

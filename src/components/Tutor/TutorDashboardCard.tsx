@@ -128,10 +128,10 @@ export function TutorDashboardCard() {
         sx={{
           p: { xs: 2.5, sm: 3.5 },
           borderRadius: 3,
-          bgcolor: 'success.light',
-          borderColor: 'success.main',
+          bgcolor: '#F0FDF4',
+          borderColor: '#BBF7D0',
           borderLeftWidth: 4,
-          borderLeftColor: 'success.main',
+          borderLeftColor: '#16A34A',
         }}
       >
         <Stack
@@ -144,31 +144,47 @@ export function TutorDashboardCard() {
               <Chip
                 size="small"
                 label={t('dashboard.completedToday')}
-                color="success"
-                sx={{ fontWeight: 700 }}
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: '#DCFCE7',
+                  color: '#15803D',
+                  border: '1px solid #86EFAC',
+                }}
               />
               <Chip
                 icon={<ClockIcon size={14} color="inherit" />}
                 size="small"
                 label={t('dashboard.targetTime', { minutes: dailyMinutes })}
                 variant="outlined"
-                sx={{ fontWeight: 600 }}
+                sx={{ fontWeight: 600, bgcolor: '#FFFFFF', color: '#166534', borderColor: '#BBF7D0' }}
               />
             </Stack>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: 'success.dark', mb: 0.5 }}>
+            <Typography variant="h6" sx={{ fontWeight: 800, color: '#15803D', mb: 0.5 }}>
               {t('dashboard.completedToday')}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: '#166534' }}>
               {t('dashboard.completedDesc')}
             </Typography>
           </Box>
 
           <Button
             component={RouterLink}
-            to={routePaths.tutorHistory}
+            to={routePaths.tutorSession}
             variant="outlined"
-            color="success"
-            sx={{ borderRadius: 2, px: 3, py: 1, fontWeight: 700, whiteSpace: 'nowrap' }}
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              py: 1,
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              bgcolor: '#FFFFFF',
+              color: '#15803D',
+              borderColor: '#86EFAC',
+              '&:hover': {
+                bgcolor: '#DCFCE7',
+                borderColor: '#16A34A',
+              },
+            }}
           >
             {t('summary.viewHistory')}
           </Button>
@@ -185,10 +201,10 @@ export function TutorDashboardCard() {
         sx={{
           p: { xs: 2.5, sm: 3.5 },
           borderRadius: 3,
-          bgcolor: 'warning.light',
-          borderColor: 'warning.main',
+          bgcolor: '#FFFBEB',
+          borderColor: '#FDE68A',
           borderLeftWidth: 4,
-          borderLeftColor: 'warning.main',
+          borderLeftColor: '#D97706',
         }}
       >
         <Stack
@@ -201,24 +217,40 @@ export function TutorDashboardCard() {
               <Chip
                 size="small"
                 label={t('dashboard.abandonedToday')}
-                color="warning"
-                sx={{ fontWeight: 700 }}
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: '#FEF3C7',
+                  color: '#B45309',
+                  border: '1px solid #FCD34D',
+                }}
               />
             </Stack>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: 'warning.dark', mb: 0.5 }}>
+            <Typography variant="h6" sx={{ fontWeight: 800, color: '#B45309', mb: 0.5 }}>
               {t('dashboard.abandonedToday')}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: '#92400E' }}>
               {t('dashboard.abandonedDesc')}
             </Typography>
           </Box>
 
           <Button
             component={RouterLink}
-            to={routePaths.tutorHistory}
+            to={routePaths.tutorSession}
             variant="outlined"
-            color="inherit"
-            sx={{ borderRadius: 2, px: 3, py: 1, fontWeight: 700, whiteSpace: 'nowrap' }}
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              py: 1,
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              bgcolor: '#FFFFFF',
+              color: '#B45309',
+              borderColor: '#FDE68A',
+              '&:hover': {
+                bgcolor: '#FEF3C7',
+                borderColor: '#D97706',
+              },
+            }}
           >
             {t('summary.viewHistory')}
           </Button>

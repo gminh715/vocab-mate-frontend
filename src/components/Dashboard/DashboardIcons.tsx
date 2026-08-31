@@ -222,3 +222,147 @@ export function FilterIcon({ size = 20, color = 'currentColor', ...props }: Icon
     </Box>
   )
 }
+
+export function ChevronLeftIcon({ size = 20, color = 'currentColor', ...props }: IconProps) {
+  return (
+    <Box
+      component="svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <polyline points="15 18 9 12 15 6" />
+    </Box>
+  )
+}
+
+export function ChevronRightIcon({ size = 20, color = 'currentColor', ...props }: IconProps) {
+  return (
+    <Box
+      component="svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <polyline points="9 18 15 12 9 6" />
+    </Box>
+  )
+}
+
+export function CalendarIcon({ size = 20, color = 'currentColor', ...props }: IconProps) {
+  return (
+    <Box
+      component="svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </Box>
+  )
+}
+
+export function CheckIcon({ size = 18, color = 'currentColor', ...props }: IconProps) {
+  return (
+    <Box
+      component="svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </Box>
+  )
+}
+
+export function VietnamFlagIcon({ size = 22, ...props }: IconProps) {
+  return (
+    <Box
+      component="svg"
+      width={size}
+      height={Math.round((size * 2) / 3)}
+      viewBox="0 0 30 20"
+      sx={{ borderRadius: '3px', overflow: 'hidden', display: 'inline-block', verticalAlign: 'middle', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
+      {...props}
+    >
+      <rect width="30" height="20" fill="#DA251D" />
+      <polygon
+        points="15,4 16.5,8.8 21.5,8.8 17.5,11.8 19,16.5 15,13.5 11,16.5 12.5,11.8 8.5,8.8 13.5,8.8"
+        fill="#FFFF00"
+      />
+    </Box>
+  )
+}
+
+export function UkFlagIcon({ size = 22, ...props }: IconProps) {
+  return (
+    <Box
+      component="svg"
+      width={size}
+      height={Math.round((size * 2) / 3)}
+      viewBox="0 0 60 30"
+      sx={{ borderRadius: '3px', overflow: 'hidden', display: 'inline-block', verticalAlign: 'middle', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
+      {...props}
+    >
+      <clipPath id="uk-flag-clip">
+        <rect width="60" height="30" />
+      </clipPath>
+      <g clipPath="url(#uk-flag-clip)">
+        <rect width="60" height="30" fill="#012169" />
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#FFFFFF" strokeWidth="6" />
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="4" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#FFFFFF" strokeWidth="10" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
+      </g>
+    </Box>
+  )
+}
+
+export function CameraIcon({ size = 20, color = 'currentColor', ...props }: IconProps) {
+  return (
+    <Box
+      component="svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+      <circle cx="12" cy="13" r="3" />
+    </Box>
+  )
+}
+
+

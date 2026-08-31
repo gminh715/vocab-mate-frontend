@@ -18,10 +18,15 @@ import {
   ClockIcon,
   SparklesIcon,
 } from '@/components/Dashboard/DashboardIcons'
+import { FsrsMasteryWidget } from '@/components/Dashboard/FsrsMasteryWidget'
+import { StreakWidget } from '@/components/Dashboard/StreakWidget'
 import { TutorDashboardCard } from '@/components/Tutor/TutorDashboardCard'
 import { useAuth } from '@/contexts/AuthContext'
 import { normalizeApiError } from '@/config/apiClient'
-import { useAnalyticsOverviewQuery } from '@/hooks/Analytics/useAnalytics'
+import {
+  useAnalyticsOverviewQuery,
+  useReviewAnalyticsQuery,
+} from '@/hooks/Analytics/useAnalytics'
 import { useReadingHistoryQuery } from '@/hooks/Reading/useReading'
 import type { AnalyticsOverview } from '@/types/Analytics/analytics'
 import type { ReadingHistoryItem } from '@/types/Reading/reading'
@@ -439,6 +444,7 @@ export function HomePage() {
   const { t } = useTranslation('home')
   const { currentUser } = useAuth()
   const overviewQuery = useAnalyticsOverviewQuery({})
+  const reviewQuery = useReviewAnalyticsQuery()
   const readingQuery = useReadingHistoryQuery(CONTINUE_READING_PARAMS)
   const overview = overviewQuery.data
   const continueReading = readingQuery.data?.items ?? []
@@ -528,6 +534,23 @@ export function HomePage() {
       </Paper>
 
       <TutorDashboardCard />
+
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+          gap: 2,
+        }}
+      >
+        <StreakWidget
+          streak={reviewQuery.data?.streak}
+          isLoading={reviewQuery.isPending}
+        />
+        <FsrsMasteryWidget
+          mastery={reviewQuery.data?.mastery}
+          isLoading={reviewQuery.isPending}
+        />
+      </Box>
 
       <Stack component="section" spacing={2} aria-labelledby="overview-title">
         <SectionHeading

@@ -15,8 +15,8 @@
     "abandonedToday": "Phiên học hôm nay đã dừng",
     "abandonedDesc": "Bạn đã kết thúc phiên học hôm nay. Mỗi ngày chỉ có 1 phiên học duy nhất.",
     "noVocabTitle": "Chưa có từ vựng nào được lưu",
-    "noVocabDesc": "Hãy đọc các bài báo và lưu lại từ vựng để bắt đầu luyện tập cùng gia sư AI.",
-    "noVocabCta": "Khám phá bài báo"
+    "noVocabDesc": "Hãy đọc các tin tức và lưu lại từ vựng để bắt đầu luyện tập cùng gia sư AI.",
+    "noVocabCta": "Khám phá tin tức"
   },
   "session": {
     "activityProgress": "Câu {{current}} / {{total}}",
@@ -49,10 +49,10 @@
     "yourAnswer": "Câu trả lời của bạn:",
     "correctAnswer": "Đáp án đúng:",
     "explanation": "Giải thích chi tiết:",
-    "ratingAgain": "Cần ôn lại sớm (Again)",
-    "ratingHard": "Khó (Hard)",
-    "ratingGood": "Tốt (Good)",
-    "ratingEasy": "Dễ (Easy)"
+    "ratingAgain": "Chưa nhớ (Cần ôn lại sớm)",
+    "ratingHard": "Khó nhớ (Cần luyện thêm)",
+    "ratingGood": "Nhớ tốt (Đã nắm vững)",
+    "ratingEasy": "Nhớ sâu (Thuộc làu)"
   },
   "summary": {
     "completedTitle": "Chúc mừng! Bạn đã hoàn thành phiên học",
@@ -63,7 +63,11 @@
     "activities": "Số câu hoàn thành",
     "newWords": "Từ mới đã học",
     "reviewWords": "Từ đã ôn tập",
-    "ratingDistribution": "Phân bố đánh giá ghi nhớ",
+    "ratingDistribution": "Mức độ ghi nhớ sau buổi học",
+    "ratingAgain": "Chưa nhớ",
+    "ratingHard": "Khó nhớ",
+    "ratingGood": "Nhớ tốt",
+    "ratingEasy": "Nhớ sâu",
     "relearningWords": "Từ vựng cần củng cố lại",
     "noRelearning": "Không có từ nào cần củng cố lại!",
     "nextDue": "Số từ đến hạn trong phiên tới",

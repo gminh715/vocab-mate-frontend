@@ -9,14 +9,20 @@ import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { CameraIcon } from '@/components/Dashboard/DashboardIcons'
 import { SettingsNavigation } from '@/components/User/SettingsNavigation'
+import { UserAvatar } from '@/components/Shared/UserAvatar'
 import { normalizeApiError } from '@/config/apiClient'
 import { useAuth } from '@/contexts/AuthContext'
-import { useUpdateMyProfileMutation } from '@/hooks/User/useProfile'
+import {
+  useUpdateMyProfileMutation,
+  useUploadMyAvatarMutation,
+} from '@/hooks/User/useProfile'
 import {
   profileFormSchema,
   profileToFormValues,
@@ -86,10 +92,11 @@ export function ProfileSettingsPage() {
   const { t } = useTranslation('profile')
   const { currentUser } = useAuth()
   const updateMutation = useUpdateMyProfileMutation()
+  const uploadAvatarMutation = useUploadMyAvatarMutation()
   const loadedUserId = useRef<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(
-    null,
-  )
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [avatarError, setAvatarError] = useState<string | null>(null)
   const {
     control,
     formState: { errors, isDirty },
@@ -97,6 +104,7 @@ export function ProfileSettingsPage() {
     register,
     reset,
     setError,
+    setValue,
   } = useForm<ProfileFormValues, unknown, ProfileFormOutput>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: currentUser
@@ -129,8 +137,42 @@ export function ProfileSettingsPage() {
 
   if (!currentUser) return null
 
+  const handleAvatarFileSelect = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAvatarError(null)
+    setSuccessMessage(null)
+
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarError(t('profile.form.avatarFileTooLarge'))
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
+    if (!file.type.match(/^image\/(jpeg|png|webp|gif|jpg)$/)) {
+      setAvatarError(t('profile.form.avatarInvalidType'))
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
+    try {
+      const updatedProfile = await uploadAvatarMutation.mutateAsync(file)
+      setValue('avatarUrl', updatedProfile.avatarUrl || '', {
+        shouldDirty: false,
+      })
+      setSuccessMessage(t('profile.form.avatarUploadSuccess'))
+    } catch {
+      setAvatarError(t('profile.form.avatarUploadError'))
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
   const submit = handleSubmit(async (values) => {
     setSuccessMessage(null)
+    setAvatarError(null)
     updateMutation.reset()
 
     if (currentUser.avatarUrl && !values.avatarUrl) {
@@ -239,6 +281,16 @@ export function ProfileSettingsPage() {
             </Alert>
           ) : null}
 
+          {avatarError ? (
+            <Alert
+              severity="error"
+              role="alert"
+              onClose={() => setAvatarError(null)}
+            >
+              {avatarError}
+            </Alert>
+          ) : null}
+
           {mutationError ? (
             <Alert severity="error" role="alert">
               {mutationError.details?.[0] ?? mutationError.message}
@@ -265,8 +317,105 @@ export function ProfileSettingsPage() {
                 sx={{ p: { xs: 2.5, sm: 3 }, bgcolor: 'background.default' }}
               >
                 <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 1.25,
+                    pb: 2.5,
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Tooltip
+                    title={t('profile.form.uploadAvatar', 'Nhấn để đổi ảnh đại diện')}
+                    arrow
+                    placement="top"
+                  >
+                    <Box
+                      component="button"
+                      type="button"
+                      disabled={uploadAvatarMutation.isPending}
+                      onClick={() => fileInputRef.current?.click()}
+                      aria-label={t('profile.form.uploadAvatar', 'Đổi ảnh đại diện')}
+                      sx={{
+                        position: 'relative',
+                        p: 0,
+                        border: '3px solid',
+                        borderColor: 'primary.light',
+                        borderRadius: '50%',
+                        cursor: uploadAvatarMutation.isPending ? 'default' : 'pointer',
+                        bgcolor: 'transparent',
+                        outline: 'none',
+                        transition: 'all 200ms ease',
+                        '&:hover, &:focus-visible': {
+                          borderColor: 'primary.main',
+                          boxShadow: '0 0 0 4px rgba(22, 163, 74, 0.15)',
+                          '& .avatar-overlay': {
+                            opacity: 1,
+                          },
+                        },
+                      }}
+                    >
+                      <UserAvatar
+                        displayName={currentUser.displayName}
+                        avatarUrl={currentUser.avatarUrl}
+                        size={92}
+                      />
+
+                      {/* Hover Overlay with Camera Icon */}
+                      <Box
+                        className="avatar-overlay"
+                        sx={{
+                          position: 'absolute',
+                          inset: 0,
+                          borderRadius: '50%',
+                          bgcolor: 'rgba(0, 0, 0, 0.55)',
+                          color: '#ffffff',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 0.5,
+                          opacity: uploadAvatarMutation.isPending ? 1 : 0,
+                          transition: 'opacity 200ms ease',
+                          backdropFilter: 'blur(1.5px)',
+                        }}
+                      >
+                        {uploadAvatarMutation.isPending ? (
+                          <CircularProgress size={26} sx={{ color: 'white' }} />
+                        ) : (
+                          <>
+                            <CameraIcon size={24} color="#ffffff" />
+                            <Typography
+                              sx={{
+                                fontSize: 10.5,
+                                fontWeight: 750,
+                                color: '#ffffff',
+                                letterSpacing: '0.02em',
+                                textTransform: 'uppercase',
+                              }}
+                            >
+                              {t('profile.form.uploadAvatarShort', 'Tải ảnh')}
+                            </Typography>
+                          </>
+                        )}
+                      </Box>
+                    </Box>
+                  </Tooltip>
+
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    style={{ display: 'none' }}
+                    onChange={handleAvatarFileSelect}
+                  />
+                </Box>
+
+                <Box
                   component="dl"
-                  sx={{ m: 0, mt: 3, display: 'grid', gap: 2.5 }}
+                  sx={{ m: 0, mt: 2.5, display: 'grid', gap: 2.5 }}
                 >
                   <AccountDetail label={t('profile.account.email')} value={currentUser.email} />
                   <AccountDetail
@@ -354,21 +503,6 @@ export function ProfileSettingsPage() {
                   helperText={errors.displayName?.message}
                   slotProps={{ htmlInput: { maxLength: 100 } }}
                   {...register('displayName')}
-                />
-
-                <TextField
-                  label={t('profile.form.avatarUrl')}
-                  type="url"
-                  autoComplete="url"
-                  error={Boolean(errors.avatarUrl)}
-                  helperText={errors.avatarUrl?.message}
-                  slotProps={{
-                    htmlInput: {
-                      inputMode: 'url',
-                      spellCheck: false,
-                    },
-                  }}
-                  {...register('avatarUrl')}
                 />
 
                 <Box

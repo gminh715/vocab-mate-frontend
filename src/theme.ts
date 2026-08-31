@@ -25,8 +25,29 @@ export const appTheme = createTheme({
       secondary: '#5D7068',
     },
     divider: '#D9E4DE',
+    success: {
+      main: '#16A34A',
+      dark: '#15803D',
+      light: '#F0FDF4',
+      contrastText: '#FFFFFF',
+    },
     error: {
-      main: '#B23B3B',
+      main: '#DC2626',
+      dark: '#991B1B',
+      light: '#FEF2F2',
+      contrastText: '#FFFFFF',
+    },
+    warning: {
+      main: '#D97706',
+      dark: '#92400E',
+      light: '#FFFBEB',
+      contrastText: '#FFFFFF',
+    },
+    info: {
+      main: '#2563EB',
+      dark: '#1E40AF',
+      light: '#EFF6FF',
+      contrastText: '#FFFFFF',
     },
   },
   shape: {
@@ -99,49 +120,25 @@ export const appTheme = createTheme({
         },
       },
     },
-    MuiMenu: {
-      styleOverrides: {
-        paper: {
-          borderRadius: componentBorderRadius,
-        },
-      },
-    },
-    MuiPopover: {
-      styleOverrides: {
-        paper: {
-          borderRadius: componentBorderRadius,
-        },
-      },
-    },
-    MuiAlert: {
+    MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: componentBorderRadius,
+          borderRadius: 8,
+          fontWeight: 600,
         },
       },
     },
-    MuiLink: {
+    MuiInputBase: {
       styleOverrides: {
         root: {
-          borderRadius: 4,
-          '&:focus-visible': {
-            outline: '3px solid rgba(23, 107, 75, 0.28)',
-            outlineOffset: 3,
-          },
+          borderRadius: 14,
         },
-      },
-    },
-    MuiTextField: {
-      defaultProps: {
-        fullWidth: true,
-        size: 'medium',
       },
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          backgroundColor: '#FFFFFF',
-          borderRadius: componentBorderRadius,
+          borderRadius: 14,
         },
       },
     },

@@ -6,6 +6,7 @@ export const analyticsQueryKeys = {
   all: ['analytics', 'me'] as const,
   overview: (params: AnalyticsOverviewParams) =>
     [...analyticsQueryKeys.all, 'overview', params] as const,
+  review: () => [...analyticsQueryKeys.all, 'review'] as const,
 }
 
 export const useAnalyticsOverviewQuery = (
@@ -19,3 +20,13 @@ export const useAnalyticsOverviewQuery = (
     retry: false,
     staleTime: 2 * 60 * 1_000,
   })
+
+export const useReviewAnalyticsQuery = (enabled = true) =>
+  useQuery({
+    queryKey: analyticsQueryKeys.review(),
+    queryFn: () => analyticsApi.review(),
+    enabled,
+    retry: false,
+    staleTime: 60 * 1_000,
+  })
+

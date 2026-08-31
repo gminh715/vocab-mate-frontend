@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
@@ -15,8 +16,10 @@ import { TutorFeedbackCard } from '@/components/Tutor/TutorFeedbackCard'
 import { TutorHintBox } from '@/components/Tutor/TutorHintBox'
 import { TutorProgressHeader } from '@/components/Tutor/TutorProgressHeader'
 import { TutorSessionSummaryView } from '@/components/Tutor/TutorSessionSummaryView'
+import { TutorWarmupFactsView } from '@/components/Tutor/TutorWarmupFactsView'
 import { TypedRecallQuestion } from '@/components/Tutor/TypedRecallQuestion'
 import {
+  tutorQueryKeys,
   useAbandonSessionMutation,
   useActiveTutorSessionQuery,
   useSubmitAnswerMutation,
@@ -32,9 +35,12 @@ import { routePaths } from '@/utils/paths'
 
 export function TutorSessionPage() {
   const { t } = useTranslation('tutor')
+  const queryClient = useQueryClient()
 
   const [abandonDialogOpen, setAbandonDialogOpen] = useState(false)
+  const [warmupAcknowledged, setWarmupAcknowledged] = useState(false)
   const [hintUsed, setHintUsed] = useState(false)
+  const [isLoadingNext, setIsLoadingNext] = useState(false)
   const [submittedAnswerItem, setSubmittedAnswerItem] =
     useState<TutorSessionAnsweredItem | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -90,27 +96,35 @@ export function TutorSessionPage() {
     }
   }
 
-  const handleNextItem = () => {
-    setSubmittedAnswerItem(null)
-    setHintUsed(false)
-    setErrorMessage(null)
-    renderStartTimeRef.current = Date.now()
+  const handleNextItem = async () => {
+    setIsLoadingNext(true)
+    try {
+      await queryClient.refetchQueries({
+        queryKey: tutorQueryKeys.activeSession(),
+      })
+      setSubmittedAnswerItem(null)
+      setHintUsed(false)
+      setErrorMessage(null)
+      renderStartTimeRef.current = Date.now()
+    } finally {
+      setIsLoadingNext(false)
+    }
   }
 
   const handleConfirmAbandon = async () => {
-    if (!session || abandonMutation.isPending) return
+    if (!session?.id) return
     try {
       await abandonMutation.mutateAsync()
       setAbandonDialogOpen(false)
     } catch (err: unknown) {
       const errObj = err as { response?: { data?: { message?: string } } }
       setErrorMessage(
-        errObj?.response?.data?.message ?? t('errors.submitFailed'),
+        errObj?.response?.data?.message ?? t('errors.abandonFailed'),
       )
     }
   }
 
-  // 1. Initial Loading State
+  // 1. Loading State
   if (sessionQuery.isPending && !sessionData) {
     return (
       <Box
@@ -168,7 +182,27 @@ export function TutorSessionPage() {
     )
   }
 
-  // 4. No current pending item or fetching next question while session is active
+  // 4. Warmup Facts Phase (Show all facts upfront before testing)
+  const warmupFacts = session?.warmupFacts
+  const hasWarmupFacts = Array.isArray(warmupFacts) && warmupFacts.length > 0
+  const isSessionUnstarted = currentItem?.position === 1 && !submittedAnswerItem
+
+  if (
+    hasWarmupFacts &&
+    !warmupAcknowledged &&
+    isSessionUnstarted &&
+    session?.status === 'ACTIVE'
+  ) {
+    return (
+      <TutorWarmupFactsView
+        facts={warmupFacts}
+        targetCount={session.targetActivityCount}
+        onStartTest={() => setWarmupAcknowledged(true)}
+      />
+    )
+  }
+
+  // 5. No current pending item or fetching next question while session is active
   if (
     (!currentItem || (sessionQuery.isFetching && !submittedAnswerItem)) &&
     session?.status === 'ACTIVE'
@@ -289,7 +323,7 @@ export function TutorSessionPage() {
             fsrsRating={submittedAnswerItem.fsrsRating}
             onNext={handleNextItem}
             isLastItem={isLastItem}
-            isLoadingNext={sessionQuery.isFetching}
+            isLoadingNext={sessionQuery.isFetching || isLoadingNext}
           />
         )}
       </Paper>

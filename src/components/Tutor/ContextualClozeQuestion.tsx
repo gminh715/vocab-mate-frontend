@@ -30,6 +30,123 @@ export function ContextualClozeQuestion({
     onSubmit(trimmed)
   }
 
+  const targetWord = payload.wordDisplay?.trim() || ''
+
+  // Render individual character slots with bottom dash underline
+  const renderWordSlots = () => {
+    const targetChars = targetWord ? targetWord.split('') : []
+    const typedChars = answer.split('')
+
+    if (targetChars.length === 0) {
+      return (
+        <Box
+          component="span"
+          sx={{
+            px: 1.5,
+            py: 0.25,
+            mx: 0.5,
+            borderRadius: 1.5,
+            bgcolor: 'rgba(124, 58, 237, 0.08)',
+            color: 'primary.dark',
+            fontWeight: 700,
+            borderBottom: '2.5px solid',
+            borderColor: 'primary.main',
+            display: 'inline-block',
+          }}
+        >
+          {answer.trim() || '_______'}
+        </Box>
+      )
+    }
+
+    const slotCount = Math.max(targetChars.length, typedChars.length)
+    const slots: React.ReactNode[] = []
+
+    for (let i = 0; i < slotCount; i++) {
+      const typedChar = typedChars[i]
+      const targetChar = targetChars[i]
+
+      if (targetChar === ' ' && !typedChar) {
+        slots.push(
+          <Box
+            key={i}
+            component="span"
+            sx={{ width: '8px', display: 'inline-block' }}
+          />,
+        )
+        continue
+      }
+
+      if (targetChar === '-' && !typedChar) {
+        slots.push(
+          <Box
+            key={i}
+            component="span"
+            sx={{
+              mx: '2px',
+              color: 'primary.main',
+              fontWeight: 800,
+              fontSize: '1.2rem',
+            }}
+          >
+            -
+          </Box>,
+        )
+        continue
+      }
+
+      const isTyped = Boolean(typedChar)
+      slots.push(
+        <Box
+          key={i}
+          component="span"
+          sx={{
+            display: 'inline-flex',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            minWidth: { xs: '14px', sm: '18px' },
+            mx: '2.5px',
+            borderBottom: '2.5px solid',
+            borderColor: isTyped ? 'primary.main' : 'rgba(124, 58, 237, 0.4)',
+            pb: '1px',
+          }}
+        >
+          <Box
+            component="span"
+            sx={{
+              fontWeight: 800,
+              fontSize: '1.2rem',
+              lineHeight: 1.2,
+              color: isTyped ? 'primary.dark' : 'transparent',
+              fontFamily: '"Merriweather", serif',
+              userSelect: 'none',
+            }}
+          >
+            {typedChar || (targetChar && targetChar !== ' ' ? targetChar : 'x')}
+          </Box>
+        </Box>,
+      )
+    }
+
+    return (
+      <Box
+        component="span"
+        sx={{
+          display: 'inline-flex',
+          alignItems: 'baseline',
+          px: 1,
+          py: 0.25,
+          mx: 0.5,
+          borderRadius: 2,
+          bgcolor: 'rgba(124, 58, 237, 0.08)',
+          verticalAlign: 'baseline',
+        }}
+      >
+        {slots}
+      </Box>
+    )
+  }
+
   // Highlight blank part if present in sentenceWithBlank
   const renderSentence = () => {
     const parts = payload.sentenceWithBlank.split(/(___+|\[\.\.\.\])/)
@@ -38,7 +155,7 @@ export function ContextualClozeQuestion({
         variant="h6"
         component="p"
         sx={{
-          lineHeight: 1.6,
+          lineHeight: 1.8,
           fontWeight: 500,
           color: 'text.primary',
           fontFamily: '"Merriweather", serif',
@@ -46,26 +163,7 @@ export function ContextualClozeQuestion({
       >
         {parts.map((part, index) => {
           if (part.startsWith('_') || part === '[...]') {
-            return (
-              <Box
-                component="span"
-                key={index}
-                sx={{
-                  px: 1.5,
-                  py: 0.25,
-                  mx: 0.5,
-                  borderRadius: 1,
-                  bgcolor: 'primary.light',
-                  color: 'primary.dark',
-                  fontWeight: 700,
-                  borderBottom: 2,
-                  borderColor: 'primary.main',
-                  display: 'inline-block',
-                }}
-              >
-                {answer.trim() || '_______'}
-              </Box>
-            )
+            return <span key={index}>{renderWordSlots()}</span>
           }
           return <span key={index}>{part}</span>
         })}

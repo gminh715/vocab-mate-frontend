@@ -102,12 +102,6 @@ export const useSubmitAnswerMutation = () => {
         queryKey: tutorQueryKeys.todayStatus(),
       })
       void queryClient.invalidateQueries({
-        queryKey: tutorQueryKeys.activeSession(),
-      })
-      void queryClient.invalidateQueries({
-        queryKey: tutorQueryKeys.session(variables.sessionId),
-      })
-      void queryClient.invalidateQueries({
         queryKey: tutorQueryKeys.sessionDetail(variables.sessionId),
       })
     },

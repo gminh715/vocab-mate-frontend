@@ -28,6 +28,12 @@ export const FSRS_CARD_STATES = [
 ] as const
 export type FsrsCardState = (typeof FSRS_CARD_STATES)[number]
 
+export interface WarmupFactStory {
+  title: string
+  factContentVi: string
+  targetWords: string[]
+}
+
 export interface TutorSessionSummary {
   id: string
   userId: string
@@ -36,6 +42,7 @@ export interface TutorSessionSummary {
   targetDurationMinutes: number
   targetActivityCount: number
   newWordTarget: number
+  warmupFacts?: WarmupFactStory[] | null
   startedAt: string
   completedAt: string | null
   createdAt: string
@@ -69,6 +76,9 @@ export interface TypedRecallPayload extends BaseQuestionPayload {
 }
 
 export interface MicroLessonRetestPayload extends BaseQuestionPayload {
+  microLessonTitle?: string
+  microLessonFactEn?: string
+  microLessonFactVi?: string
   microLessonVi: string
   retestType: 'CONTEXTUAL_CLOZE' | 'TYPED_RECALL'
   sentenceWithBlank?: string

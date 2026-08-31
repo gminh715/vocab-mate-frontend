@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
@@ -26,29 +25,11 @@ export function TutorFeedbackCard({
   correctAnswer,
   explanationVi,
   feedbackVi,
-  fsrsRating,
   onNext,
   isLastItem = false,
   isLoadingNext = false,
 }: TutorFeedbackCardProps) {
   const { t } = useTranslation('tutor')
-
-  const getRatingLabel = (rating: number | null | undefined) => {
-    switch (rating) {
-      case 1:
-        return t('feedback.ratingAgain')
-      case 2:
-        return t('feedback.ratingHard')
-      case 3:
-        return t('feedback.ratingGood')
-      case 4:
-        return t('feedback.ratingEasy')
-      default:
-        return null
-    }
-  }
-
-  const ratingLabel = getRatingLabel(fsrsRating)
 
   return (
     <Paper
@@ -65,35 +46,16 @@ export function TutorFeedbackCard({
       }}
     >
       <Stack spacing={2}>
-        <Stack
-          direction="row"
+        <Typography
+          variant="h6"
           sx={{
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: 1,
+            fontWeight: 800,
+            color: isCorrect ? 'success.dark' : 'error.dark',
+            fontSize: '1.25rem',
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 800,
-              color: isCorrect ? 'success.dark' : 'error.dark',
-              fontSize: '1.25rem',
-            }}
-          >
-            {isCorrect ? t('feedback.correct') : t('feedback.incorrect')}
-          </Typography>
-
-          {ratingLabel ? (
-            <Chip
-              size="small"
-              label={ratingLabel}
-              color={isCorrect ? 'success' : 'error'}
-              sx={{ fontWeight: 700 }}
-            />
-          ) : null}
-        </Stack>
+          {isCorrect ? t('feedback.correct') : t('feedback.incorrect')}
+        </Typography>
 
         {feedbackVi ? (
           <Typography

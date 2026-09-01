@@ -15,15 +15,17 @@ import enOnboarding from './locales/en/onboarding.json'
 import viOnboarding from './locales/vi/onboarding.json'
 import enTutor from './locales/en/tutor.json'
 import viTutor from './locales/vi/tutor.json'
+import enAuth from './locales/en/auth.json'
+import viAuth from './locales/vi/auth.json'
 
 void i18n.use(initReactI18next).init({
   lng: 'vi',
   fallbackLng: 'vi',
-  ns: ['home', 'profile', 'articles', 'vocabulary', 'landing', 'onboarding', 'tutor'],
+  ns: ['home', 'profile', 'articles', 'vocabulary', 'landing', 'onboarding', 'tutor', 'auth'],
   defaultNS: 'home',
   resources: {
-    en: { home: enHome, profile: enProfile, articles: enArticles, vocabulary: enVocabulary, landing: enLanding, onboarding: enOnboarding, tutor: enTutor },
-    vi: { home: viHome, profile: viProfile, articles: viArticles, vocabulary: viVocabulary, landing: viLanding, onboarding: viOnboarding, tutor: viTutor },
+    en: { home: enHome, profile: enProfile, articles: enArticles, vocabulary: enVocabulary, landing: enLanding, onboarding: enOnboarding, tutor: enTutor, auth: enAuth },
+    vi: { home: viHome, profile: viProfile, articles: viArticles, vocabulary: viVocabulary, landing: viLanding, onboarding: viOnboarding, tutor: viTutor, auth: viAuth },
   },
   interpolation: {
     escapeValue: false, // React already escapes values

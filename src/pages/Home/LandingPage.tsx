@@ -538,13 +538,212 @@ export function LandingPage() {
         </Container>
       </Box>
 
+      {/* Features Grid Section (6 Key Capabilities) */}
+      <Box
+        id="features"
+        sx={{
+          py: { xs: 8, md: 13 },
+          bgcolor: '#FFFFFF',
+          borderTop: '1px solid #D9E4DE',
+          borderBottom: '1px solid #D9E4DE',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Stack spacing={2.5} sx={{ alignItems: 'center', textAlign: 'center', mb: 8 }}>
+            <Chip
+              icon={<SparklesIcon size={14} color="#B66A2C" />}
+              label={t('features.badge')}
+              sx={{
+                bgcolor: '#F8E4D1',
+                color: '#864719',
+                border: '1px solid #E6C8AD',
+                fontWeight: 700,
+                fontSize: 13,
+              }}
+            />
+            <Typography variant="h2" sx={{ fontFamily: '"Merriweather", serif', fontSize: { xs: 26, sm: 34, md: 38 }, color: '#17372B', fontWeight: 800 }}>
+              {t('features.title')}
+            </Typography>
+          </Stack>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+              gap: 3.5,
+            }}
+          >
+            {/* Feature 1: Reader & Sentence Translation */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3.75,
+                borderRadius: 4,
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: '#176B4B',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 16px 36px rgba(23, 107, 75, 0.12)',
+                },
+              }}
+            >
+              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#DDF3E8', color: '#176B4B', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <BookOpenIcon size={26} color="#176B4B" />
+              </Box>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
+                {t('features.readerTitle')}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
+                {t('features.readerDesc')}
+              </Typography>
+            </Paper>
+
+            {/* Feature 2: CEFR Highlighting */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3.75,
+                borderRadius: 4,
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: '#B66A2C',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 16px 36px rgba(182, 106, 44, 0.12)',
+                },
+              }}
+            >
+              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#F8E4D1', color: '#B66A2C', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <TargetIcon size={26} color="#B66A2C" />
+              </Box>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
+                {t('features.cefrTitle')}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
+                {t('features.cefrDesc')}
+              </Typography>
+            </Paper>
+
+            {/* Feature 3: AI Tutor Interactive Sessions */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3.75,
+                borderRadius: 4,
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: '#7C3AED',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 16px 36px rgba(124, 58, 237, 0.12)',
+                },
+              }}
+            >
+              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#EDE9FE', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <SparklesIcon size={26} color="#7C3AED" />
+              </Box>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
+                {t('features.tutorTitle')}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
+                {t('features.tutorDesc')}
+              </Typography>
+            </Paper>
+
+            {/* Feature 4: FSRS Spaced Repetition */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3.75,
+                borderRadius: 4,
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: '#0F5138',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 16px 36px rgba(15, 81, 56, 0.12)',
+                },
+              }}
+            >
+              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#DDF3E8', color: '#0F5138', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <ClockIcon size={26} color="#0F5138" />
+              </Box>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
+                {t('features.fsrsTitle')}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
+                {t('features.fsrsDesc')}
+              </Typography>
+            </Paper>
+
+            {/* Feature 5: Personal Collections */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3.75,
+                borderRadius: 4,
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: '#0284C7',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 16px 36px rgba(2, 132, 199, 0.12)',
+                },
+              }}
+            >
+              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#E0F2FE', color: '#0284C7', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <LayersIcon size={26} color="#0284C7" />
+              </Box>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
+                {t('features.collectionsTitle')}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
+                {t('features.collectionsDesc')}
+              </Typography>
+            </Paper>
+
+            {/* Feature 6: Analytics & Streak */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3.75,
+                borderRadius: 4,
+                bgcolor: '#F3F7F4',
+                border: '1px solid #D9E4DE',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: '#EA580C',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 16px 36px rgba(234, 88, 12, 0.12)',
+                },
+              }}
+            >
+              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#FFEDD5', color: '#EA580C', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
+                <FlameIcon size={26} color="#EA580C" />
+              </Box>
+              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
+                {t('features.analyticsTitle')}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
+                {t('features.analyticsDesc')}
+              </Typography>
+            </Paper>
+          </Box>
+        </Container>
+      </Box>
+
       {/* Interactive Demo Section */}
       <Box
         id="demo"
         sx={{
           py: { xs: 8, md: 12 },
-          bgcolor: '#FFFFFF',
-          borderTop: '1px solid #D9E4DE',
+          bgcolor: '#F3F7F4',
           borderBottom: '1px solid #D9E4DE',
         }}
       >
@@ -581,7 +780,7 @@ export function LandingPage() {
               sx={{
                 p: { xs: 3, sm: 4.5 },
                 borderRadius: 4,
-                bgcolor: '#F3F7F4',
+                bgcolor: '#FFFFFF',
                 border: '1px solid #D9E4DE',
                 boxShadow: '0 16px 40px rgba(21, 55, 43, 0.08)',
               }}
@@ -774,198 +973,6 @@ export function LandingPage() {
                   {t('demo.addToVocab')}
                 </Button>
               </Stack>
-            </Paper>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* Features Grid Section (6 Key Capabilities) */}
-      <Box id="features" sx={{ py: { xs: 8, md: 13 } }}>
-        <Container maxWidth="lg">
-          <Stack spacing={2.5} sx={{ alignItems: 'center', textAlign: 'center', mb: 8 }}>
-            <Chip
-              icon={<SparklesIcon size={14} color="#B66A2C" />}
-              label={t('features.badge')}
-              sx={{
-                bgcolor: '#F8E4D1',
-                color: '#864719',
-                border: '1px solid #E6C8AD',
-                fontWeight: 700,
-                fontSize: 13,
-              }}
-            />
-            <Typography variant="h2" sx={{ fontFamily: '"Merriweather", serif', fontSize: { xs: 26, sm: 34, md: 38 }, color: '#17372B', fontWeight: 800 }}>
-              {t('features.title')}
-            </Typography>
-          </Stack>
-
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
-              gap: 3.5,
-            }}
-          >
-            {/* Feature 1: Reader & Sentence Translation */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3.75,
-                borderRadius: 4,
-                bgcolor: '#FFFFFF',
-                border: '1px solid #D9E4DE',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  borderColor: '#176B4B',
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 16px 36px rgba(23, 107, 75, 0.12)',
-                },
-              }}
-            >
-              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#DDF3E8', color: '#176B4B', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <BookOpenIcon size={26} color="#176B4B" />
-              </Box>
-              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
-                {t('features.readerTitle')}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
-                {t('features.readerDesc')}
-              </Typography>
-            </Paper>
-
-            {/* Feature 2: CEFR Highlighting */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3.75,
-                borderRadius: 4,
-                bgcolor: '#FFFFFF',
-                border: '1px solid #D9E4DE',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  borderColor: '#B66A2C',
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 16px 36px rgba(182, 106, 44, 0.12)',
-                },
-              }}
-            >
-              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#F8E4D1', color: '#B66A2C', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <TargetIcon size={26} color="#B66A2C" />
-              </Box>
-              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
-                {t('features.cefrTitle')}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
-                {t('features.cefrDesc')}
-              </Typography>
-            </Paper>
-
-            {/* Feature 3: AI Tutor Interactive Sessions */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3.75,
-                borderRadius: 4,
-                bgcolor: '#FFFFFF',
-                border: '1px solid #D9E4DE',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  borderColor: '#7C3AED',
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 16px 36px rgba(124, 58, 237, 0.12)',
-                },
-              }}
-            >
-              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#EDE9FE', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <SparklesIcon size={26} color="#7C3AED" />
-              </Box>
-              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
-                {t('features.tutorTitle')}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
-                {t('features.tutorDesc')}
-              </Typography>
-            </Paper>
-
-            {/* Feature 4: FSRS Spaced Repetition */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3.75,
-                borderRadius: 4,
-                bgcolor: '#FFFFFF',
-                border: '1px solid #D9E4DE',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  borderColor: '#0F5138',
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 16px 36px rgba(15, 81, 56, 0.12)',
-                },
-              }}
-            >
-              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#DDF3E8', color: '#0F5138', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <ClockIcon size={26} color="#0F5138" />
-              </Box>
-              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
-                {t('features.fsrsTitle')}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
-                {t('features.fsrsDesc')}
-              </Typography>
-            </Paper>
-
-            {/* Feature 5: Personal Collections */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3.75,
-                borderRadius: 4,
-                bgcolor: '#FFFFFF',
-                border: '1px solid #D9E4DE',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  borderColor: '#0284C7',
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 16px 36px rgba(2, 132, 199, 0.12)',
-                },
-              }}
-            >
-              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#E0F2FE', color: '#0284C7', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <LayersIcon size={26} color="#0284C7" />
-              </Box>
-              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
-                {t('features.collectionsTitle')}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
-                {t('features.collectionsDesc')}
-              </Typography>
-            </Paper>
-
-            {/* Feature 6: Analytics & Streak */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3.75,
-                borderRadius: 4,
-                bgcolor: '#FFFFFF',
-                border: '1px solid #D9E4DE',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  borderColor: '#EA580C',
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 16px 36px rgba(234, 88, 12, 0.12)',
-                },
-              }}
-            >
-              <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: '#FFEDD5', color: '#EA580C', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2.5 }}>
-                <FlameIcon size={26} color="#EA580C" />
-              </Box>
-              <Typography variant="h6" sx={{ fontFamily: '"Merriweather", serif', fontWeight: 750, color: '#17372B', mb: 1.25 }}>
-                {t('features.analyticsTitle')}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#5D7068', lineHeight: 1.65, fontSize: 14.5 }}>
-                {t('features.analyticsDesc')}
-              </Typography>
             </Paper>
           </Box>
         </Container>

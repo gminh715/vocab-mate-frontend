@@ -67,17 +67,18 @@
       "by": "By {{name}}"
     },
     "vocabulary": {
-      "panelTitle": "Vocabulary",
-      "noHighlights": "No terms fall between your current and target CEFR levels. You can still look up vocabulary prepared for this article.",
-      "hasHighlights": "Highlighted words range from your current CEFR through your target CEFR. Turn on lookup to explore all vocabulary prepared for this article.",
+      "panelTitle": "Vocabulary Suggestions",
+      "noHighlights": "No terms match your current and target CEFR levels. You can still turn on lookup to explore all vocabulary in this article.",
+      "hasHighlights": "Vocabulary suggestions match your current through target CEFR levels. Turn on lookup to explore contextual meanings and save words.",
       "turnOn": "Turn on vocabulary lookup",
       "turnOff": "Turn off vocabulary lookup",
+      "switchLabel": "Lookup mode",
       "statusOff": "Vocabulary lookup is off.",
-      "statusOn": "Lookup is on. Select a marked word in the article.",
+      "statusOn": "Lookup is active. Click on any suggested word in the article to view details.",
       "statusSelected": "Term selected. Activate it again to reopen details.",
       "statusOpen": "Vocabulary details are open."
     },
-    "termInstructions": "Vocabulary term. Press Enter or Space to select it. Use arrow keys to move between marked terms."
+    "termInstructions": "Suggested vocabulary term. Press Enter or Space to select it. Use arrow keys to move between suggested terms."
   },
   "lookup": {
     "eyebrow": "Contextual vocabulary",

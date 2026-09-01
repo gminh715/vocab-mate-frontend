@@ -382,13 +382,15 @@ export function StreakWidget({ streak, isLoading }: StreakWidgetProps) {
             {cells.map((cell, idx) => {
               const { dayNumber, dateStr, isCurrentMonth: inCurrentMonth, isCompleted, isToday, isFuture } = cell
 
-              const tooltipText = `${dateStr}${isToday ? ` (${t('streakWidget.dayToday')})` : ''}: ${
-                isCompleted
-                  ? t('streakWidget.todayCompleted')
-                  : isFuture
-                    ? ''
-                    : t('streakWidget.todayPending')
-              }`
+              const [y, m, d] = dateStr.split('-')
+              const formattedDate = `${d}/${m}/${y}`
+              const statusLabel = isCompleted
+                ? t('streakWidget.statusLearned', 'Đã học')
+                : t('streakWidget.statusNotLearned', 'Chưa học')
+
+              const tooltipText = isFuture && !isToday
+                ? ''
+                : `${isToday ? `${t('streakWidget.dayToday', 'Hôm nay')} (${formattedDate})` : `Ngày ${formattedDate}`}: ${statusLabel}`
 
               return (
                 <Tooltip key={idx} title={tooltipText} arrow disableHoverListener={isFuture && !isToday}>

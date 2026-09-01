@@ -183,14 +183,6 @@ const SavedVocabularyPage = lazy(() =>
   ),
 )
 
-const VocabularyDetailPage = lazy(() =>
-  import('@/pages/Vocabulary/VocabularyDetailPage').then(
-    ({ VocabularyDetailPage: Component }) => ({
-      default: Component,
-    }),
-  ),
-)
-
 const TutorSessionPage = lazy(() =>
   import('@/pages/Tutor/TutorSessionPage').then(
     ({ TutorSessionPage: Component }) => ({
@@ -199,9 +191,9 @@ const TutorSessionPage = lazy(() =>
   ),
 )
 
-const TutorHistoryPage = lazy(() =>
-  import('@/pages/Tutor/TutorHistoryPage').then(
-    ({ TutorHistoryPage: Component }) => ({
+const TutorPage = lazy(() =>
+  import('@/pages/Tutor/TutorPage').then(
+    ({ TutorPage: Component }) => ({
       default: Component,
     }),
   ),
@@ -297,16 +289,12 @@ export function AppRoutes() {
             element={<SavedVocabularyPage />}
           />
           <Route
-            path={routePaths.vocabularyDetail}
-            element={<VocabularyDetailPage />}
+            path={routePaths.tutor}
+            element={<TutorPage />}
           />
           <Route
             path={routePaths.tutorSession}
             element={<TutorSessionPage />}
-          />
-          <Route
-            path={routePaths.tutorHistory}
-            element={<TutorHistoryPage />}
           />
           <Route
             path={routePaths.tutorHistoryDetail}

@@ -3,7 +3,7 @@
   "nav": "Practice",
   "dashboard": {
     "title": "Today's Vocabulary Practice",
-    "subtitle": "Spaced Repetition System (FSRS) optimizes review schedules for your saved words.",
+    "subtitle": "AI Tutor automatically optimizes review schedules for your saved words.",
     "targetTime": "Target: {{minutes}} mins/day",
     "dueCount": "{{count}} word due for review",
     "dueCount_other": "{{count}} words due for review",
@@ -16,7 +16,11 @@
     "abandonedDesc": "You ended today's session. Only 1 session is allowed per day.",
     "noVocabTitle": "No Saved Words Yet",
     "noVocabDesc": "Read news articles and save unfamiliar words to practice with the AI Tutor.",
-    "noVocabCta": "Explore Articles"
+    "noVocabCta": "Explore Articles",
+    "notDoneTitle": "Today's Test Not Completed",
+    "notDoneDesc": "Take today's test now to reinforce memory and master your vocabulary.",
+    "notDoneCta": "Take Test Now",
+    "resumeCta": "Resume Test"
   },
   "session": {
     "activityProgress": "Question {{current}} of {{total}}",
@@ -60,7 +64,7 @@
     "subtitle": "Here is the detailed summary of your practice session today.",
     "duration": "Duration",
     "accuracy": "Accuracy",
-    "activities": "Activities Completed",
+    "activities": "Questions Completed",
     "newWords": "New Words Learned",
     "reviewWords": "Words Reviewed",
     "ratingDistribution": "Memory Retention Level",
@@ -94,12 +98,15 @@
     "score": "Score: {{correct}}/{{total}} ({{percent}}%)",
     "viewDetail": "View Details",
     "loadMore": "Load More Sessions",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "questionCount": "{{count}} questions",
+    "questionCount_one": "{{count}} question",
+    "questionCount_other": "{{count}} questions"
   },
   "detail": {
     "title": "Session Details",
     "backToHistory": "Back to History",
-    "itemHeading": "Activity {{position}}",
+    "itemHeading": "Question {{position}}",
     "questionType": "Question Type",
     "correctBadge": "Correct",
     "incorrectBadge": "Incorrect",

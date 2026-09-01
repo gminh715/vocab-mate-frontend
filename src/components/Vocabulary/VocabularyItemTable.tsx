@@ -18,10 +18,8 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { Link as RouterLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { VocabularySnapshot } from '@/types/Vocabulary/vocabulary'
-import { vocabularyDetailPath } from '@/utils/paths'
 
 const TABLE_HEADER_HEIGHT = 56
 const TABLE_ROW_HEIGHT = 76
@@ -34,6 +32,7 @@ interface VocabularyItemTableProps {
   onToggleSelected: (id: string) => void
   onToggleAll: () => void
   onDelete: (id: string) => void
+  onViewDetails?: (item: VocabularySnapshot) => void
   deletingId?: string | null
   isBulkDeleting?: boolean
 }
@@ -44,6 +43,7 @@ export function VocabularyItemTable({
   onToggleSelected,
   onToggleAll,
   onDelete,
+  onViewDetails,
   deletingId,
   isBulkDeleting = false,
 }: VocabularyItemTableProps) {
@@ -58,7 +58,7 @@ export function VocabularyItemTable({
       utterance.lang = 'en-US'
       window.speechSynthesis.speak(utterance)
     } catch {
-      // Audio playback is optional
+      // Audio speech playback fallback
     }
   }
 
@@ -68,55 +68,46 @@ export function VocabularyItemTable({
       elevation={0}
       sx={{
         borderRadius: 0,
-        border: 0,
-        overflowX: 'auto',
-        overflowY: 'auto',
+        boxShadow: 'none',
         maxHeight: TABLE_VIEWPORT_HEIGHT,
-        overscrollBehavior: 'contain',
+        overflowY: 'auto',
       }}
     >
-      <Table
-        aria-label={t('table.ariaLabel')}
-        stickyHeader
-        sx={{ minWidth: 820, tableLayout: 'fixed' }}
-      >
-        <TableHead sx={{ '& .MuiTableCell-head': { bgcolor: '#F8F9FA' } }}>
+      <Table sx={{ minWidth: 650 }} size="medium" stickyHeader>
+        <TableHead>
           <TableRow sx={{ height: TABLE_HEADER_HEIGHT }}>
-            <TableCell padding="checkbox" sx={{ width: 56 }}>
+            <TableCell padding="checkbox" sx={{ bgcolor: 'background.paper', zIndex: 3 }}>
               <Checkbox
+                indeterminate={someSelected && !allSelected}
                 checked={allSelected}
-                indeterminate={!allSelected && someSelected}
                 onChange={onToggleAll}
                 slotProps={{
-                  input: { 'aria-label': t('table.bulk.selectAll') },
+                  input: {
+                    'aria-label': t('table.bulk.selectAll'),
+                  },
                 }}
               />
             </TableCell>
-            <TableCell sx={{ width: '38%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
-              {t('table.colVocabulary')}
+            <TableCell sx={{ fontWeight: 800, bgcolor: 'background.paper', zIndex: 2 }}>
+              {t('table.columns.word')}
             </TableCell>
-            <TableCell sx={{ width: '13%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
-              {t('table.colPos')}
+            <TableCell sx={{ fontWeight: 800, bgcolor: 'background.paper', zIndex: 2 }}>
+              {t('table.columns.posCefr')}
             </TableCell>
-            <TableCell sx={{ width: '26%', fontWeight: 800, color: 'text.secondary', fontSize: 13, py: 1.75 }}>
-              {t('table.colMeaning')}
+            <TableCell sx={{ fontWeight: 800, bgcolor: 'background.paper', zIndex: 2 }}>
+              {t('table.columns.meaning')}
             </TableCell>
             <TableCell
               align="right"
               sx={{
+                fontWeight: 800,
                 position: 'sticky',
                 right: 0,
-                zIndex: 2,
-                width: 112,
-                bgcolor: '#F8F9FA',
-                fontWeight: 800,
-                color: 'text.secondary',
-                fontSize: 13,
-                py: 1.75,
-                whiteSpace: 'nowrap',
+                zIndex: 4,
+                bgcolor: 'background.paper',
               }}
             >
-              {t('table.colActions')}
+              {t('table.columns.actions')}
             </TableCell>
           </TableRow>
         </TableHead>
@@ -149,8 +140,9 @@ export function VocabularyItemTable({
                 <TableCell sx={{ verticalAlign: 'middle' }}>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center', minWidth: 0 }}>
                     <Typography
-                      component={RouterLink}
-                      to={vocabularyDetailPath(item.id)}
+                      component="button"
+                      type="button"
+                      onClick={() => onViewDetails?.(item)}
                       variant="subtitle1"
                       noWrap
                       sx={{
@@ -158,7 +150,13 @@ export function VocabularyItemTable({
                         color: 'text.primary',
                         fontWeight: 800,
                         textDecoration: 'none',
-                        '&:hover': { color: '#E53935' },
+                        background: 'none',
+                        border: 'none',
+                        p: 0,
+                        font: 'inherit',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        '&:hover': { color: 'primary.main', textDecoration: 'underline' },
                       }}
                     >
                       {item.savedWordDisplay}
@@ -215,8 +213,7 @@ export function VocabularyItemTable({
                   <Stack direction="row" spacing={0.5} sx={{ justifyContent: 'flex-end' }}>
                     <Tooltip title={t('table.detailsTooltip')}>
                       <IconButton
-                        component={RouterLink}
-                        to={vocabularyDetailPath(item.id)}
+                        onClick={() => onViewDetails?.(item)}
                         size="small"
                         sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
                         aria-label={t('table.detailsAriaLabel', { word: item.savedWordDisplay })}
@@ -242,7 +239,6 @@ export function VocabularyItemTable({
           })}
         </TableBody>
       </Table>
-
       <Dialog
         open={Boolean(deleteTargetItem)}
         onClose={() => setDeleteTargetItem(null)}
@@ -270,7 +266,6 @@ export function VocabularyItemTable({
           </Button>
         </DialogActions>
       </Dialog>
-
     </TableContainer>
   )
 }

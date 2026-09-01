@@ -13,9 +13,8 @@ export const routePaths = {
   profileSettings: '/settings/profile',
   securitySettings: '/settings/security',
   vocabularies: '/vocabularies',
-  vocabularyDetail: '/vocabularies/:userVocabularyId',
+  tutor: '/tutor',
   tutorSession: '/tutor/session',
-  tutorHistory: '/tutor/history',
   tutorHistoryDetail: '/tutor/history/:sessionId',
   admin: '/admin',
   adminUsers: '/admin/users',
@@ -60,12 +59,6 @@ export const articlePath = (slug: string): string => readerPath(slug)
 export const readerPath = (slug: string): string =>
   routePaths.reader.replace(':slug', encodeURIComponent(slug))
 
-export const vocabularyDetailPath = (userVocabularyId: string): string =>
-  routePaths.vocabularyDetail.replace(
-    ':userVocabularyId',
-    encodeURIComponent(userVocabularyId),
-  )
-
 export const tutorHistoryDetailPath = (sessionId: string): string =>
   routePaths.tutorHistoryDetail.replace(
     ':sessionId',
@@ -79,32 +72,17 @@ export interface AuthRedirectState {
 export const requestedPath = (location: Location): string =>
   `${location.pathname}${location.search}${location.hash}`
 
-const isSafeInternalPath = (value: unknown): value is string =>
-  typeof value === 'string' &&
-  value.startsWith('/') &&
-  !value.startsWith('//') &&
-  !value.includes('\\')
-
 export const postAuthPath = (
   role: UserRole,
-  state: unknown,
+  _state?: unknown,
 ): string => {
-  if (
-    typeof state === 'object' &&
-    state !== null &&
-    'from' in state &&
-    isSafeInternalPath(state.from)
-  ) {
-    return state.from
-  }
-
   return defaultAuthenticatedPath(role)
 }
 
 export const postLoginPath = (
   user: CurrentUser,
-  state: unknown,
+  _state?: unknown,
 ): string =>
   user.role === 'USER' && user.learningGoal === null
     ? routePaths.onboarding
-    : postAuthPath(user.role, state)
+    : defaultAuthenticatedPath(user.role)

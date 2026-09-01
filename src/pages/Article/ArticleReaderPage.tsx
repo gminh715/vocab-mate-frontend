@@ -6,6 +6,7 @@ import Divider from '@mui/material/Divider'
 import LinearProgress from '@mui/material/LinearProgress'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -13,6 +14,7 @@ import { Link as RouterLink, useParams } from 'react-router-dom'
 import { ArticleCefrChip } from '@/components/Article/ArticleChips'
 import { ArticleRenderer } from '@/components/Article/ArticleRenderer'
 import { ContextualTermDrawer } from '@/components/Article/ContextualTermDrawer'
+import { SparklesIcon } from '@/components/Dashboard/DashboardIcons'
 import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import {
@@ -206,7 +208,7 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
   }
 
   return (
-    <Stack spacing={{ xs: 1, md: 1.5 }} sx={{ minWidth: 0, maxWidth: '100%', overflowX: 'hidden' }}>
+    <Stack spacing={{ xs: 1, md: 1.5 }} sx={{ minWidth: 0, maxWidth: '100%' }}>
       <Box
         sx={(theme) => ({
           position: 'fixed',
@@ -253,12 +255,42 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
           borderTopColor: 'primary.main',
           minWidth: 0,
           maxWidth: '100%',
+          borderRadius: 3,
         }}
       >
+        {article.thumbnailUrl ? (
+          <Box
+            sx={{
+              width: '100%',
+              bgcolor: 'background.paper',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              overflow: 'hidden',
+            }}
+          >
+            <Box
+              component="img"
+              src={article.thumbnailUrl}
+              alt={article.title}
+              loading="eager"
+              sx={{
+                display: 'block',
+                width: '100%',
+                height: 'auto',
+                maxHeight: { xs: 400, sm: 550, md: 650 },
+                objectFit: 'contain',
+              }}
+            />
+          </Box>
+        ) : null}
+
         <Stack
           spacing={1.25}
           sx={{
-            py: { xs: 1.25, sm: 1.5, md: 2 },
+            py: { xs: 1.5, sm: 2, md: 2.5 },
             px: { xs: 2, sm: 3, md: 4 },
           }}
         >
@@ -386,38 +418,74 @@ function ReaderContent({ data }: { data: ReaderArticleData }) {
           aria-labelledby="vocabulary-panel-title"
           sx={{
             position: { md: 'sticky' },
-            top: { md: 24 },
+            top: { md: 88 },
+            alignSelf: 'start',
             overflow: 'hidden',
+            borderRadius: 3,
           }}
         >
           <Box sx={{ height: 5, bgcolor: 'secondary.main' }} />
           <Stack spacing={1.5} sx={{ p: 2.5 }}>
-            <Typography
-              id="vocabulary-panel-title"
-              component="h2"
-              sx={{ fontSize: 19, fontWeight: 800 }}
-            >
-              {t('reader.vocabulary.panelTitle')}
-            </Typography>
-            <Typography color="text.secondary" variant="body2">
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              <SparklesIcon size={20} color="#16A34A" />
+              <Typography
+                id="vocabulary-panel-title"
+                component="h2"
+                sx={{ fontSize: 18, fontWeight: 800 }}
+              >
+                {t('reader.vocabulary.panelTitle')}
+              </Typography>
+            </Stack>
+
+            <Typography color="text.secondary" variant="body2" sx={{ lineHeight: 1.5 }}>
               {highlightedTermIds.length === 0
                 ? t('reader.vocabulary.noHighlights')
                 : t('reader.vocabulary.hasHighlights')}
             </Typography>
-            <Button
-              type="button"
-              variant={isLookupModeEnabled ? 'contained' : 'outlined'}
-              onClick={toggleLookupMode}
-              aria-pressed={isLookupModeEnabled}
-              fullWidth
+
+            <Box
+              sx={{
+                p: 1.5,
+                borderRadius: 2,
+                bgcolor: isLookupModeEnabled ? 'rgba(22, 163, 74, 0.08)' : 'background.default',
+                border: 1,
+                borderColor: isLookupModeEnabled ? 'primary.main' : 'divider',
+                transition: 'all 0.2s ease-in-out',
+              }}
             >
-              {isLookupModeEnabled
-                ? t('reader.vocabulary.turnOff')
-                : t('reader.vocabulary.turnOn')}
-            </Button>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 700,
+                    color: isLookupModeEnabled ? 'primary.dark' : 'text.primary',
+                  }}
+                >
+                  {t('reader.vocabulary.switchLabel')}
+                </Typography>
+                <Switch
+                  checked={isLookupModeEnabled}
+                  onChange={toggleLookupMode}
+                  color="primary"
+                  size="medium"
+                  slotProps={{ input: { 'aria-label': t('reader.vocabulary.switchLabel') } }}
+                />
+              </Stack>
+            </Box>
+
             <Typography
               aria-live="polite"
-              sx={{ fontSize: 14, fontWeight: 750 }}
+              sx={{
+                fontSize: 13,
+                fontWeight: 650,
+                color: isLookupModeEnabled ? 'primary.main' : 'text.secondary',
+              }}
             >
               {!isLookupModeEnabled
                 ? t('reader.vocabulary.statusOff')

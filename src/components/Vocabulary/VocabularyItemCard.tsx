@@ -11,13 +11,11 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { Link as RouterLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type {
   VocabularyCollectionSummary,
   VocabularySnapshot,
 } from '@/types/Vocabulary/vocabulary'
-import { vocabularyDetailPath } from '@/utils/paths'
 
 const cefrColorMap: Record<string, string> = {
   A1: '#4CAF50',
@@ -33,12 +31,14 @@ interface VocabularyItemCardProps {
     collections?: VocabularyCollectionSummary[]
   }
   onDelete: (id: string) => void
+  onViewDetails?: (item: VocabularySnapshot) => void
   isDeleting?: boolean
 }
 
 export function VocabularyItemCard({
   item,
   onDelete,
+  onViewDetails,
   isDeleting = false,
 }: VocabularyItemCardProps) {
   const { t } = useTranslation('vocabulary')
@@ -71,13 +71,20 @@ export function VocabularyItemCard({
           <Box>
             <Stack direction="row" spacing={1} sx={{ alignItems: 'baseline', flexWrap: 'wrap' }}>
               <Typography
-                component={RouterLink}
-                to={vocabularyDetailPath(item.id)}
+                component="button"
+                type="button"
+                onClick={() => onViewDetails?.(item)}
                 variant="h6"
                 sx={{
                   color: 'primary.dark',
                   fontWeight: 750,
                   textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  p: 0,
+                  font: 'inherit',
+                  cursor: 'pointer',
+                  textAlign: 'left',
                   '&:hover': { textDecoration: 'underline' },
                 }}
               >
@@ -113,7 +120,6 @@ export function VocabularyItemCard({
                 color: '#FFFFFF',
               }}
             />
-
           </Stack>
         </Stack>
 
@@ -148,8 +154,7 @@ export function VocabularyItemCard({
         >
           <Stack direction="row" spacing={1}>
             <Button
-              component={RouterLink}
-              to={vocabularyDetailPath(item.id)}
+              onClick={() => onViewDetails?.(item)}
               size="small"
               variant="outlined"
               color="primary"

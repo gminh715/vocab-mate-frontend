@@ -16,6 +16,7 @@ import { useTheme } from '@mui/material/styles'
 import { useTranslation } from 'react-i18next'
 import { CollectionSidebar } from '@/components/Vocabulary/CollectionSidebar'
 import { AddVocabularyToCollectionDialog } from '@/components/Vocabulary/AddVocabularyToCollectionDialog'
+import { VocabularyDetailDialog } from '@/components/Vocabulary/VocabularyDetailDialog'
 import { VocabularyFilterBar } from '@/components/Vocabulary/VocabularyFilterBar'
 import { VocabularyItemCard } from '@/components/Vocabulary/VocabularyItemCard'
 import { VocabularyItemTable } from '@/components/Vocabulary/VocabularyItemTable'
@@ -54,6 +55,7 @@ export function SavedVocabularyPage() {
     useState<CollectionListItem | null>(null)
   const [deleteCollectionError, setDeleteCollectionError] = useState<string | null>(null)
   const [isAddVocabularyOpen, setIsAddVocabularyOpen] = useState(false)
+  const [detailUserVocabularyId, setDetailUserVocabularyId] = useState<string | null>(null)
 
   const currentParams = vocabularyParamsFromSearchParams(searchParams)
   const collectionsQuery = useCollectionsQuery({ limit: 100 })
@@ -392,6 +394,7 @@ export function SavedVocabularyPage() {
                       onToggleSelected={handleToggleSelected}
                       onToggleAll={handleToggleAll}
                       onDelete={handleDelete}
+                      onViewDetails={(item) => setDetailUserVocabularyId(item.id)}
                       deletingId={
                         deleteMutation.isPending ? deleteMutation.variables : null
                       }
@@ -404,6 +407,7 @@ export function SavedVocabularyPage() {
                           <VocabularyItemCard
                             item={item}
                             onDelete={handleDelete}
+                            onViewDetails={(cardItem) => setDetailUserVocabularyId(cardItem.id)}
                             isDeleting={
                               deleteMutation.isPending &&
                               deleteMutation.variables === item.id
@@ -432,6 +436,20 @@ export function SavedVocabularyPage() {
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Vocabulary Detail Dialog */}
+      <VocabularyDetailDialog
+        userVocabularyId={detailUserVocabularyId}
+        open={Boolean(detailUserVocabularyId)}
+        onClose={() => setDetailUserVocabularyId(null)}
+        onDeleted={(deletedId) => {
+          setSelectedIds((current) => {
+            const next = new Set(current)
+            next.delete(deletedId)
+            return next
+          })
+        }}
+      />
 
       {collectionToRename ? (
         <RenameCollectionDialog

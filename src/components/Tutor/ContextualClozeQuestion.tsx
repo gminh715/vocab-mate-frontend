@@ -199,7 +199,6 @@ export function ContextualClozeQuestion({
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
         disabled={disabled || isSubmitting}
-        placeholder={t('session.enterAnswerPlaceholder')}
         variant="outlined"
         autoComplete="off"
         slotProps={{

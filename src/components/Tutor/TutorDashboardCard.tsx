@@ -169,7 +169,7 @@ export function TutorDashboardCard() {
 
           <Button
             component={RouterLink}
-            to={routePaths.tutorSession}
+            to={routePaths.tutor}
             variant="outlined"
             sx={{
               borderRadius: 2,
@@ -235,7 +235,7 @@ export function TutorDashboardCard() {
 
           <Button
             component={RouterLink}
-            to={routePaths.tutorSession}
+            to={routePaths.tutor}
             variant="outlined"
             sx={{
               borderRadius: 2,
@@ -283,7 +283,7 @@ export function TutorDashboardCard() {
         sx={{ alignItems: { md: 'center' }, justifyContent: 'space-between' }}
       >
         <Box sx={{ maxWidth: 640 }}>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1, flexWrap: 'wrap' }}>
+          <Stack direction="row" useFlexGap sx={{ alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 1 }}>
             <Chip
               icon={<SparklesIcon size={14} color="inherit" />}
               size="small"
@@ -298,21 +298,6 @@ export function TutorDashboardCard() {
               variant="outlined"
               sx={{ fontWeight: 600 }}
             />
-            {status.dueCount > 0 ? (
-              <Chip
-                size="small"
-                label={t('dashboard.dueCount', { count: status.dueCount })}
-                color="secondary"
-                sx={{ fontWeight: 700 }}
-              />
-            ) : (
-              <Chip
-                size="small"
-                label={t('dashboard.noDue')}
-                variant="outlined"
-                sx={{ fontWeight: 600 }}
-              />
-            )}
           </Stack>
 
           <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>

@@ -15,7 +15,7 @@ html {
   min-width: 320px;
   min-height: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body,
@@ -23,10 +23,10 @@ body,
   min-height: 100vh;
   min-height: 100svh;
   max-width: 100%;
-  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   overflow-wrap: anywhere;
+  overflow-x: clip;
 }

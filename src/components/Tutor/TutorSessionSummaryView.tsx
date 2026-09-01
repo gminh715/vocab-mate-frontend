@@ -286,14 +286,27 @@ export function TutorSessionSummaryView({
           </Paper>
         ) : null}
 
-        {/* Action button */}
-        <Stack direction="row" spacing={2} sx={{ justifyContent: 'center' }}>
+        {/* Action buttons */}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          sx={{ justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Button
+            component={RouterLink}
+            to={routePaths.tutor}
+            variant="contained"
+            size="large"
+            sx={{ px: 3.5, py: 1.25, borderRadius: 2, fontWeight: 700 }}
+          >
+            {t('summary.viewHistory', 'Xem trang Luyện tập')}
+          </Button>
           <Button
             component={RouterLink}
             to={routePaths.home}
-            variant="contained"
+            variant="outlined"
             size="large"
-            sx={{ px: 4, py: 1.25, borderRadius: 2, fontWeight: 700 }}
+            sx={{ px: 3.5, py: 1.25, borderRadius: 2, fontWeight: 700 }}
           >
             {t('summary.backToHome')}
           </Button>

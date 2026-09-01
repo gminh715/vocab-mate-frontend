@@ -7,7 +7,7 @@
   "profile": {
     "eyebrow": "Danh tính học tập của bạn",
     "title": "Cài đặt hồ sơ",
-    "subtitle": "Cập nhật trình độ học tập và thông tin hồ sơ của bạn. Từ trong bài đọc được tô sáng theo khoảng từ CEFR hiện tại đến CEFR mục tiêu.",
+    "subtitle": "Cập nhật trình độ học tập và thông tin hồ sơ của bạn. Từ trong bài đọc được gợi ý theo khoảng từ CEFR hiện tại đến CEFR mục tiêu.",
     "avatarAlt": "Xem trước ảnh đại diện",
     "successMessage": "Đã lưu thay đổi hồ sơ.",
     "cannotRemoveAvatar": "API hiện tại không thể xóa URL ảnh đại diện. Hãy nhập URL thay thế.",
@@ -21,7 +21,7 @@
     },
     "cefrCard": {
       "title": "Trình độ học tập hiện tại",
-      "hint": "Lưu một trong hai trình độ CEFR sẽ làm mới các từ được tô sáng trong bài đọc.",
+      "hint": "Lưu một trong hai trình độ CEFR sẽ làm mới các từ được gợi ý trong bài đọc.",
       "vocabSize": "Vốn từ: {{count}}",
       "levels": {
         "A1": {
@@ -70,7 +70,7 @@
       "avatarFileTooLarge": "Kích thước ảnh không được vượt quá 5MB.",
       "avatarInvalidType": "Chỉ chấp nhận file ảnh JPG, PNG, WEBP hoặc GIF.",
       "cefrLevel": "Trình độ CEFR hiện tại",
-      "cefrLevelHint": "Từ ở trình độ này đến mục tiêu sẽ được tô sáng.",
+      "cefrLevelHint": "Từ ở trình độ này đến mục tiêu sẽ được gợi ý trong bài đọc.",
       "learningGoal": "Mục tiêu học tập",
       "learningGoalHint": "Chọn trình độ hiện tại hoặc mục tiêu CEFR cao hơn.",
       "learningGoalNotSet": "Chưa đặt",

@@ -67,17 +67,18 @@
       "by": "Tác giả: {{name}}"
     },
     "vocabulary": {
-      "panelTitle": "Từ vựng",
-      "noHighlights": "Không có từ nào nằm trong khoảng từ CEFR hiện tại đến CEFR mục tiêu của bạn. Bạn vẫn có thể tra cứu từ vựng được chuẩn bị cho tin tức này.",
-      "hasHighlights": "Các từ được tô sáng nằm từ CEFR hiện tại đến CEFR mục tiêu của bạn. Bật tra cứu để khám phá toàn bộ từ vựng được chuẩn bị cho tin tức này.",
+      "panelTitle": "Gợi ý từ vựng",
+      "noHighlights": "Chưa có từ vựng nào trong bài phù hợp với trình độ CEFR của bạn. Bạn vẫn có thể bật tra cứu để khám phá các từ vựng trong tin tức này.",
+      "hasHighlights": "Các từ vựng được gợi ý theo trình độ CEFR hiện tại đến mục tiêu của bạn. Bật tra cứu để xem giải nghĩa ngữ cảnh và lưu từ.",
       "turnOn": "Bật tra cứu từ vựng",
       "turnOff": "Tắt tra cứu từ vựng",
+      "switchLabel": "Chế độ tra cứu",
       "statusOff": "Tra cứu từ vựng đang tắt.",
-      "statusOn": "Đã bật tra cứu. Chọn một từ được đánh dấu trong bài.",
+      "statusOn": "Đã bật tra cứu. Nhấn vào các từ được gợi ý trong bài để xem nghĩa ngữ cảnh.",
       "statusSelected": "Đã chọn từ. Nhấn lại để mở lại thông tin.",
-      "statusOpen": "Thông tin từ vựng đang mở."
+      "statusOpen": "Bảng tra cứu từ vựng đang mở."
     },
-    "termInstructions": "Từ vựng. Nhấn Enter hoặc Space để chọn. Dùng phím mũi tên để di chuyển giữa các từ được đánh dấu."
+    "termInstructions": "Từ vựng gợi ý. Nhấn Enter hoặc Space để chọn. Dùng phím mũi tên để di chuyển giữa các từ được gợi ý."
   },
   "lookup": {
     "eyebrow": "Từ vựng theo ngữ cảnh",

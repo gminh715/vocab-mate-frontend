@@ -1,9 +1,9 @@
 {
-  "title": "Luyện tập cùng Gia sư AI",
+  "title": "Luyện tập cùng AI Tutor",
   "nav": "Luyện tập",
   "dashboard": {
     "title": "Luyện tập từ vựng hôm nay",
-    "subtitle": "Hệ thống Spaced Repetition (FSRS) tự động tối ưu hoá thời điểm ôn tập cho từng từ của bạn.",
+    "subtitle": "AI Tutor tự động tối ưu hoá thời điểm ôn tập cho từng từ của bạn.",
     "targetTime": "Mục tiêu: {{minutes}} phút/ngày",
     "dueCount": "{{count}} từ cần ôn tập",
     "dueCount_other": "{{count}} từ cần ôn tập",
@@ -15,8 +15,12 @@
     "abandonedToday": "Phiên học hôm nay đã dừng",
     "abandonedDesc": "Bạn đã kết thúc phiên học hôm nay. Mỗi ngày chỉ có 1 phiên học duy nhất.",
     "noVocabTitle": "Chưa có từ vựng nào được lưu",
-    "noVocabDesc": "Hãy đọc các tin tức và lưu lại từ vựng để bắt đầu luyện tập cùng gia sư AI.",
-    "noVocabCta": "Khám phá tin tức"
+    "noVocabDesc": "Hãy đọc các tin tức và lưu lại từ vựng để bắt đầu luyện tập cùng AI Tutor.",
+    "noVocabCta": "Khám phá tin tức",
+    "notDoneTitle": "Chưa làm bài test hôm nay",
+    "notDoneDesc": "Hãy làm bài test ngay để củng cố trí nhớ và nâng cao vốn từ vựng của bạn.",
+    "notDoneCta": "Làm bài test ngay",
+    "resumeCta": "Tiếp tục làm bài test"
   },
   "session": {
     "activityProgress": "Câu {{current}} / {{total}}",
@@ -94,12 +98,14 @@
     "score": "Đúng: {{correct}}/{{total}} ({{percent}}%)",
     "viewDetail": "Xem chi tiết",
     "loadMore": "Tải thêm lịch sử",
-    "loading": "Đang tải..."
+    "loading": "Đang tải...",
+    "questionCount": "{{count}} câu hỏi",
+    "questionCount_other": "{{count}} câu hỏi"
   },
   "detail": {
     "title": "Chi tiết phiên học",
     "backToHistory": "Quay lại lịch sử",
-    "itemHeading": "Hoạt động {{position}}",
+    "itemHeading": "Câu hỏi {{position}}",
     "questionType": "Dạng bài",
     "correctBadge": "Đúng",
     "incorrectBadge": "Sai",

@@ -3,7 +3,7 @@
     "brand": "Vocab Mate",
     "features": "Tính năng",
     "demo": "Trải nghiệm",
-    "spotlight": "Gia sư AI",
+    "spotlight": "AI Tutor",
     "howItWorks": "Cách học",
     "faq": "Hỏi đáp",
     "login": "Đăng nhập",
@@ -56,14 +56,14 @@
   },
   "spotlight": {
     "badge": "Phương pháp khoa học",
-    "title": "Ghi nhớ từ vựng chủ động cùng Gia sư AI",
+    "title": "Ghi nhớ từ vựng chủ động cùng AI Tutor",
     "p1Title": "Tạo câu hỏi từ bài đọc",
     "p1Desc": "AI biến các câu văn bạn vừa đọc thành bài tập điền từ và phản xạ nhớ lại.",
     "p2Title": "Gợi ý thông minh khi gặp khó",
     "p2Desc": "Gợi ý ngữ cảnh hoặc chữ cái đầu thay vì đưa ngay đáp án, giúp kích thích trí nhớ.",
     "p3Title": "Tối ưu hóa thời gian với FSRS",
     "p3Desc": "Chỉ nhắc ôn tập đúng lúc bạn sắp quên, tiết kiệm tối đa thời gian học tập.",
-    "demoCardBadge": "PHIÊN ÔN TẬP GIA SƯ AI",
+    "demoCardBadge": "PHIÊN ÔN TẬP AI TUTOR",
     "demoCardCefr": "CEFR C1",
     "demoCardQuestion": "Recent advancements in artificial intelligence are completely [ _____ ] how learners approach vocabulary acquisition.",
     "demoCardOption1": "transforms",
@@ -81,8 +81,8 @@
     "step1Desc": "Thoải mái đọc báo theo chủ đề bạn quan tâm.",
     "step2Title": "Tra từ và lưu lại",
     "step2Desc": "Xem ngay nghĩa ngữ cảnh, nghe phát âm chuẩn và lưu từ cần học vào bộ sưu tập.",
-    "step3Title": "Ôn tập cùng Gia sư AI",
-    "step3Desc": "Luyện tập linh hoạt qua các phiên học cá nhân hóa cùng Gia sư AI."
+    "step3Title": "Ôn tập cùng AI Tutor",
+    "step3Desc": "Luyện tập linh hoạt qua các phiên học cá nhân hóa cùng AI Tutor."
   },
   "faq": {
     "badge": "Hỏi & Đáp",
@@ -98,10 +98,10 @@
   },
   "cta": {
     "title": "Sẵn sàng nâng tầm vốn từ Tiếng Anh?",
-    "subtitle": "Bắt đầu đọc báo thực tế và làm chủ từ vựng cùng Gia sư AI ngay hôm nay.",
+    "subtitle": "Bắt đầu đọc báo thực tế và làm chủ từ vựng cùng AI Tutor ngay hôm nay.",
     "button": "Bắt đầu miễn phí ngay"
   },
   "footer": {
-    "rights": "© 2026 Vocab Mate. Học từ vựng Tiếng Anh qua tin tức cùng Gia sư AI."
+    "rights": "© 2026 Vocab Mate. Học từ vựng Tiếng Anh qua tin tức cùng AI Tutor."
   }
 }

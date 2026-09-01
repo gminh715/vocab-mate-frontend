@@ -124,7 +124,6 @@ export function AuthenticatedLayout() {
       sx={{
         minHeight: '100svh',
         bgcolor: 'background.default',
-        overflowX: 'hidden',
         maxWidth: '100%',
       }}
     >
@@ -206,7 +205,7 @@ export function AuthenticatedLayout() {
                 <>
                   <NavLink to={routePaths.readingHistory}>{t('nav.readingHistory', 'Reading history')}</NavLink>
                   <NavLink to={routePaths.vocabularies}>{t('nav.vocabulary', 'Vocabulary')}</NavLink>
-                  <NavLink to={routePaths.tutorSession} end={false}>{t('nav.tutor', 'Practice')}</NavLink>
+                  <NavLink to={routePaths.tutor} end={false}>{t('nav.tutor', 'Practice')}</NavLink>
                 </>
               ) : null}
               {currentUser?.role === 'ADMIN' ? (
@@ -375,7 +374,6 @@ export function AuthenticatedLayout() {
           pt: { xs: 1.5, md: 2 },
           pb: { xs: 4, md: 6 },
           maxWidth: '100%',
-          overflowX: 'hidden',
         }}
       >
         <Outlet />

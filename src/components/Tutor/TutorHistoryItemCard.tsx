@@ -63,7 +63,7 @@ export function TutorHistoryItemCard({ session }: TutorHistoryItemCardProps) {
         sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}
       >
         <Box>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1, flexWrap: 'wrap' }}>
+          <Stack direction="row" useFlexGap sx={{ alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 1 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
               {t('history.sessionDate', { date: session.studyDate })}
             </Typography>
@@ -76,7 +76,7 @@ export function TutorHistoryItemCard({ session }: TutorHistoryItemCardProps) {
             />
           </Stack>
 
-          <Stack direction="row" spacing={2} sx={{ color: 'text.secondary', flexWrap: 'wrap' }}>
+          <Stack direction="row" useFlexGap sx={{ color: 'text.secondary', flexWrap: 'wrap', gap: 2 }}>
             <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
               <ClockIcon size={15} color="currentColor" />
               <Typography variant="caption" sx={{ fontWeight: 600 }}>
@@ -87,7 +87,10 @@ export function TutorHistoryItemCard({ session }: TutorHistoryItemCardProps) {
             <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
               <SparklesIcon size={15} color="currentColor" />
               <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                {session.targetActivityCount} hoạt động ({session.newWordTarget} từ mới)
+                {t('history.questionCount', {
+                  count: session.targetActivityCount,
+                  defaultValue: `${session.targetActivityCount} câu hỏi`,
+                })}
               </Typography>
             </Stack>
           </Stack>

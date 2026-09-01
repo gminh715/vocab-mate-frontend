@@ -86,9 +86,8 @@ export function MultipleChoiceQuestion({
       </Typography>
 
       <Stack spacing={1.5} sx={{ mb: 3 }} role="radiogroup" aria-label="Multiple choice options">
-        {payload.options.map((option, index) => {
+        {payload.options.map((option) => {
           const isSelected = selectedOption === option.id
-          const shortcutKey = `${index + 1}`
 
           return (
             <Paper
@@ -106,7 +105,7 @@ export function MultipleChoiceQuestion({
                 borderRadius: 2.5,
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'flex-start',
                 textAlign: 'left',
                 cursor: disabled || isSubmitting ? 'default' : 'pointer',
                 borderColor: isSelected ? 'primary.main' : 'divider',
@@ -152,21 +151,6 @@ export function MultipleChoiceQuestion({
                   {option.text}
                 </Typography>
               </Stack>
-
-              <Typography
-                variant="caption"
-                sx={{
-                  fontWeight: 600,
-                  color: 'text.secondary',
-                  px: 1,
-                  py: 0.5,
-                  borderRadius: 1,
-                  bgcolor: 'action.hover',
-                  display: { xs: 'none', sm: 'inline-block' },
-                }}
-              >
-                {shortcutKey}
-              </Typography>
             </Paper>
           )
         })}

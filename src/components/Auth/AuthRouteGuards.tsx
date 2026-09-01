@@ -2,7 +2,6 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import {
   defaultAuthenticatedPath,
   postLoginPath,
-  requestedPath,
   routePaths,
 } from '@/utils/paths'
 import type { UserRole } from '@/types/Auth/auth'
@@ -38,7 +37,6 @@ export function ProtectedRoute() {
       <Navigate
         to={routePaths.login}
         replace
-        state={{ from: requestedPath(location) }}
       />
     )
   }

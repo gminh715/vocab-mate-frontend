@@ -179,7 +179,7 @@ export function TutorHistoryDetailPage() {
 
         <Button
           component={RouterLink}
-          to={routePaths.tutorHistory}
+          to={routePaths.tutor}
           variant="outlined"
           sx={{ borderRadius: 2, fontWeight: 700 }}
         >

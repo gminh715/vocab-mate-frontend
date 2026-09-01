@@ -2,7 +2,6 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
@@ -16,6 +15,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import type { ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useAdminAnalyticsOverviewQuery,
@@ -88,12 +88,7 @@ function AsyncSection({
         </Typography>
       </Box>
       {isPending ? (
-        <Paper variant="outlined" sx={{ minHeight: 180, display: 'grid', placeItems: 'center' }}>
-          <Stack role="status" spacing={1.25} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={30} />
-            <Typography color="text.secondary">Loading {title.toLowerCase()}…</Typography>
-          </Stack>
-        </Paper>
+        <LoadingState minHeight={220} size={30} />
       ) : error ? (
         <Alert
           severity="error"
@@ -244,11 +239,12 @@ function RegistrationsTrend({ items }: { items: RegistrationTrendBucket[] }) {
 const distributionLabels: Array<{
   key: keyof LearningDistribution
   label: string
+  detail: string
 }> = [
-  { key: 'inactive', label: 'Inactive' },
-  { key: 'readingOnly', label: 'Reading only' },
-  { key: 'vocabularyOnly', label: 'Vocabulary only' },
-  { key: 'multiActivity', label: 'Multiple activities' },
+  { key: 'inactive', label: 'Inactive', detail: 'No learning activity in this range' },
+  { key: 'readingOnly', label: 'Reading only', detail: 'Read articles without saving vocabulary' },
+  { key: 'vocabularyOnly', label: 'Vocabulary only', detail: 'Saved terms without completing articles' },
+  { key: 'multiActivity', label: 'Multiple activities', detail: 'Both read and saved vocabulary' },
 ]
 
 function LearningDistributionPanel({ data }: { data: LearningDistribution }) {

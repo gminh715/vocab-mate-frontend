@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
 import Pagination from '@mui/material/Pagination'
@@ -17,6 +16,7 @@ import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import { ArticleCefrChip } from '@/components/Article/ArticleChips'
 import { ArticleCover } from '@/components/Article/ArticleCover'
 import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useReadingHistoryQuery,
@@ -330,17 +330,7 @@ export function ReadingHistoryPage() {
       </Paper>
 
       {historyQuery.isPending ? (
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 320, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={34} />
-            <Typography color="text.secondary">
-              {t('history.loading')}
-            </Typography>
-          </Stack>
-        </Paper>
+        <LoadingState size={34} />
       ) : historyQuery.isError ? (
         <Alert
           severity="error"

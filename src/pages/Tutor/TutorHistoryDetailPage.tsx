@@ -2,7 +2,6 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
@@ -10,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import { ClockIcon, SparklesIcon } from '@/components/Dashboard/DashboardIcons'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { useTutorSessionDetailQuery } from '@/hooks/Tutor/useTutor'
 import type {
   MultipleChoicePayload,
@@ -27,22 +27,7 @@ export function TutorHistoryDetailPage() {
   )
 
   if (isPending) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          py: 8,
-          gap: 2,
-        }}
-      >
-        <CircularProgress size={40} />
-        <Typography variant="body2" color="text.secondary">
-          {t('history.loading')}
-        </Typography>
-      </Box>
-    )
+    return <LoadingState paper={false} minHeight="50vh" size={40} />
   }
 
   if (isError || !data) {

@@ -18,7 +18,7 @@
       "oldest": "Cũ nhất trước",
       "clearFilters": "Xóa bộ lọc"
     },
-    "loading": "Đang tải tin tức…",
+    "loading": "Đang tải...",
     "errors": {
       "invalidFilters": "Các bộ lọc này không hợp lệ. Xóa chúng và thử lại.",
       "loadError": "Không thể tải tin tức. Vui lòng thử lại.",
@@ -38,7 +38,7 @@
     }
   },
   "reader": {
-    "loading": "Đang tải trình đọc tin tức…",
+    "loading": "Đang tải...",
     "notFound": {
       "title": "Không tìm thấy tin tức",
       "subtitle": "Tin tức này có thể không còn khả dụng hoặc đã ngừng xuất bản. Hãy chọn bài khác từ thư viện.",
@@ -84,7 +84,7 @@
     "title": "Tra cứu từ vựng",
     "description": "Thông tin của từ trong câu này.",
     "close": "Đóng",
-    "loading": "Đang tải thông tin từ vựng…",
+    "loading": "Đang tải...",
     "tryAgain": "Thử lại",
     "errors": {
       "disabled": "Không thể tra cứu từ này trong ngữ cảnh hiện tại.",
@@ -169,7 +169,7 @@
       "oldestActivity": "Hoạt động cũ nhất",
       "clearFilters": "Xóa bộ lọc"
     },
-    "loading": "Đang tải lịch sử đọc…",
+    "loading": "Đang tải...",
     "errors": {
       "invalidFilters": "Các bộ lọc lịch sử này không hợp lệ. Xóa chúng và thử lại.",
       "loadError": "Không thể tải lịch sử đọc. Vui lòng thử lại.",

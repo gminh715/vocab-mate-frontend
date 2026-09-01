@@ -12,6 +12,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { useAddCollectionItemsMutation, useCollectionsQuery } from '@/hooks/Vocabulary/useCollections'
 import type {
   CollectionListItem,
@@ -111,7 +112,7 @@ export function AddToCollectionDialog({
         ) : null}
 
         {isLoading ? (
-          <Typography color="text.secondary">Loading collections…</Typography>
+          <LoadingState paper={false} py={4} minHeight={0} size={28} />
         ) : allCollections.length === 0 ? (
           <Typography color="text.secondary">
             You don&apos;t have any collections yet.

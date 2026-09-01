@@ -220,7 +220,7 @@ export function TutorSessionPage() {
       >
         <CircularProgress size={40} />
         <Typography variant="body1" color="text.secondary">
-          {t('session.submitting')}
+          {t('history.loading')}
         </Typography>
       </Box>
     )

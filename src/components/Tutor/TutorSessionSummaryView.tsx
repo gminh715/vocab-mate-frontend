@@ -321,6 +321,8 @@ export function TutorSessionSummaryView({
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '30vh',
               py: 6,
               gap: 2,
             }}

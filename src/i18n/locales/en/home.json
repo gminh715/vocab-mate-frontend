@@ -62,7 +62,7 @@
   "continueReading": {
     "title": "Continue reading",
     "historyButton": "Reading history",
-    "loadingLabel": "Loading articles",
+    "loadingLabel": "Loading...",
     "errorMessage": "Could not load recent articles. Try again.",
     "tryAgain": "Try again",
     "continueLabel": "Continue: {{title}}",
@@ -76,7 +76,7 @@
   },
   "accessibility": {
     "viewMetric": "View details for {{label}}",
-    "loadingOverview": "Loading learning overview"
+    "loadingOverview": "Loading..."
   },
   "streakWidget": {
     "title": "Learning Streak",

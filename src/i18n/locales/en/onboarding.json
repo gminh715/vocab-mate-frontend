@@ -7,7 +7,7 @@
   "chooseManually": "Choose CEFR manually",
   "skipSetup": "Skip for now",
   "skipTest": "Skip placement test",
-  "loading": "Preparing your word set…",
+  "loading": "Loading...",
   "loadError": "The placement vocabulary could not be loaded.",
   "retry": "Try again",
   "question": "Question {{current}} / {{total}}",

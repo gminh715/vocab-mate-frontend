@@ -2,7 +2,6 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
@@ -21,6 +20,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import { useAdminUserListQuery } from '@/hooks/Admin/useAdminUsers'
 import {
@@ -181,15 +181,7 @@ export function AdminUsersPage() {
       </Paper>
 
       {usersQuery.isPending ? (
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 280, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={32} />
-            <Typography color="text.secondary">Loading users…</Typography>
-          </Stack>
-        </Paper>
+        <LoadingState />
       ) : usersQuery.isError ? (
         <Alert
           severity="error"

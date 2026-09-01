@@ -62,7 +62,7 @@
   "continueReading": {
     "title": "Đọc tiếp",
     "historyButton": "Lịch sử đọc",
-    "loadingLabel": "Đang tải tin tức",
+    "loadingLabel": "Đang tải...",
     "errorMessage": "Không thể tải tin tức gần đây. Hãy thử lại.",
     "tryAgain": "Thử lại",
     "continueLabel": "Đọc tiếp: {{title}}",
@@ -76,7 +76,7 @@
   },
   "accessibility": {
     "viewMetric": "Xem chi tiết cho {{label}}",
-    "loadingOverview": "Đang tải tổng quan học tập"
+    "loadingOverview": "Đang tải..."
   },
   "streakWidget": {
     "title": "Chuỗi Học Tập",

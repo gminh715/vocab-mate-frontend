@@ -2,7 +2,6 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
@@ -15,6 +14,7 @@ import {
 } from 'react-router-dom'
 import { ArticleClassification } from '@/components/Article/ArticleChips'
 import { ArticleRenderer } from '@/components/Article/ArticleRenderer'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import { useAdminArticlePreviewQuery } from '@/hooks/Admin/useAdminArticleContent'
 import { CEFR_LEVELS, type CefrLevel } from '@/types/Auth/auth'
@@ -62,17 +62,7 @@ export function AdminArticlePreviewPage() {
     return (
       <Stack spacing={3.5}>
         {heading}
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 320, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={32} />
-            <Typography color="text.secondary">
-              Loading preview…
-            </Typography>
-          </Stack>
-        </Paper>
+        <LoadingState />
       </Stack>
     )
   }

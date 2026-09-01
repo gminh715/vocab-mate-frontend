@@ -2,7 +2,6 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import LinearProgress from '@mui/material/LinearProgress'
 import Paper from '@mui/material/Paper'
@@ -14,6 +13,7 @@ import { Link as RouterLink, useParams } from 'react-router-dom'
 import { ArticleCefrChip } from '@/components/Article/ArticleChips'
 import { ArticleRenderer } from '@/components/Article/ArticleRenderer'
 import { ContextualTermDrawer } from '@/components/Article/ContextualTermDrawer'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useCompleteReadingMutation,
@@ -46,21 +46,7 @@ const visuallyHidden = {
 const termInstructionsId = 'reader-term-instructions'
 
 function ReaderLoading() {
-  const { t } = useTranslation('articles')
-
-  return (
-    <Paper
-      variant="outlined"
-      sx={{ minHeight: 480, display: 'grid', placeItems: 'center' }}
-    >
-      <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-        <CircularProgress size={36} />
-        <Typography color="text.secondary">
-          {t('reader.loading')}
-        </Typography>
-      </Stack>
-    </Paper>
-  )
+  return <LoadingState minHeight={480} size={36} />
 }
 
 function ReaderNotFound() {

@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import CircularProgress from '@mui/material/CircularProgress'
 import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
 import Pagination from '@mui/material/Pagination'
@@ -20,6 +19,7 @@ import {
 import { ArticleCefrChip } from '@/components/Article/ArticleChips'
 import { ArticleCover } from '@/components/Article/ArticleCover'
 import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import { useArticleListQuery } from '@/hooks/Article/useArticles'
 import { useCategoryListQuery } from '@/hooks/Article/useCategories'
@@ -333,15 +333,7 @@ export function ArticlesPage() {
       ) : null}
 
       {articlesQuery.isPending ? (
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 320, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={34} />
-            <Typography color="text.secondary">{t('list.loading')}</Typography>
-          </Stack>
-        </Paper>
+        <LoadingState size={34} />
       ) : articlesQuery.isError ? (
         <Alert
           severity="error"

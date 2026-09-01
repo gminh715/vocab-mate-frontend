@@ -29,7 +29,7 @@
     "submitting": "Checking...",
     "nextBtn": "Continue",
     "nextQuestion": "Next Question",
-    "loadingNextQuestion": "Preparing next question...",
+    "loadingNextQuestion": "Loading...",
     "finishSession": "View Results",
     "microLessonTitle": "Mini Fact & Quick Review",
     "microLessonPrompt": "Explore the interesting fact below to reinforce and memorize vocabulary before taking the retest:",
@@ -94,7 +94,7 @@
     "score": "Score: {{correct}}/{{total}} ({{percent}}%)",
     "viewDetail": "View Details",
     "loadMore": "Load More Sessions",
-    "loading": "Loading sessions..."
+    "loading": "Loading..."
   },
   "detail": {
     "title": "Session Details",

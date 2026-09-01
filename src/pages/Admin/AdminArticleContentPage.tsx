@@ -2,7 +2,6 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -32,6 +31,7 @@ import { ArticleSentenceEditor } from '@/components/Article/ArticleSentenceEdito
 import { ArticleTermDrawer } from '@/components/Article/ArticleTermDrawer'
 import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useArchiveAdminArticleMutation,
@@ -192,14 +192,7 @@ function EditTermDrawerContainer({
       <Dialog open onClose={onClose} aria-labelledby="loading-term-title">
         <DialogTitle id="loading-term-title">Edit term</DialogTitle>
         <DialogContent>
-          <Stack
-            role="status"
-            spacing={1.5}
-            sx={{ minWidth: 280, alignItems: 'center', py: 5 }}
-          >
-            <CircularProgress size={30} />
-            <Typography color="text.secondary">Loading term…</Typography>
-          </Stack>
+          <LoadingState paper={false} py={5} minHeight={0} size={30} sx={{ minWidth: 280 }} />
         </DialogContent>
       </Dialog>
     )
@@ -876,17 +869,7 @@ export function AdminArticleContentPage() {
     return (
       <Stack spacing={3.5}>
         {heading}
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 320, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={32} />
-            <Typography color="text.secondary">
-              Loading article workspace…
-            </Typography>
-          </Stack>
-        </Paper>
+        <LoadingState />
       </Stack>
     )
   }
@@ -1153,16 +1136,7 @@ export function AdminArticleContentPage() {
                 <Box sx={{ height: 4 }} />
               )}
               {sentenceListQuery.isPending ? (
-                <Stack
-                  role="status"
-                  spacing={1.25}
-                  sx={{ alignItems: 'center', py: 8 }}
-                >
-                  <CircularProgress size={28} />
-                  <Typography color="text.secondary">
-                    Loading sentences…
-                  </Typography>
-                </Stack>
+                <LoadingState paper={false} py={8} minHeight={0} size={28} />
               ) : sentenceListQuery.isError ? (
                 <Alert severity="error" sx={{ m: 2 }}>
                   {apiMessage(sentenceListQuery.error)}
@@ -1279,16 +1253,7 @@ export function AdminArticleContentPage() {
                   </Typography>
                 </Stack>
               ) : sentenceDetailQuery.isPending ? (
-                <Stack
-                  role="status"
-                  spacing={1.5}
-                  sx={{ alignItems: 'center', py: 8 }}
-                >
-                  <CircularProgress size={30} />
-                  <Typography color="text.secondary">
-                    Loading sentence detail…
-                  </Typography>
-                </Stack>
+                <LoadingState paper={false} py={8} minHeight={0} size={30} />
               ) : sentenceDetailQuery.isError ? (
                 <Alert severity="error">
                   {apiMessage(sentenceDetailQuery.error)}
@@ -1426,16 +1391,7 @@ export function AdminArticleContentPage() {
                 <LinearProgress aria-label="Refreshing terms" />
               ) : null}
               {termListQuery.isPending ? (
-                <Stack
-                  role="status"
-                  spacing={1.5}
-                  sx={{ alignItems: 'center', py: 8 }}
-                >
-                  <CircularProgress size={30} />
-                  <Typography color="text.secondary">
-                    Loading contextual terms…
-                  </Typography>
-                </Stack>
+                <LoadingState paper={false} py={8} minHeight={0} size={30} />
               ) : termListQuery.isError ? (
                 <Alert severity="error">
                   {apiMessage(termListQuery.error)}

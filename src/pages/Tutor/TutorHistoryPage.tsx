@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 import { SparklesIcon } from '@/components/Dashboard/DashboardIcons'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { TutorHistoryItemCard } from '@/components/Tutor/TutorHistoryItemCard'
 import { useTutorHistoryQuery } from '@/hooks/Tutor/useTutor'
 import type { TutorSessionSummary } from '@/types/Tutor/tutor'
@@ -55,21 +56,8 @@ export function TutorHistoryPage() {
         </Typography>
       </Stack>
 
-      {isPending && !cursor ? (
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            py: 8,
-            gap: 2,
-          }}
-        >
-          <CircularProgress size={40} />
-          <Typography variant="body2" color="text.secondary">
-            {t('history.loading')}
-          </Typography>
-        </Box>
+      {isPending ? (
+        <LoadingState paper={false} minHeight="40vh" size={40} />
       ) : isError ? (
         <Alert
           severity="error"

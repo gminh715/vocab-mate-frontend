@@ -3,7 +3,6 @@ import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
@@ -16,6 +15,7 @@ import {
   useParams,
 } from 'react-router-dom'
 import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useAdminUserDetailQuery,
@@ -228,24 +228,10 @@ function RoleControl({
 export function AdminUserDetailPage() {
   const { userId = '' } = useParams()
   const detailQuery = useAdminUserDetailQuery(userId)
-  const [successMessage, setSuccessMessage] = useState<string | null>(
-    null,
-  )
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   if (detailQuery.isPending) {
-    return (
-      <Paper
-        variant="outlined"
-        sx={{ minHeight: 320, display: 'grid', placeItems: 'center' }}
-      >
-        <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-          <CircularProgress size={32} />
-          <Typography color="text.secondary">
-            Loading user details…
-          </Typography>
-        </Stack>
-      </Paper>
-    )
+    return <LoadingState />
   }
 
   if (detailQuery.isError) {
@@ -305,7 +291,7 @@ export function AdminUserDetailPage() {
             height: 64,
             bgcolor: 'primary.light',
             color: 'primary.dark',
-                        fontFamily: '"Merriweather", serif',
+            fontFamily: '"Merriweather", serif',
             fontSize: 28,
           }}
         >
@@ -434,7 +420,7 @@ export function AdminUserDetailPage() {
                       component="dd"
                       sx={{
                         m: 0,
-                                    fontFamily: '"Merriweather", serif',
+                        fontFamily: '"Merriweather", serif',
                         fontSize: 32,
                         fontWeight: 700,
                         color: 'primary.dark',

@@ -7,7 +7,7 @@
   "chooseManually": "Tự chọn trình độ CEFR",
   "skipSetup": "Bỏ qua bước này",
   "skipTest": "Bỏ qua bài kiểm tra",
-  "loading": "Đang chuẩn bị bộ từ…",
+  "loading": "Đang tải...",
   "loadError": "Không thể tải bộ từ kiểm tra.",
   "retry": "Thử lại",
   "question": "Câu {{current}} / {{total}}",

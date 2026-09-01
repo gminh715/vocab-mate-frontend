@@ -1,7 +1,6 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
 import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
@@ -23,6 +22,7 @@ import {
 import { ArticleClassification } from '@/components/Article/ArticleChips'
 import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useAdminArticleListQuery,
@@ -265,17 +265,7 @@ export function AdminArticlesPage() {
       </Paper>
 
       {articlesQuery.isPending ? (
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 300, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={32} />
-            <Typography color="text.secondary">
-              Loading articles…
-            </Typography>
-          </Stack>
-        </Paper>
+        <LoadingState />
       ) : articlesQuery.isError ? (
         <Alert
           severity="error"

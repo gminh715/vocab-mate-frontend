@@ -18,7 +18,7 @@
       "oldest": "Oldest first",
       "clearFilters": "Clear filters"
     },
-    "loading": "Loading articles…",
+    "loading": "Loading...",
     "errors": {
       "invalidFilters": "These filters are not valid. Clear them and try again.",
       "loadError": "Articles could not be loaded. Try again.",
@@ -38,7 +38,7 @@
     }
   },
   "reader": {
-    "loading": "Loading article reader…",
+    "loading": "Loading...",
     "notFound": {
       "title": "Article not found",
       "subtitle": "This article may be unavailable or no longer published. Choose another article from the library.",
@@ -84,7 +84,7 @@
     "title": "Vocabulary lookup",
     "description": "Details for this sentence occurrence.",
     "close": "Close",
-    "loading": "Loading vocabulary details…",
+    "loading": "Loading...",
     "tryAgain": "Try again",
     "errors": {
       "disabled": "Lookup is disabled for this contextual term.",
@@ -169,7 +169,7 @@
       "oldestActivity": "Oldest activity",
       "clearFilters": "Clear filters"
     },
-    "loading": "Loading reading history…",
+    "loading": "Loading...",
     "errors": {
       "invalidFilters": "These history filters are not valid. Clear them and try again.",
       "loadError": "Reading history could not be loaded. Try again.",

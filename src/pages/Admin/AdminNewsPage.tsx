@@ -4,7 +4,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Link from '@mui/material/Link'
@@ -20,6 +19,7 @@ import {
   Link as RouterLink,
   useSearchParams,
 } from 'react-router-dom'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import { useAdminCategoryOptionsQuery } from '@/hooks/Admin/useAdminCategories'
 import {
@@ -323,17 +323,7 @@ export function AdminNewsPage() {
       </Paper>
 
       {searchQuery.isPending ? (
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 280, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={32} />
-            <Typography color="text.secondary">
-              Loading Guardian articles…
-            </Typography>
-          </Stack>
-        </Paper>
+        <LoadingState />
       ) : searchQuery.isError ? (
         <Alert
           severity="error"

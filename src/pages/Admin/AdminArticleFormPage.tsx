@@ -1,7 +1,6 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -14,6 +13,7 @@ import {
 } from 'react-router-dom'
 import { AdminArticleForm } from '@/components/Admin/AdminArticleForm'
 import { ArticleClassification } from '@/components/Article/ArticleChips'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useAdminArticleDetailQuery,
@@ -134,17 +134,7 @@ export function AdminArticleCreatePage() {
       </Stack>
 
       {categoriesQuery.isPending ? (
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 280, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={32} />
-            <Typography color="text.secondary">
-              Loading categories…
-            </Typography>
-          </Stack>
-        </Paper>
+        <LoadingState />
       ) : categoriesQuery.isError ? (
         <CategoriesError
           error={categoriesQuery.error}
@@ -250,15 +240,7 @@ export function AdminArticleEditPage() {
           title="Edit article"
           description="Loading article metadata and content."
         />
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 320, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={32} />
-            <Typography color="text.secondary">Loading article…</Typography>
-          </Stack>
-        </Paper>
+        <LoadingState />
       </Stack>
     )
   }

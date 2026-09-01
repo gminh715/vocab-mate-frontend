@@ -29,7 +29,7 @@
     "submitting": "Đang kiểm tra...",
     "nextBtn": "Tiếp tục",
     "nextQuestion": "Câu tiếp theo",
-    "loadingNextQuestion": "Đang chuẩn bị câu tiếp theo...",
+    "loadingNextQuestion": "Đang tải...",
     "finishSession": "Xem kết quả",
     "microLessonTitle": "Fact thú vị & Bài học ngắn",
     "microLessonPrompt": "Khám phá mẩu chuyện thú vị dưới đây để củng cố và ghi nhớ từ vựng:",
@@ -94,7 +94,7 @@
     "score": "Đúng: {{correct}}/{{total}} ({{percent}}%)",
     "viewDetail": "Xem chi tiết",
     "loadMore": "Tải thêm lịch sử",
-    "loading": "Đang tải danh sách..."
+    "loading": "Đang tải..."
   },
   "detail": {
     "title": "Chi tiết phiên học",

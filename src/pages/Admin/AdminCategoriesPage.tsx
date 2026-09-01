@@ -2,7 +2,6 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -25,6 +24,7 @@ import { useSearchParams } from 'react-router-dom'
 import { CategoryFormDialog } from '@/components/Admin/CategoryFormDialog'
 import { ConfirmationDialog } from '@/components/Shared/ConfirmationDialog'
 import { DebouncedSearchField } from '@/components/Shared/DebouncedSearchField'
+import { LoadingState } from '@/components/Shared/LoadingState'
 import { normalizeApiError } from '@/config/apiClient'
 import {
   useAdminCategoryDetailQuery,
@@ -99,16 +99,7 @@ function EditCategoryDialog({
       <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
         <DialogTitle>Edit category</DialogTitle>
         <DialogContent>
-          <Stack
-            role="status"
-            spacing={1.5}
-            sx={{ alignItems: 'center', py: 6 }}
-          >
-            <CircularProgress size={32} />
-            <Typography color="text.secondary">
-              Loading category…
-            </Typography>
-          </Stack>
+          <LoadingState paper={false} py={6} minHeight={0} />
         </DialogContent>
       </Dialog>
     )
@@ -231,6 +222,7 @@ export function AdminCategoriesPage() {
 
   const confirmDeactivation = () => {
     if (!statusCategory) return
+
 
     statusMutation.mutate(
       { categoryId: statusCategory.id, isActive: false },
@@ -365,17 +357,7 @@ export function AdminCategoriesPage() {
       </Paper>
 
       {categoriesQuery.isPending ? (
-        <Paper
-          variant="outlined"
-          sx={{ minHeight: 280, display: 'grid', placeItems: 'center' }}
-        >
-          <Stack role="status" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <CircularProgress size={32} />
-            <Typography color="text.secondary">
-              Loading categories…
-            </Typography>
-          </Stack>
-        </Paper>
+        <LoadingState />
       ) : categoriesQuery.isError ? (
         <Alert
           severity="error"

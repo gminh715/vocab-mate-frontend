@@ -275,7 +275,7 @@ describe('Save Vocabulary with Collections', () => {
     expect(await screen.findByText('Added to collection successfully!')).toBeInTheDocument()
   })
 
-  it('creates a collection from lookup and saves an unsaved word into it', async () => {
+  it('creates a collection from lookup, selects it, and saves when user submits', async () => {
     vi.spyOn(readingApi, 'term').mockResolvedValue(mockUnsavedLookup)
     vi.spyOn(collectionsApi, 'create').mockResolvedValue({
       collection: {
@@ -313,6 +313,98 @@ describe('Save Vocabulary with Collections', () => {
     await user.click(
       screen.getByRole('button', { name: 'Create Collection', exact: true }),
     )
+
+    // Verify vocabulary is NOT saved immediately upon creating the collection
+    expect(vocabulariesApi.save).not.toHaveBeenCalled()
+
+    // The user explicitly clicks Save Vocabulary to save
+    const saveButton = await screen.findByRole('button', { name: 'Save Vocabulary' })
+    await user.click(saveButton)
+
+    await waitFor(() => {
+      expect(vocabulariesApi.save).toHaveBeenCalledWith({
+        articleSentenceTermId: termId,
+        collectionIds: ['550e8400-e29b-41d4-a716-446655440012'],
+      })
+    })
+  })
+
+  it('creates a collection when initially having no collections, selects it, and saves on submit', async () => {
+    vi.spyOn(readingApi, 'term').mockResolvedValue(mockUnsavedLookup)
+    vi.spyOn(collectionsApi, 'findAll').mockResolvedValue({
+      items: [
+        {
+          id: '550e8400-e29b-41d4-a716-446655440012',
+          name: 'Travel',
+          createdAt: '2026-08-25T10:00:00.000Z',
+          updatedAt: '2026-08-25T10:00:00.000Z',
+          vocabularyCount: 0,
+        },
+      ],
+      meta: { page: 1, limit: 100, total: 1, totalPages: 1 },
+    })
+    vi.spyOn(collectionsApi, 'create').mockResolvedValue({
+      collection: {
+        id: '550e8400-e29b-41d4-a716-446655440012',
+        name: 'Travel',
+        createdAt: '2026-08-25T10:00:00.000Z',
+        updatedAt: '2026-08-25T10:00:00.000Z',
+        vocabularyCount: 0,
+      },
+    })
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+    })
+    queryClient.setQueryData(
+      readingQueryKeys.term(articleId, termId),
+      mockUnsavedLookup,
+    )
+    queryClient.setQueryData(
+      collectionQueryKeys.list({ limit: 100 }),
+      mockEmptyCollectionsList,
+    )
+
+    render(
+      <ThemeProvider theme={appTheme}>
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter>
+            <ContextualTermDrawer
+              open={true}
+              articleId={articleId}
+              termId={termId}
+              onClose={() => {}}
+            />
+          </MemoryRouter>
+        </QueryClientProvider>
+      </ThemeProvider>,
+    )
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      "You don't have any collections yet. Create one to save vocabulary.",
+    )
+
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'Create collection' }))
+    await user.type(
+      await screen.findByLabelText('Collection Name'),
+      'Travel',
+    )
+    await user.click(
+      screen.getByRole('button', { name: 'Create Collection', exact: true }),
+    )
+
+    // Verify dialog closes and Save Vocabulary button becomes enabled
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Save Vocabulary' })).toBeEnabled()
+    })
+
+    // Verify vocabulary is NOT saved automatically
+    expect(vocabulariesApi.save).not.toHaveBeenCalled()
+
+    // The user explicitly clicks Save Vocabulary to save
+    const saveButton = screen.getByRole('button', { name: 'Save Vocabulary' })
+    await user.click(saveButton)
 
     await waitFor(() => {
       expect(vocabulariesApi.save).toHaveBeenCalledWith({

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
@@ -161,25 +161,35 @@ function SaveVocabularyForm({
   const [addFeedback, setAddFeedback] = useState<string | null>(null)
   const [isCreateCollectionOpen, setIsCreateCollectionOpen] = useState(false)
 
-  const defaultCollectionIds = useMemo(
-    () => (collections.length > 0 ? [collections[0].id] : []),
-    [collections],
-  )
+  const isDefaultInitializedRef = useRef(false)
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     getValues,
     handleSubmit,
+    setValue,
   } = useForm<
     SaveVocabularyFormValues,
     unknown,
     SaveVocabularyFormOutput
   >({
     resolver: zodResolver(saveVocabularyFormSchema),
-    values: { collectionIds: defaultCollectionIds },
-    resetOptions: { keepDefaultValues: false },
+    defaultValues: {
+      collectionIds: collections.length > 0 ? [collections[0].id] : [],
+    },
   })
+
+  useEffect(() => {
+    if (isDefaultInitializedRef.current) return
+    if (collections.length > 0) {
+      const current = getValues('collectionIds')
+      if (!current || current.length === 0) {
+        setValue('collectionIds', [collections[0].id])
+      }
+      isDefaultInitializedRef.current = true
+    }
+  }, [collections, getValues, setValue])
 
   const submit = handleSubmit((values) => {
     saveMutation.mutate(toSaveVocabularyRequest(data.term.id, values))
@@ -220,12 +230,16 @@ function SaveVocabularyForm({
       return
     }
 
-    saveMutation.mutate(
-      toSaveVocabularyRequest(data.term.id, {
-        ...getValues(),
-        collectionIds: [collectionId],
-      }),
-    )
+    isDefaultInitializedRef.current = true
+    const current = getValues('collectionIds') ?? []
+    const nextCollectionIds = isDirty
+      ? Array.from(new Set([...current, collectionId]))
+      : [collectionId]
+
+    setValue('collectionIds', nextCollectionIds, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
   }
 
   if (data.saveState.isSaved) {
@@ -387,7 +401,6 @@ function SaveVocabularyForm({
                   <Controller
                     name="collectionIds"
                     control={control}
-                    defaultValue={[collections[0]?.id].filter(Boolean)}
                     render={({ field }) => (
                       <FormControl
                         fullWidth
@@ -639,7 +652,7 @@ function LookupDetails({
       <Divider />
 
       <DetailSection title={t('lookup.sections.saveTerm')}>
-        <SaveVocabularyForm articleId={articleId} data={data} />
+        <SaveVocabularyForm key={data.term.id} articleId={articleId} data={data} />
       </DetailSection>
     </Stack>
   )

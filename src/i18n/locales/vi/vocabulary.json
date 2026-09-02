@@ -73,6 +73,12 @@
     "colPos": "Từ loại / Cấp độ",
     "colMeaning": "Nghĩa",
     "colActions": "Hành động",
+    "columns": {
+      "word": "Từ vựng",
+      "posCefr": "Từ loại / Cấp độ",
+      "meaning": "Nghĩa",
+      "actions": "Hành động"
+    },
     "listenTooltip": "Nghe phát âm",
     "listenAriaLabel": "Nghe phát âm {{word}}",
     "detailsTooltip": "Xem chi tiết / Chỉnh sửa",

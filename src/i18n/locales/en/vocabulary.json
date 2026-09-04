@@ -73,6 +73,12 @@
     "colPos": "POS / Level",
     "colMeaning": "Meaning",
     "colActions": "Actions",
+    "columns": {
+      "word": "Vocabulary",
+      "posCefr": "POS / Level",
+      "meaning": "Meaning",
+      "actions": "Actions"
+    },
     "listenTooltip": "Listen pronunciation",
     "listenAriaLabel": "Listen to {{word}}",
     "detailsTooltip": "View Details / Edit",

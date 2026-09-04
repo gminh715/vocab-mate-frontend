@@ -73,7 +73,7 @@ export function VocabularyItemTable({
         overflowY: 'auto',
       }}
     >
-      <Table sx={{ minWidth: 650 }} size="medium" stickyHeader>
+      <Table aria-label={t('table.ariaLabel')} sx={{ minWidth: 650 }} size="medium" stickyHeader>
         <TableHead>
           <TableRow sx={{ height: TABLE_HEADER_HEIGHT }}>
             <TableCell padding="checkbox" sx={{ bgcolor: 'background.paper', zIndex: 3 }}>

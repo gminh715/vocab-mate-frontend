@@ -2,9 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   collectionsApi,
   type CreateCollectionRequest,
+  type CreateCollectionResponse,
   type UpdateCollectionRequest,
 } from '@/api/Vocabulary/CollectionsApi'
 import type {
+  CollectionListData,
   GetCollectionItemsQueryParams,
   GetCollectionsQueryParams,
 } from '@/types/Vocabulary/vocabulary'
@@ -52,7 +54,25 @@ export const useCreateCollectionMutation = () => {
   return useMutation({
     mutationFn: (request: CreateCollectionRequest) =>
       collectionsApi.create(request),
-    onSuccess: () => {
+    onSuccess: (data: CreateCollectionResponse) => {
+      queryClient.setQueriesData<CollectionListData>(
+        { queryKey: collectionQueryKeys.lists() },
+        (old) => {
+          if (!old) {
+            return {
+              items: [{ ...data.collection, vocabularyCount: 0 }],
+              meta: { page: 1, limit: 100, total: 1, totalPages: 1 },
+            }
+          }
+          const exists = old.items.some((c) => c.id === data.collection.id)
+          if (exists) return old
+          return {
+            ...old,
+            items: [{ ...data.collection, vocabularyCount: 0 }, ...old.items],
+            meta: old.meta ? { ...old.meta, total: old.meta.total + 1 } : old.meta,
+          }
+        },
+      )
       void queryClient.invalidateQueries({
         queryKey: collectionQueryKeys.all,
       })
